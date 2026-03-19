@@ -144,9 +144,9 @@ export default function LoginPage() {
         {/* Logo Section */}
         <div className="text-center mb-10">
           <div className="w-24 h-24 rounded-[2.5rem] bg-accent-primary flex items-center justify-center mx-auto mb-6 shadow-2xl hatched border border-white/10 group hover:rotate-6 transition-all duration-500">
-            <Shield className="w-12 h-12 text-surface-900 drop-shadow-lg" />
+            <Shield className="w-12 h-12 text-black drop-shadow-lg" />
           </div>
-          <h1 className="text-4xl font-display font-black text-text-primary tracking-tighter italic uppercase text-white">GFTEAM <span className="text-accent-primary">SAAS</span></h1>
+          <h1 className="text-4xl font-display font-black text-text-primary tracking-tighter italic uppercase">GFTEAM <span className="text-accent-primary">SAAS</span></h1>
           <p className="text-accent-primary font-black uppercase tracking-[0.4em] text-[10px] mt-4 opacity-80">
             World Class Jiu-Jitsu Management
           </p>
@@ -255,9 +255,9 @@ export default function LoginPage() {
               className="btn-primary w-full !rounded-2xl py-5 shadow-2xl mt-4"
             >
               {loading ? (
-                <Loader2 className="w-6 h-6 animate-spin text-surface-900" />
+                <Loader2 className="w-6 h-6 animate-spin text-black" />
               ) : (
-                <span className="uppercase tracking-[0.3em] text-[10px] font-black text-surface-900">
+                <span className="uppercase tracking-[0.3em] text-[10px] font-black text-black">
                   {isSignUp ? 'Criar Cadastro' : 'Entrar no Sistema'}
                 </span>
               )}

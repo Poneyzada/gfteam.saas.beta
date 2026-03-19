@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { 
   QrCode, Share2, 
   Copy, CheckCircle2, Download, Smartphone, 
-  UserPlus, ExternalLink, ShieldCheck 
+  UserPlus, ExternalLink, ShieldCheck, CreditCard
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -113,12 +113,9 @@ export default function OnboardingPage() {
             >
               <div className="w-full h-full flex flex-col items-center justify-center gap-8 text-center pt-8">
                 {/* Mock QR Code */}
-                <div className="p-4 bg-white border-[10px] border-surface-900 rounded-3xl shadow-2xl">
-                   <div className="w-48 h-48 bg-surface-900 flex items-center justify-center rounded-xl relative overflow-hidden">
-                      {/* Stylized QR pattern */}
-                      <div className="absolute inset-0 opacity-20 hatched" />
-                      <QrCode className="w-24 h-24 text-white relative z-10" />
-                   </div>
+                <div className="w-48 h-48 border-2 border-accent-primary/20 rounded-3xl flex items-center justify-center relative bg-surface-900/50 backdrop-blur-md shadow-[0_0_30px_rgba(var(--accent-rgb),0.1)]">
+                      <QrCode className="w-24 h-24 text-text-primary relative z-10" />
+                      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-accent-primary rounded-tl-3xl rounded-br-md" />
                 </div>
                 
                 <div>
@@ -126,10 +123,14 @@ export default function OnboardingPage() {
                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest mt-2 px-8">Escaneie para entrar no manto da GFTeam</p>
                 </div>
 
-                <div className="flex gap-3 w-full max-w-[300px]">
-                   <button className="flex-1 py-4 bg-surface-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-surface-800 transition-all">
-                      <Download className="w-4 h-4" />
-                      Imprimir Versão A4
+                <div className="flex flex-col sm:flex-row gap-4">
+                   <button className="flex-1 py-4 bg-surface-900 text-text-primary rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-surface-800 transition-all border border-white/5">
+                      <Smartphone className="w-4 h-4 text-text-muted" />
+                      Digitar CPF
+                   </button>
+                   <button className="flex-1 py-4 bg-surface-900 text-text-primary rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-surface-800 transition-all border border-white/5">
+                      <CreditCard className="w-4 h-4 text-text-muted" />
+                      Ler Carteirinha
                    </button>
                 </div>
               </div>

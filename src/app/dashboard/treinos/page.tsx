@@ -37,7 +37,7 @@ export default function TrainingPage() {
             >
               <button 
                 onClick={() => setIsNewTrainingModalOpen(false)} 
-                className="absolute top-6 right-6 p-2 rounded-full bg-surface-700 text-text-muted hover:text-white transition-all z-10"
+                className="absolute top-6 right-6 p-2 rounded-full bg-surface-700 text-text-muted hover:text-text-primary transition-all z-10"
               >
                 <X className="w-5 h-5" />
               </button>

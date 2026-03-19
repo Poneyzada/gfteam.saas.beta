@@ -72,18 +72,18 @@ export default function StudentProfileModal({ isOpen, onClose, student }: Props)
             <div className="relative p-8 overflow-hidden bg-surface-900 border-b border-white/5">
                <div className="absolute inset-0 hatched opacity-20" />
                <div className="absolute top-0 left-0 w-full h-1 bg-accent-primary shadow-[0_0_20px_rgba(var(--accent-rgb),0.5)]" />
-               <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full bg-surface-800 text-text-muted hover:text-white transition-all z-10">
+               <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full bg-surface-800 text-text-muted hover:text-text-primary transition-all z-10">
                  <X className="w-5 h-5" />
                </button>
 
                <div className="relative z-10 flex gap-6 mt-4">
                   <div className="w-24 h-24 shrink-0 rounded-[1.5rem] bg-surface-800 border-2 shadow-2xl flex items-center justify-center" style={{ borderColor: beltColor }}>
-                      <span className="text-3xl font-black text-white">{initials}</span>
+                      <span className="text-3xl font-black text-text-primary">{initials}</span>
                   </div>
                   <div>
                     <h2 className="text-2xl font-display font-black text-text-primary tracking-tight">{student.nome}</h2>
                     <div className="flex items-center gap-3 mt-2">
-                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-surface-800 text-white flex items-center gap-2 border border-white/5">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-surface-800 text-text-primary flex items-center gap-2 border border-white/5">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: beltColor }} />
                         {beltName} {beltDegree > 0 && `G${beltDegree}`}
                       </span>
@@ -124,18 +124,18 @@ export default function StudentProfileModal({ isOpen, onClose, student }: Props)
                   <div className="p-4 rounded-2xl bg-surface-900 border border-white/5 flex flex-col gap-1">
                      <Activity className="w-4 h-4 text-text-muted mb-1" />
                      <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">Aulas Ativas</span>
-                     <span className="text-xl font-display font-bold text-white">{student.aulas || '154'}</span>
+                     <span className="text-xl font-display font-bold text-text-primary">{student.aulas || '154'}</span>
                   </div>
                   <div className="p-4 rounded-2xl bg-surface-900 border border-white/5 flex flex-col gap-1">
                      <Calendar className="w-4 h-4 text-text-muted mb-1" />
                      <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">Tempo de Treino</span>
-                     <span className="text-xl font-display font-bold text-white">{student.tempo || '18 Meses'}</span>
+                     <span className="text-xl font-display font-bold text-text-primary">{student.tempo || '18 Meses'}</span>
                   </div>
                </div>
 
                {/* Action Buttons */}
                <div className="flex gap-3 pt-4 border-t border-white/5">
-                  <button className="flex-1 py-4 bg-surface-900 hover:bg-surface-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5">
+                  <button className="flex-1 py-4 bg-surface-900 hover:bg-surface-700 text-text-primary rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5">
                     Histórico Financeiro
                   </button>
                   <button className="flex-1 py-4 bg-accent-primary hover:brightness-110 text-surface-900 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-accent-primary/20">

@@ -14,6 +14,13 @@
   --text-main: #09090B;
   --text-dim: #71717A;
 
+  /* Surface System for Light Mode */
+  --surface-900: #FFFFFF;
+  --surface-800: #FAFAFA;
+  --surface-700: #F4F4F5;
+  --surface-600: #E4E4E7;
+  --surface-500: #D4D4D8;
+
   /* Dynamic Accents - Default is Gold */
   --accent: #FFC700;
   --accent-rgb: 255, 199, 0;
@@ -45,13 +52,13 @@
 /* --- THEME MODES (Backgrounds & Text) --- */
 
 [data-mode="dark"] {
-  --bg-app: #08080A;
-  --bg-sidebar: #0C0C0C;
-  --bg-card: #111114;
-  --bg-hover: #18181B;
-  --border-app: rgba(255, 255, 255, 0.05);
-  --text-main: #FFFFFF;
-  --text-dim: #9494B8;
+  --bg-app: #0A0A0E;
+  --bg-sidebar: #101015;
+  --bg-card: #14141A;
+  --bg-hover: #1A1A22;
+  --border-app: rgba(255, 255, 255, 0.08);
+  --text-main: #FAFAFA;
+  --text-dim: #A1A1AA;
 }
 
 @layer base {
