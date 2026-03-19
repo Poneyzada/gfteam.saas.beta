@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
 import TopBar from '@/components/TopBar'
