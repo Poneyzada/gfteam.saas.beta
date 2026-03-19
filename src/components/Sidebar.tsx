@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useApp, Mode, Accent } from '@/contexts/AppContext'
+import { supabase } from '@/lib/supabase'
 import {
   LayoutDashboard, Users, DollarSign, BookOpen, Award,
   CheckSquare, TrendingUp, Trophy, Settings, ChevronLeft,
@@ -24,7 +25,7 @@ const t = {
     retencao: 'Retenção',
     competicoes: 'Competições',
     settings_label: 'Configurações',
-    master: 'Painel Master',
+    master: 'Painel Filiais',
     acesso: 'Controle de Acesso',
     sair: 'Sair',
     crm: 'Vendas (Leads)',
@@ -45,7 +46,7 @@ const t = {
     retencao: 'Retention',
     competicoes: 'Competitions',
     settings_label: 'Settings',
-    master: 'Master Panel',
+    master: 'Branches Panel',
     acesso: 'Control',
     sair: 'Sign Out',
     crm: 'Leads (CRM)',
@@ -66,7 +67,6 @@ const mainNav = [
   { key: 'professores', icon: Shield, href: '/dashboard/professores' },
   { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos' },
   { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes' },
-  { key: 'aluno', icon: Zap, href: '/dashboard/aluno' },
   { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin' },
 ]
 
@@ -86,8 +86,26 @@ const accentOptions: { id: Accent, color: string }[] = [
 export default function Sidebar() {
   const pathname = usePathname()
   const { sidebarCollapsed, setSidebarCollapsed, lang, mode, setMode, accent, setAccent } = useApp()
+  const [role, setRole] = useState<string>('manager')
+
+  useEffect(() => {
+    async function loadRole() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        if (data?.role) setRole(data.role)
+      }
+    }
+    loadRole()
+  }, [])
 
   const isActive = (href: string) => pathname === href
+
+  // Only show 'master' (Filiais) if role is 'master' (or explicitly configured)
+  const filteredSettingsNav = settingsNav.filter(item => {
+    if (item.key === 'master' && role !== 'master') return false
+    return true
+  })
 
   return (
     <aside 
@@ -169,7 +187,7 @@ export default function Sidebar() {
                 </div>
              </div>
 
-            {settingsNav.map((item) => (
+            {filteredSettingsNav.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}

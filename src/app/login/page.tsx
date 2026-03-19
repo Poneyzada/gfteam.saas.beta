@@ -108,6 +108,9 @@ export default function LoginPage() {
     }
 
     if (authData.user) {
+      // Pequeno delay para evitar o "AbortError: Lock broken" do Supabase Auth ao lidar com localStorage (race condition)
+      await new Promise(resolve => setTimeout(resolve, 500))
+
       const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single()
       const tenantId = tenantData?.id 
 
