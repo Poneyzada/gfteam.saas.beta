@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Award, Shield, Mail, Phone, Calendar, Plus, Search, Filter, MoreHorizontal, CheckCircle2, Lock, X } from 'lucide-react'
+import { Users, Award, Shield, Mail, Phone, Calendar, Plus, Search, Filter, MoreHorizontal, CheckCircle2, Lock, X, MessageCircle } from 'lucide-react'
 
 export default function ProfessorsPage() {
   const [showAddModal, setShowAddModal] = useState(false)
@@ -102,7 +102,7 @@ export default function ProfessorsPage() {
               </div>
 
               <div className="space-y-6">
-                 <div className="grid grid-cols-2 gap-6">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2">Nome Completo</label>
                        <input type="text" placeholder="Nome do Professor" className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 px-5 text-sm text-text-primary outline-none focus:border-accent-primary/50 transition-all" />
@@ -110,6 +110,10 @@ export default function ProfessorsPage() {
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2">E-mail de Acesso</label>
                        <input type="email" placeholder="email@gfteam.com" className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 px-5 text-sm text-text-primary outline-none focus:border-accent-primary/50 transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-2">WhatsApp</label>
+                       <input type="tel" placeholder="(11) 99999-9999" className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 px-5 text-sm text-text-primary outline-none focus:border-accent-primary/50 transition-all font-mono" />
                     </div>
                  </div>
 
@@ -134,11 +138,14 @@ export default function ProfessorsPage() {
                     </div>
                  </div>
 
-                 <div className="pt-8">
-                    <button className="w-full btn-primary !rounded-2xl py-5 font-black text-black uppercase tracking-[0.3em] text-[10px] shadow-xl shadow-accent-primary/20 flex items-center justify-center gap-2">
-                       <Lock className="w-4 h-4 text-black" /> Enviar Convite de Acesso
+                 <div className="pt-8 flex flex-col gap-3">
+                    <button className="w-full btn-primary !bg-[#25D366] !rounded-2xl py-4 font-black text-white uppercase tracking-[0.2em] text-[10px] shadow-xl hover:shadow-[#25D366]/20 flex items-center justify-center gap-2 border-none">
+                       <MessageCircle className="w-5 h-5" /> Enviar Convite por WhatsApp
                     </button>
-                    <p className="text-center text-[9px] text-text-muted mt-4 font-bold uppercase tracking-widest">O professor receberá um link no email para criar sua senha segura.</p>
+                    <button className="w-full bg-surface-900 border border-white/10 hover:border-white/20 !rounded-2xl py-4 font-black text-text-muted hover:text-text-primary uppercase tracking-[0.2em] text-[10px] transition-all flex items-center justify-center gap-2">
+                       <Mail className="w-4 h-4" /> Enviar Link por E-mail (Alternativo)
+                    </button>
+                    <p className="text-center text-[9px] text-text-muted mt-3 font-bold uppercase tracking-widest">O professor receberá um link seguro para criar sua própria senha.</p>
                  </div>
               </div>
            </div>
