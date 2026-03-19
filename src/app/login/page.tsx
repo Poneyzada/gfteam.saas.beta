@@ -125,40 +125,51 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-900 flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,rgba(var(--accent-rgb),0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(var(--accent-rgb),0.02),transparent_40%)]">
-      <div className="w-full max-w-md animate-fade-up">
-        {/* Logo */}
+    <div className="min-h-screen bg-surface-900 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Glows - subtle team color */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent-primary/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-primary/5 blur-[100px] rounded-full" />
+
+      <div className="w-full max-w-md animate-fade-up relative z-10">
+        {/* Logo Section */}
         <div className="text-center mb-10">
-          <div className="w-20 h-20 rounded-[2rem] bg-accent-primary flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-accent-primary/20">
-            <Shield className="w-10 h-10 text-surface-900" />
+          <div className="w-24 h-24 rounded-[2.5rem] bg-accent-primary flex items-center justify-center mx-auto mb-6 shadow-2xl hatched border border-white/10 group hover:rotate-6 transition-all duration-500">
+            <Shield className="w-12 h-12 text-surface-900 drop-shadow-lg" />
           </div>
-          <h1 className="text-3xl font-display font-black text-text-primary tracking-tight">GFTeam SaaS</h1>
-          <p className="text-accent-primary font-black mt-2 uppercase tracking-widest text-[10px] animate-pulse">
-            • VERSION 2.0 (LIVE) •
-          </p>
-          <p className="text-text-muted font-bold mt-1 uppercase tracking-widest text-xs">
-            {isSignUp ? 'Criação de Conta • Beta' : 'Acesso Restrito • Monitoramento'}
+          <h1 className="text-4xl font-display font-black text-text-primary tracking-tighter italic uppercase text-white">GFTEAM <span className="text-accent-primary">SAAS</span></h1>
+          <p className="text-accent-primary font-black uppercase tracking-[0.4em] text-[10px] mt-4 opacity-80">
+            World Class Jiu-Jitsu Management
           </p>
         </div>
 
-        {/* Card */}
-        <div className="kpi-card !bg-surface-800/50 backdrop-blur-xl border-white/5 p-10 !rounded-[3rem] relative overflow-hidden">
-          <div className="card-accent" />
+        {/* Login Card */}
+        <div className="bg-surface-800/60 backdrop-blur-3xl border border-white/5 p-10 !rounded-[3rem] relative shadow-2xl overflow-visible">
+          {/* Accent Line Box */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-accent-primary rounded-b-full shadow-[0_0_20px_rgba(var(--accent-rgb),0.5)]" />
+          
+          <div className="mb-10 text-center">
+             <h2 className="text-2xl font-display font-bold text-text-primary tracking-tight">
+                {isSignUp ? 'Criar Acesso' : 'Entrar no Portal'}
+             </h2>
+             <p className="text-text-muted text-[10px] font-black mt-2 uppercase tracking-widest opacity-60">
+                {isSignUp ? 'Junte-se à elite da GFTeam' : 'Pronto para o próximo rola?'}
+             </p>
+          </div>
           
           <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
             
             {isSignUp && (
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nome Completo</label>
-                <div className="relative">
-                  <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+                <div className="relative group">
+                  <UserPlus className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted group-focus-within:text-accent-primary transition-colors" />
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Seu Nome"
-                    className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-text-primary placeholder:text-text-muted/50 focus:border-accent-primary/50 outline-none transition-all font-semibold"
+                    className="w-full bg-surface-900 border border-white/5 rounded-2xl py-5 pl-14 pr-4 text-text-primary placeholder:text-text-muted/30 focus:border-accent-primary/50 outline-none transition-all font-bold text-sm"
                   />
                 </div>
               </div>
@@ -166,80 +177,64 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">E-mail</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+              <div className="relative group">
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-text-primary placeholder:text-text-muted/50 focus:border-accent-primary/50 outline-none transition-all font-semibold"
+                  placeholder="seu@equipe.com"
+                  className="w-full bg-surface-900 border border-white/5 rounded-2xl py-5 pl-14 pr-4 text-text-primary placeholder:text-text-muted/30 focus:border-accent-primary/50 outline-none transition-all font-bold text-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+              <div className="relative group">
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-surface-900 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-text-primary placeholder:text-text-muted/50 focus:border-accent-primary/50 outline-none transition-all font-semibold"
+                  className="w-full bg-surface-900 border border-white/5 rounded-2xl py-5 pl-14 pr-4 text-text-primary placeholder:text-text-muted/30 focus:border-accent-primary/50 outline-none transition-all font-bold text-sm"
                 />
               </div>
             </div>
 
             {isSignUp && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Tipo de Acesso</label>
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="flex gap-2">
+              <div className="space-y-4 pt-2">
+                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Seu Perfil</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'student', label: 'Aluno' },
+                    { id: 'instructor', label: 'Instrutor' },
+                    { id: 'manager', label: 'Mestre' }
+                  ].map((r) => (
                     <button
+                      key={r.id}
                       type="button"
-                      onClick={() => setRole('student')}
-                      className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${role === 'student' ? 'border-accent-primary bg-accent-primary/10 text-accent-primary' : 'border-white/5 bg-surface-900 text-text-muted'}`}
+                      onClick={() => setRole(r.id as any)}
+                      className={`py-4 rounded-xl border text-[10px] font-black uppercase tracking-tighter transition-all ${role === r.id ? 'border-accent-primary bg-accent-primary/10 text-accent-primary' : 'border-white/5 bg-surface-900 text-text-muted hover:border-white/10'}`}
                     >
-                      Aluno
+                      {r.label}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setRole('instructor')}
-                      className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${role === 'instructor' ? 'border-accent-primary bg-accent-primary/10 text-accent-primary' : 'border-white/5 bg-surface-900 text-text-muted'}`}
-                    >
-                      Instrutor
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRole('manager')}
-                      className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${role === 'manager' ? 'border-accent-primary bg-accent-primary/10 text-accent-primary' : 'border-white/5 bg-surface-900 text-text-muted'}`}
-                    >
-                      Mestre
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setRole('student')}
-                    className={`w-full py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all border-white/5 bg-surface-900 text-text-muted hover:border-accent-primary/30`}
-                  >
-                    Responsável (Mãe/Pai)
-                  </button>
+                  ))}
                 </div>
               </div>
             )}
 
             {error && (
-              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest text-center leading-relaxed">
-                ERROR: {error}
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black text-center uppercase tracking-widest hatched">
+                Ops! {error}
               </div>
             )}
 
             {success && (
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest text-center">
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black text-center uppercase tracking-widest hatched">
                 {success}
               </div>
             )}
@@ -247,34 +242,35 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full !rounded-2xl py-4 flex items-center justify-center gap-3 group transition-all btn-primary"
+              className="btn-primary w-full !rounded-2xl py-5 shadow-2xl mt-4"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-6 h-6 animate-spin text-surface-900" />
               ) : (
-                <>
-                  <span className="uppercase tracking-[0.2em] text-xs font-black">
-                    {isSignUp ? 'Criar minha Conta' : 'Entrar no Sistema'}
-                  </span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </>
+                <span className="uppercase tracking-[0.3em] text-[10px] font-black text-surface-900">
+                  {isSignUp ? 'Criar Cadastro' : 'Entrar no Sistema'}
+                </span>
               )}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+          <div className="mt-10 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
             <button 
               onClick={() => { setIsSignUp(!isSignUp); setError(null); setSuccess(null); }}
-              className="text-[10px] text-text-muted font-bold uppercase tracking-widest hover:text-accent-primary transition-colors"
+              className="group flex items-center justify-center gap-2 text-[10px] text-text-muted font-black uppercase tracking-widest hover:text-accent-primary transition-all"
             >
-              {isSignUp ? 'Já tenho uma conta? Entrar' : 'Não tem conta? Criar acesso'}
+              <div className="w-8 h-[1px] bg-white/10 group-hover:w-12 group-hover:bg-accent-primary transition-all" />
+              {isSignUp ? 'Já tem o manto? Entrar' : 'Novo Aluno? Criar Acesso'}
+              <div className="w-8 h-[1px] bg-white/10 group-hover:w-12 group-hover:bg-accent-primary transition-all" />
             </button>
           </div>
         </div>
 
-        <p className="text-center mt-8 text-[10px] text-text-muted font-bold uppercase tracking-widest opacity-30">
-          GFTeam International • 2026
-        </p>
+        <div className="text-center mt-12 opacity-30">
+           <p className="text-[9px] text-text-muted font-black uppercase tracking-[0.5em]">
+             GFTeam International • 2024
+           </p>
+        </div>
       </div>
     </div>
   )

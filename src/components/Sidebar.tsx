@@ -91,21 +91,21 @@ export default function Sidebar() {
 
   return (
     <aside 
-      className={`relative h-screen sticky top-0 bg-surface-800 border-r border-surface-500/50 transition-all duration-300 z-50 flex flex-col shrink-0 ${
+      className={`relative h-screen sticky top-0 bg-surface-800 border-r border-white/5 transition-all duration-300 z-50 flex flex-col shrink-0 ${
         !sidebarCollapsed ? 'w-72' : 'w-24'
       }`}
     >
       {/* Header / Logo */}
-      <div className="h-24 flex items-center justify-between px-6 border-b border-surface-500/30">
+      <div className="h-24 flex items-center justify-between px-6 border-b border-white/5">
         <div className={`flex items-center gap-3 transition-opacity duration-300 ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0 hidden'}`}>
-          <div className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20">
-            <span className="font-display font-black text-xl text-surface-900">GF</span>
+          <div className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20 hatched">
+            <span className="font-display font-black text-xl text-surface-900 italic">GF</span>
           </div>
-          <span className="font-display font-black text-lg text-text-primary tracking-tighter">GFTEAM</span>
+          <span className="font-display font-black text-lg text-text-primary tracking-tighter italic uppercase">GFTEAM</span>
         </div>
         <button 
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="w-10 h-10 rounded-xl bg-surface-700 hover:bg-surface-600 border border-surface-500 flex items-center justify-center transition-all group"
+          className="w-10 h-10 rounded-xl bg-surface-700 hover:bg-surface-600 border border-white/10 flex items-center justify-center transition-all group"
         >
           {!sidebarCollapsed ? <ChevronLeft className="w-5 h-5 group-hover:scale-110" /> : <ChevronRight className="w-5 h-5 group-hover:scale-110" />}
         </button>
@@ -115,7 +115,7 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-8 px-4 space-y-8 scrollbar-hide">
         {/* Main Menu */}
         <div>
-          <p className={`text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-6 px-4 transition-opacity ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6 px-4 transition-opacity ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0'}`}>
             {t[lang].menu}
           </p>
           <div className="space-y-2">
@@ -123,18 +123,23 @@ export default function Sidebar() {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group relative ${
+                className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                   isActive(item.href) 
-                    ? 'bg-accent-primary text-surface-900 shadow-lg shadow-accent-primary/20' 
+                    ? 'bg-accent-primary text-surface-900 shadow-xl shadow-accent-primary/20 hatched' 
                     : 'text-text-secondary hover:bg-surface-700 hover:text-text-primary'
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive(item.href) ? 'text-surface-900' : 'group-hover:scale-110 transition-transform'}`} />
+                {/* Accent Line for Active Item */}
+                {isActive(item.href) && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-surface-900" />
+                )}
+                
+                <item.icon className={`w-5 h-5 relative z-10 ${isActive(item.href) ? 'text-surface-900' : 'group-hover:scale-110 transition-transform'}`} />
                 {!sidebarCollapsed && (
-                  <span className="font-bold text-sm tracking-tight">{t[lang][item.key as keyof typeof t.pt]}</span>
+                  <span className="font-black text-xs uppercase tracking-widest relative z-10">{t[lang][item.key as keyof typeof t.pt]}</span>
                 )}
                 {!!sidebarCollapsed && (
-                   <div className="absolute left-full ml-4 px-3 py-2 bg-surface-700 text-text-primary text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 z-[100] whitespace-nowrap border border-surface-500 shadow-2xl">
+                   <div className="absolute left-full ml-4 px-3 py-2 bg-surface-700 text-text-primary text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 z-[100] whitespace-nowrap border border-white/10 shadow-2xl">
                      {t[lang][item.key as keyof typeof t.pt]}
                    </div>
                 )}
@@ -145,12 +150,12 @@ export default function Sidebar() {
 
         {/* Branding Options & Theme */}
         <div>
-          <p className={`text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-6 px-4 transition-opacity ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6 px-4 transition-opacity ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0'}`}>
             {t[lang].settings}
           </p>
           <div className="space-y-2">
              {/* Palette Selection (Accent) */}
-             <div className={`flex items-center gap-2 px-4 py-2 mb-4 bg-surface-700/50 rounded-2xl border border-surface-500/30 transition-all ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+             <div className={`flex items-center gap-2 px-4 py-3 mb-4 bg-surface-900/50 rounded-2xl border border-white/5 transition-all ${!sidebarCollapsed ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <Palette className="w-4 h-4 text-text-muted" />
                 <div className="flex flex-1 justify-around">
                    {accentOptions.map((opt) => (
@@ -168,20 +173,15 @@ export default function Sidebar() {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group relative ${
+                className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                   isActive(item.href) 
-                    ? 'bg-accent-primary text-surface-900 shadow-lg shadow-accent-primary/20' 
+                    ? 'bg-accent-primary text-surface-900 shadow-xl shadow-accent-primary/20 hatched' 
                     : 'text-text-secondary hover:bg-surface-700 hover:text-text-primary'
                 }`}
               >
-                <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <item.icon className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
                 {!sidebarCollapsed && (
-                  <span className="font-bold text-sm tracking-tight">{t[lang][item.key as keyof typeof t.pt]}</span>
-                )}
-                {!!sidebarCollapsed && (
-                   <div className="absolute left-full ml-4 px-3 py-2 bg-surface-700 text-text-primary text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 z-[100] whitespace-nowrap border border-surface-500 shadow-2xl">
-                     {t[lang][item.key as keyof typeof t.pt]}
-                   </div>
+                  <span className="font-black text-xs uppercase tracking-widest relative z-10">{t[lang][item.key as keyof typeof t.pt]}</span>
                 )}
               </Link>
             ))}
@@ -190,19 +190,19 @@ export default function Sidebar() {
       </div>
 
       {/* Footer / User Profile Toggle */}
-      <div className="p-4 border-t border-surface-500/30 bg-surface-800/50 backdrop-blur-md">
+      <div className="p-4 border-t border-white/5 bg-surface-800/50 backdrop-blur-md">
         <button
            onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}
-           className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group relative bg-surface-700 hover:bg-surface-600 border border-surface-500/30 mb-2`}
+           className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group relative bg-surface-900 border border-white/5 mb-2 hover:bg-surface-700`}
         >
-           {mode === 'dark' ? <Sun className="w-5 h-5 text-accent-primary" /> : <Moon className="w-5 h-5 text-accent-primary" />}
-           {!sidebarCollapsed && <span className="font-bold text-sm tracking-tight capitalize">{mode} Mode</span>}
+           {mode === 'dark' ? <Sun className="w-5 h-5 text-accent-primary animate-pulse" /> : <Moon className="w-5 h-5 text-accent-primary" />}
+           {!sidebarCollapsed && <span className="font-black text-[10px] uppercase tracking-widest text-text-primary">{mode} Mode</span>}
         </button>
         <button 
-          className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all group relative group"
+          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all group relative group"
         >
           <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          {!sidebarCollapsed && <span className="font-black text-sm tracking-tight uppercase">Sair</span>}
+          {!sidebarCollapsed && <span className="font-black text-[10px] uppercase tracking-[0.2em]">Sair</span>}
         </button>
       </div>
     </aside>
