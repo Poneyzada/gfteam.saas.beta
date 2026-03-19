@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { 
-  QrCode, Link as LinkIcon, Share2, WhatsappIcon, 
+  QrCode, Share2, 
   Copy, CheckCircle2, Download, Smartphone, 
   UserPlus, ExternalLink, ShieldCheck 
 } from 'lucide-react'
