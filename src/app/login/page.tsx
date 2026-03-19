@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
-  const [role, setRole] = useState<'student' | 'manager' | 'instructor' | 'master'>('student')
+  const [role, setRole] = useState<'student'>('student')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -221,27 +221,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {isSignUp && (
-              <div className="space-y-4 pt-2">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Seu Perfil</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: 'student', label: 'Aluno' },
-                    { id: 'instructor', label: 'Instrutor' },
-                    { id: 'manager', label: 'Mestre' }
-                  ].map((r) => (
-                    <button
-                      key={r.id}
-                      type="button"
-                      onClick={() => setRole(r.id as any)}
-                      className={`py-4 rounded-xl border text-[10px] font-black uppercase tracking-tighter transition-all ${role === r.id ? 'border-accent-primary bg-accent-primary/10 text-accent-primary' : 'border-white/5 bg-surface-900 text-text-muted hover:border-white/10'}`}
-                    >
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+
 
             {error && (
               <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black text-center uppercase tracking-widest hatched">

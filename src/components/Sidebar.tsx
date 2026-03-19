@@ -58,16 +58,16 @@ const t = {
 }
 
 const mainNav = [
-  { key: 'dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { key: 'alunos', icon: Users, href: '/dashboard/alunos' },
-  { key: 'crm', icon: TrendingUp, href: '/dashboard/crm' },
-  { key: 'financeiro', icon: DollarSign, href: '/dashboard/financeiro' },
-  { key: 'relatorios', icon: Activity, href: '/dashboard/financeiro/relatorios' },
-  { key: 'loja', icon: Dumbbell, href: '/dashboard/loja' },
-  { key: 'professores', icon: Shield, href: '/dashboard/professores' },
-  { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos' },
-  { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes' },
-  { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin' },
+  { key: 'dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['manager', 'instructor', 'master'] },
+  { key: 'alunos', icon: Users, href: '/dashboard/alunos', roles: ['manager', 'instructor', 'master'] },
+  { key: 'crm', icon: TrendingUp, href: '/dashboard/crm', roles: ['manager', 'master'] },
+  { key: 'financeiro', icon: DollarSign, href: '/dashboard/financeiro', roles: ['manager', 'master'] },
+  { key: 'relatorios', icon: Activity, href: '/dashboard/financeiro/relatorios', roles: ['manager', 'master'] },
+  { key: 'loja', icon: Dumbbell, href: '/dashboard/loja', roles: ['manager', 'master'] },
+  { key: 'professores', icon: Shield, href: '/dashboard/professores', roles: ['manager', 'master'] },
+  { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos', roles: ['manager', 'instructor', 'master'] },
+  { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes', roles: ['manager', 'instructor', 'master'] },
+  { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin', roles: ['manager', 'instructor', 'master'] },
 ]
 
 const settingsNav = [
@@ -107,6 +107,12 @@ export default function Sidebar() {
     return true
   })
 
+  // Filter Main Nav based on roles
+  const filteredMainNav = mainNav.filter(item => {
+    if (!item.roles.includes(role)) return false
+    return true
+  })
+
   return (
     <aside 
       className={`relative h-screen sticky top-0 bg-surface-800 border-r border-white/5 transition-all duration-300 z-50 flex flex-col shrink-0 ${
@@ -137,7 +143,7 @@ export default function Sidebar() {
             {t[lang].menu}
           </p>
           <div className="space-y-2">
-            {mainNav.map((item) => (
+            {filteredMainNav.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
