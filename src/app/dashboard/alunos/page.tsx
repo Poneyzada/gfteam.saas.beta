@@ -1,14 +1,14 @@
-'use client'
-
+import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
 import TopBar from '@/components/TopBar'
+import StudentProfileModal, { StudentData } from '@/components/StudentProfileModal'
 import { 
   Search, Plus, Filter, MoreHorizontal, 
   TrendingUp, Users, Shield, Award, ChevronRight,
   Download
 } from 'lucide-react'
 
-const alunos = [
+const alunos: StudentData[] = [
   { id: 1, nome: 'Lucas Andrade', faixa: 'Azul', grau: 3, turma: 'Adulto — Manhã', status: 'Ativo', ultima: '16/03', progresso: 68, avatar: 'LA' },
   { id: 2, nome: 'Fernanda Costa', faixa: 'Roxa', grau: 2, turma: 'Adulto — Noite', status: 'Ativo', ultima: '15/03', progresso: 42, avatar: 'FC' },
   { id: 3, nome: 'Rafael Mendes', faixa: 'Branca', grau: 4, turma: 'Kids', status: 'Ativo', ultima: '16/03', progresso: 85, avatar: 'RM' },
@@ -35,9 +35,16 @@ const texts = {
 export default function PremiumAlunosPage() {
   const { lang } = useApp()
   const tx = texts[lang]
+  const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null)
 
   return (
     <div className="min-h-screen bg-surface-900 pb-12">
+      <StudentProfileModal 
+        isOpen={!!selectedStudent} 
+        onClose={() => setSelectedStudent(null)} 
+        student={selectedStudent} 
+      />
+
       <div className="px-10 py-10 flex items-center justify-between">
         <div>
           <h1 className="text-[2.5rem] font-display font-bold text-text-primary tracking-tight">
@@ -91,21 +98,25 @@ export default function PremiumAlunosPage() {
                 </thead>
                 <tbody className="divide-y divide-surface-500/20">
                    {alunos.map((a, i) => (
-                      <tr key={a.id} className="group hover:bg-surface-600/30 transition-all cursor-pointer">
+                      <tr 
+                        key={i} 
+                        onClick={() => setSelectedStudent(a)}
+                        className="group hover:bg-surface-600/30 transition-all cursor-pointer"
+                      >
                          <td className="py-6 px-4">
                             <div className="flex items-center gap-4">
-                               <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black text-surface-900 shadow-md ring-1 ring-white/10" style={{ backgroundColor: beltColors[a.faixa] }}>
+                               <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black text-surface-900 shadow-md ring-1 ring-white/10" style={{ backgroundColor: beltColors[a.faixa || 'Branca'] }}>
                                   {a.avatar}
                                </div>
                                <div>
                                   <p className="text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors">{a.nome}</p>
-                                  <p className="text-[10px] text-text-muted font-bold mt-0.5 tracking-wide">ID: 100{a.id}</p>
+                                  <p className="text-[10px] text-text-muted font-bold mt-0.5 tracking-wide">ID: 100{i+1}</p>
                                </div>
                             </div>
                          </td>
                          <td className="py-6 px-4">
                             <div className="flex items-center gap-2">
-                               <div className="w-3 h-3 rounded-full border-2 border-surface-700" style={{ backgroundColor: beltColors[a.faixa] }} />
+                               <div className="w-3 h-3 rounded-full border-2 border-surface-700" style={{ backgroundColor: beltColors[a.faixa || 'Branca'] }} />
                                <span className="text-xs font-bold text-text-secondary">{a.faixa}</span>
                                <span className="text-[10px] font-black text-text-muted bg-surface-600 px-1.5 py-0.5 rounded-md">G{a.grau}</span>
                             </div>
@@ -126,7 +137,7 @@ export default function PremiumAlunosPage() {
                          </td>
                          <td className="py-6 px-4 hidden lg:table-cell">
                             <div className="flex items-center gap-2 font-mono text-xs text-text-muted">
-                               {a.ultima}
+                               {(a as any).ultima}
                             </div>
                          </td>
                          <td className="py-6 px-4">
@@ -180,3 +191,4 @@ export default function PremiumAlunosPage() {
     </div>
   )
 }
+

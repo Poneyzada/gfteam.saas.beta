@@ -5,14 +5,14 @@
 @tailwind utilities;
 
 :root {
-  /* Default mode colors (Dark) */
-  --bg-app: #08080A;
-  --bg-sidebar: #0C0C0F;
-  --bg-card: #121217;
-  --bg-hover: #1A1A22;
-  --border-app: rgba(255, 255, 255, 0.03);
-  --text-main: #FFFFFF;
-  --text-dim: #94949E;
+  /* Default mode colors (Light) */
+  --bg-app: #F4F4F5;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F1F5F9;
+  --border-app: rgba(0, 0, 0, 0.05);
+  --text-main: #09090B;
+  --text-dim: #71717A;
 
   /* Dynamic Accents - Default is Gold */
   --accent: #FFC700;

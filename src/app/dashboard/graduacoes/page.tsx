@@ -1,14 +1,14 @@
-'use client'
-
+import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
 import TopBar from '@/components/TopBar'
+import StudentProfileModal, { StudentData } from '@/components/StudentProfileModal'
 import { Award, CheckCircle, Clock, Users } from 'lucide-react'
 
 const candidatos = [
-  { nome: 'Rafael Mendes', atual: 'Branca G4', prox: 'Azul', aulas: 156, tempo: '18 meses', progresso: 85, ok: true },
-  { nome: 'Amanda Silva', atual: 'Azul G4', prox: 'Roxa', aulas: 342, tempo: '36 meses', progresso: 78, ok: true },
-  { nome: 'Bianca Reis', atual: 'Branca G2', prox: 'Branca G3', aulas: 81, tempo: '8 meses', progresso: 45, ok: false },
-  { nome: 'Lucas Andrade', atual: 'Azul G3', prox: 'Azul G4', aulas: 228, tempo: '28 meses', progresso: 68, ok: true },
+  { id: 101, nome: 'Rafael Mendes', atual: 'Branca G4', prox: 'Azul', aulas: 156, tempo: '18 meses', progresso: 85, ok: true },
+  { id: 102, nome: 'Amanda Silva', atual: 'Azul G4', prox: 'Roxa', aulas: 342, tempo: '36 meses', progresso: 78, ok: true },
+  { id: 103, nome: 'Bianca Reis', atual: 'Branca G2', prox: 'Branca G3', aulas: 81, tempo: '8 meses', progresso: 45, ok: false },
+  { id: 104, nome: 'Lucas Andrade', atual: 'Azul G3', prox: 'Azul G4', aulas: 228, tempo: '28 meses', progresso: 68, ok: true },
 ]
 
 const beltColors: Record<string, string> = {
@@ -17,10 +17,17 @@ const beltColors: Record<string, string> = {
 
 export default function GraduacoesPage() {
   const { lang } = useApp()
+  const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(null)
 
   return (
     <div className="min-h-screen bg-surface-900">
       <TopBar title={lang === 'pt' ? 'Graduações' : 'Promotions'} />
+      <StudentProfileModal 
+        isOpen={!!selectedStudent} 
+        onClose={() => setSelectedStudent(null)} 
+        student={selectedStudent} 
+      />
+
       <div className="p-6 space-y-5">
         <div className="grid grid-cols-3 gap-4">
           {[
@@ -47,7 +54,11 @@ export default function GraduacoesPage() {
           </div>
           <div className="space-y-4">
             {candidatos.map((c, i) => (
-              <div key={i} className="p-4 rounded-xl bg-surface-600 hover:bg-surface-500 transition-colors">
+              <div 
+                key={i} 
+                onClick={() => setSelectedStudent(c as any)}
+                className="p-4 rounded-xl bg-surface-600 hover:bg-surface-500 transition-colors cursor-pointer"
+              >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[10px] font-bold text-surface-900" style={{ backgroundColor: beltColors[c.prox] || '#E5E7EB' }}>
