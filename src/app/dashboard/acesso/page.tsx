@@ -100,8 +100,8 @@ export default function OnboardingPage() {
 
               <div className="mt-12 flex gap-4">
                 <button className="flex-1 btn-primary !rounded-2xl py-4 flex items-center justify-center gap-3">
-                  <Share2 className="w-4 h-4 text-surface-900" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Enviar via WhatsApp</span>
+                  <Share2 className="w-4 h-4 text-black" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black">Enviar via WhatsApp</span>
                 </button>
               </div>
             </motion.div>

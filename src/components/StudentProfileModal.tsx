@@ -138,7 +138,7 @@ export default function StudentProfileModal({ isOpen, onClose, student }: Props)
                   <button className="flex-1 py-4 bg-surface-900 hover:bg-surface-700 text-text-primary rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5">
                     Histórico Financeiro
                   </button>
-                  <button className="flex-1 py-4 bg-accent-primary hover:brightness-110 text-surface-900 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-accent-primary/20">
+                  <button className="flex-1 py-4 bg-accent-primary hover:brightness-110 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-accent-primary/20">
                     Graduar Aluno
                   </button>
                </div>
