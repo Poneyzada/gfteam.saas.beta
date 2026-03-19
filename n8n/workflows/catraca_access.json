@@ -1,0 +1,133 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gfteam-catraca-verify",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: Inbound Access",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/access/verify",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "tenantId",
+              "value": "={{$json.body.tenantId}}"
+            },
+            {
+              "name": "identifier",
+              "value": "={{$json.body.identifier}}"
+            },
+            {
+              "name": "method",
+              "value": "={{$json.body.method}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Verify in SaaS API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.allowed}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "Is Allowed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "phoneNumber": "={{$json.phone || '5521999999999'}}",
+        "message": "Olá {{$json.studentName}}, notamos uma tentativa de acesso mas sua mensalidade está pendente. Por favor, fale com a recepção. OSS!"
+      },
+      "id": "4",
+      "name": "Alert: WhatsApp Churn/Debt",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [700, 450]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5",
+      "name": "Respond to Hardware",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Inbound Access": {
+      "main": [
+        [
+          {
+            "node": "Verify in SaaS API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify in SaaS API": {
+      "main": [
+        [
+          {
+            "node": "Is Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Respond to Hardware",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert: WhatsApp Churn/Debt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Hardware",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

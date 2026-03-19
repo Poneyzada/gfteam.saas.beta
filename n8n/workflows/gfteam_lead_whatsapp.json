@@ -1,0 +1,84 @@
+{
+  "name": "GFTeam — Novo Lead WhatsApp Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gfteam-lead",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-lead",
+      "name": "Webhook - Novo Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Format phone for Evolution API (only numbers)\nconst cleanPhone = (data.phone || '').replace(/\\D/g, '');\n\n// Build rich WhatsApp message\nconst turma = data.turma && data.turma !== 'Não informado' ? data.turma : 'Não informado';\nconst email = data.email && data.email !== '—' ? data.email : 'Não informado';\nconst utm = data.utm_campaign && data.utm_campaign !== '—' ? data.utm_campaign : data.utm_source !== '—' ? data.utm_source : 'Direto';\n\nconst message = `🥋 *NOVO LEAD — ${data.tenant_name}*\n\n👤 *Nome:* ${data.name}\n📱 *Telefone:* ${data.phone}\n📧 *Email:* ${email}\n\n🎯 *Turma de Interesse:* ${turma}\n📍 *Origem:* ${data.source.replace('_', ' ')}\n📊 *Campanha:* ${utm}\n\n🕐 *Recebido:* ${data.time} — ${data.date}\n\n👉 *Ver no CRM:*\n${data.crm_url}\n\n_Responda rápido! Leads frios não convertem._ 🔥`;\n\nreturn [{\n  json: {\n    ...data,\n    clean_phone: cleanPhone,\n    wpp_message: message\n  }\n}];"
+      },
+      "id": "format-message",
+      "name": "Formatar Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.EVOLUTION_API_URL}}/message/sendText/{{$env.EVOLUTION_INSTANCE}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.EVOLUTION_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"5521969464472\",\n  \"text\": \"{{ $json.wpp_message }}\"\n}",
+        "options": {}
+      },
+      "id": "send-whatsapp-frazao",
+      "name": "WhatsApp → Frazão",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": true, \"lead\": \"{{ $('Formatar Mensagem').item.json.name }}\"}"
+      },
+      "id": "respond",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Novo Lead": {
+      "main": [[{ "node": "Formatar Mensagem", "type": "main", "index": 0 }]]
+    },
+    "Formatar Mensagem": {
+      "main": [[{ "node": "WhatsApp → Frazão", "type": "main", "index": 0 }]]
+    },
+    "WhatsApp → Frazão": {
+      "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

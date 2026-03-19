@@ -1,0 +1,196 @@
+'use client'
+
+import { useState } from 'react'
+import { BookOpen, Calendar, Clock, Award, PlayCircle, Plus, Search, ChevronRight, ChevronLeft, MapPin, Users, Zap, CheckCircle2 } from 'lucide-react'
+
+export default function TrainingPage() {
+  const [currentWeek] = useState('Semana 12: Fundamentos de Guarda')
+  const [activeTab, setActiveTab] = useState('wod')
+  const [syncing, setSyncing] = useState(false)
+
+  const [lessons] = useState([
+    { id: 1, title: 'Raspagem de Gancho (Hook Sweep)', level: 'Básico', type: 'Técnica Principal', duration: '20 min', instructor: 'Mestre Julio' },
+    { id: 2, title: 'Passagem de Meia Guarda Profunda', level: 'Avançado', type: 'Técnica Principal', duration: '25 min', instructor: 'Marcos Freitas' },
+    { id: 3, title: 'Drills de Movimentação Lateral', level: 'Todos os Níveis', type: 'Drill/Aquecimento', duration: '15 min', instructor: 'Equipe Técnica' },
+  ])
+
+  const handleSync = () => {
+    setSyncing(true)
+    setTimeout(() => setSyncing(false), 2000)
+  }
+
+  return (
+    <div className="p-10 space-y-8 animate-fade-up">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-4xl font-display font-black text-text-primary tracking-tight">Cronograma de Treinos</h1>
+          <p className="text-text-muted font-semibold mt-1">Gestão de currículo técnico e planos de aula (Syllabus)</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleSync}
+            disabled={syncing}
+            className={`btn-ghost flex items-center gap-2 border-accent-primary/20 ${syncing ? 'opacity-50' : ''}`}
+          >
+            <Zap className={`w-4 h-4 text-accent-primary ${syncing ? 'animate-pulse' : ''}`} />
+            {syncing ? 'Sincronizando...' : 'Sincronizar com Matriz'}
+          </button>
+          <button className="btn-primary flex items-center gap-2 bg-accent-primary text-surface-900 border-none">
+            <Plus className="w-4 h-4" />
+            Novo Treino
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-2 p-1.5 bg-surface-700/50 rounded-2xl w-fit">
+        <button 
+          onClick={() => setActiveTab('wod')}
+          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            activeTab === 'wod' ? 'bg-accent-primary text-surface-900 shadow-lg' : 'text-text-muted hover:text-text-primary'
+          }`}
+        >
+          Treino do Dia (WOD)
+        </button>
+        <button 
+          onClick={() => setActiveTab('library')}
+          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+            activeTab === 'library' ? 'bg-accent-primary text-surface-900 shadow-lg' : 'text-text-muted hover:text-text-primary'
+          }`}
+        >
+          Biblioteca Técnica
+        </button>
+      </div>
+
+      {activeTab === 'wod' ? (
+        <>
+          {/* Week Focus Bar */}
+          <div className="accent-bg p-8 rounded-[3rem] shadow-xl accent-shadow relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                 <div className="w-16 h-16 rounded-2xl bg-surface-900/20 flex items-center justify-center backdrop-blur-md">
+                    <BookOpen className="w-8 h-8 text-surface-900" />
+                 </div>
+                 <div>
+                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Foco da Semana (Global)</p>
+                    <h2 className="text-2xl font-display font-black text-surface-900">{currentWeek}</h2>
+                 </div>
+              </div>
+              <div className="flex items-center gap-6">
+                 <div className="text-right">
+                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Status Local</p>
+                    <p className="text-xl font-bold text-surface-900">12 Alunos Atendidos</p>
+                 </div>
+                 <div className="w-px h-10 bg-surface-900/20" />
+                 <button className="px-6 py-3 rounded-2xl bg-surface-900 text-accent-primary text-xs font-black uppercase tracking-widest hover:scale-105 transition-all">
+                    Registrar Presença
+                 </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+            {/* Left: Classes of the Day */}
+            <div className="xl:col-span-8 space-y-8">
+              <div className="kpi-card !rounded-[3rem] p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-display font-black text-text-primary">Grade de Técnicas</h2>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live Matriz
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {lessons.map((lesson) => (
+                    <div key={lesson.id} className="group p-6 rounded-[2rem] bg-surface-600 border border-white/5 hover:border-accent-primary/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-2xl bg-surface-700 flex items-center justify-center flex-shrink-0 group-hover:bg-accent-primary transition-colors">
+                           <PlayCircle className="w-6 h-6 text-text-muted group-hover:text-surface-900" />
+                        </div>
+                        <div>
+                           <div className="flex items-center gap-2 mb-1">
+                              <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter ${
+                                lesson.level === 'Avançado' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'
+                              }`}>
+                                {lesson.level}
+                              </span>
+                              <span className="text-[9px] font-black text-text-muted uppercase tracking-widest italic">{lesson.type}</span>
+                           </div>
+                           <h4 className="text-lg font-bold text-text-primary">{lesson.title}</h4>
+                           <div className="flex items-center gap-4 mt-1 text-text-muted text-[10px] font-semibold">
+                              <span className="flex items-center gap-1"><Clock className="w-3 h-3"/> {lesson.duration}</span>
+                              <span className="flex items-center gap-1"><Award className="w-3 h-3"/> {lesson.instructor}</span>
+                           </div>
+                        </div>
+                      </div>
+                      <button className="px-5 py-2.5 rounded-xl bg-surface-700 text-text-primary text-xs font-black uppercase tracking-widest hover:bg-accent-primary hover:text-surface-900 transition-all">
+                         Ver Técnica
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Instructor Notes & Schedule */}
+            <div className="xl:col-span-4 space-y-8">
+              <div className="kpi-card !rounded-[2.5rem] p-8 space-y-6">
+                <h3 className="text-xl font-display font-black text-text-primary">Próximas Turmas</h3>
+                <div className="space-y-4">
+                   {[
+                     { time: '18:00', class: 'Iniciantes', coach: 'Prof. Marcos', students: 12 },
+                     { time: '19:30', class: 'Avançado (No-Gi)', coach: 'Mestre Italo', students: 18 },
+                     { time: '21:00', class: 'Open Mat', coach: 'Equipe GFTeam', students: 8 },
+                   ].map((c, i) => (
+                     <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface-600/50 border border-white/5">
+                        <div className="flex items-center gap-3">
+                           <span className="text-sm font-black text-accent-primary">{c.time}</span>
+                           <div>
+                              <p className="text-xs font-bold text-text-primary">{c.class}</p>
+                              <p className="text-[10px] text-text-muted">{c.coach}</p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-text-muted">
+                           <Users className="w-3 h-3" />
+                           {c.students}
+                        </div>
+                     </div>
+                   ))}
+                </div>
+              </div>
+
+              <div className="kpi-card !rounded-[2.5rem] p-8 bg-surface-600 border-accent-primary/20">
+                 <div className="flex items-center gap-3 mb-4">
+                    <Zap className="w-5 h-5 text-accent-primary" />
+                    <h3 className="text-xl font-display font-black text-text-primary">Dica do Julio</h3>
+                 </div>
+                  <p className="text-sm text-text-secondary leading-relaxed italic opacity-80">
+                    &quot;Focar na distribuição de peso durante a raspagem. O gancho deve ser ativo.&quot;
+                  </p>
+                 <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-accent-primary" />
+                    <span className="text-[10px] font-black text-text-muted uppercase">Validado pela Matriz</span>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {['Guarda Fechada', 'Meia Guarda', 'Passagem de Guarda', 'Montada', 'Costas', 'Finalizações'].map((cat, i) => (
+            <div key={i} className="kpi-card !rounded-[2.5rem] p-8 group hover:border-accent-primary transition-all cursor-pointer">
+               <div className="w-12 h-12 rounded-2xl bg-surface-600 flex items-center justify-center mb-6 group-hover:bg-accent-primary transition-colors">
+                  <PlayCircle className="w-6 h-6 text-text-muted group-hover:text-surface-900" />
+               </div>
+               <h4 className="text-xl font-display font-black text-text-primary mb-2">{cat}</h4>
+               <p className="text-xs text-text-muted font-bold tracking-widest uppercase">12 Vídeos de Técnicas</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

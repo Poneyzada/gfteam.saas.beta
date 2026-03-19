@@ -1,0 +1,212 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gfteam-financial-upload",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: CSV Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "toModel",
+        "options": {}
+      },
+      "id": "2",
+      "name": "Extract CSV Data",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "3",
+      "name": "Split in Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.description}}",
+              "operation": "regex",
+              "value2": "([A-Z][a-z]+ [A-Z][a-z]+)"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Detect Person (PF)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "category",
+              "value": "Transferência Pessoal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5",
+      "name": "Mark as PF",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1050, 150]
+    },
+    {
+      "parameters": {
+        "prompt": "Investigue a empresa/estabelecimento '{{$json.description}}' usando SerpAPI e categorize em uma destas: Alimentação, Mercado, Transporte, Combustível, Farmácia, Saúde, Entretenimento, Moradia, Educação, Compras, Serviços Bancários ou Outros.",
+        "options": {
+          "systemMessage": "Você é um consultor financeiro especialista em categorização de transações no Brasil."
+        }
+      },
+      "id": "6",
+      "name": "AI Agent: Company Research",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [1050, 350]
+    },
+    {
+      "parameters": {
+        "amount": 500
+      },
+      "id": "7",
+      "name": "Wait (Rate Limit)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "aggregateSelection",
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "field": "amount",
+              "renameTo": "total_amount"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8",
+      "name": "Aggregate results",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: CSV Upload": {
+      "main": [
+        [
+          {
+            "node": "Extract CSV Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract CSV Data": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split in Batches": {
+      "main": [
+        [
+          {
+            "node": "Detect Person (PF)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Person (PF)": {
+      "main": [
+        [
+          {
+            "node": "Mark as PF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent: Company Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as PF": {
+      "main": [
+        [
+          {
+            "node": "Wait (Rate Limit)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Company Research": {
+      "main": [
+        [
+          {
+            "node": "Wait (Rate Limit)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait (Rate Limit)": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
