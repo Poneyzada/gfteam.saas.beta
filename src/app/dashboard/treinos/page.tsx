@@ -1,26 +1,84 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, Calendar, Clock, Award, PlayCircle, Plus, Search, ChevronRight, ChevronLeft, MapPin, Users, Zap, CheckCircle2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { BookOpen, Calendar, Clock, Award, PlayCircle, Plus, Search, ChevronRight, ChevronLeft, MapPin, Users, Zap, CheckCircle2, X, CopyPlus, FilePlus } from 'lucide-react'
 
 export default function TrainingPage() {
   const [currentWeek] = useState('Semana 12: Fundamentos de Guarda')
   const [activeTab, setActiveTab] = useState('wod')
-  const [syncing, setSyncing] = useState(false)
+  const [isNewTrainingModalOpen, setIsNewTrainingModalOpen] = useState(false)
 
   const [lessons] = useState([
     { id: 1, title: 'Raspagem de Gancho (Hook Sweep)', level: 'Básico', type: 'Técnica Principal', duration: '20 min', instructor: 'Mestre Julio' },
-    { id: 2, title: 'Passagem de Meia Guarda Profunda', level: 'Avançado', type: 'Técnica Principal', duration: '25 min', instructor: 'Marcos Freitas' },
+    { id: 2, title: 'Passagem de Meia Guarda Profunda', level: 'Avançado', type: 'Técnica Principal', duration: '25 min', instructor: 'Prof. Marcos Freitas' },
     { id: 3, title: 'Drills de Movimentação Lateral', level: 'Todos os Níveis', type: 'Drill/Aquecimento', duration: '15 min', instructor: 'Equipe Técnica' },
   ])
 
-  const handleSync = () => {
-    setSyncing(true)
-    setTimeout(() => setSyncing(false), 2000)
-  }
-
   return (
-    <div className="p-10 space-y-8 animate-fade-up">
+    <div className="p-10 space-y-8 animate-fade-up relative min-h-screen">
+      
+      {/* New Training Modal */}
+      <AnimatePresence>
+        {isNewTrainingModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsNewTrainingModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-surface-800 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden p-8"
+            >
+              <button 
+                onClick={() => setIsNewTrainingModalOpen(false)} 
+                className="absolute top-6 right-6 p-2 rounded-full bg-surface-700 text-text-muted hover:text-white transition-all z-10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <h2 className="text-3xl font-display font-black text-text-primary mb-2">Novo Treino</h2>
+              <p className="text-text-secondary mb-8">Como você deseja montar o cronograma desta semana?</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Option 1: Duplicate */}
+                <div className="group p-6 rounded-3xl bg-surface-900 border border-white/5 hover:border-accent-primary transition-all cursor-pointer relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent-primary/5 rounded-full blur-2xl group-hover:bg-accent-primary/20 transition-all" />
+                  <div className="w-14 h-14 rounded-2xl bg-surface-800 flex items-center justify-center mb-6 group-hover:bg-accent-primary group-hover:text-surface-900 transition-all">
+                    <CopyPlus className="w-6 h-6 text-accent-primary group-hover:text-surface-900" />
+                  </div>
+                  <h3 className="text-xl font-display font-bold text-text-primary mb-2">Duplicar Semana Anterior</h3>
+                  <p className="text-sm text-text-muted">Copia toda a estrutura de aquecimento, drills e técnicas da semana passada para você apenas ajustar os detalhes.</p>
+                  <div className="mt-6 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-text-muted group-hover:text-accent-primary transition-colors">Mais rápido</span>
+                    <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-accent-primary transition-colors" />
+                  </div>
+                </div>
+
+                {/* Option 2: Scratch */}
+                <div className="group p-6 rounded-3xl bg-surface-900 border border-white/5 hover:border-text-primary transition-all cursor-pointer relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-all" />
+                  <div className="w-14 h-14 rounded-2xl bg-surface-800 flex items-center justify-center mb-6 group-hover:bg-text-primary group-hover:text-surface-900 transition-all">
+                    <FilePlus className="w-6 h-6 text-text-secondary group-hover:text-surface-900" />
+                  </div>
+                  <h3 className="text-xl font-display font-bold text-text-primary mb-2">Criar do Zero</h3>
+                  <p className="text-sm text-text-muted">Começa com um quadro em branco. Ideal para planejar um ciclo totalmente novo de treinamentos e posições.</p>
+                  <div className="mt-6 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-text-muted group-hover:text-text-primary transition-colors">100% Personalizado</span>
+                    <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -29,16 +87,11 @@ export default function TrainingPage() {
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={handleSync}
-            disabled={syncing}
-            className={`btn-ghost flex items-center gap-2 border-accent-primary/20 ${syncing ? 'opacity-50' : ''}`}
+            onClick={() => setIsNewTrainingModalOpen(true)}
+            className="btn-primary flex items-center gap-2 bg-accent-primary text-surface-900 border-none px-6 py-3.5 rounded-2xl shadow-xl shadow-accent-primary/20"
           >
-            <Zap className={`w-4 h-4 text-accent-primary ${syncing ? 'animate-pulse' : ''}`} />
-            {syncing ? 'Sincronizando...' : 'Sincronizar com Matriz'}
-          </button>
-          <button className="btn-primary flex items-center gap-2 bg-accent-primary text-surface-900 border-none">
-            <Plus className="w-4 h-4" />
-            Novo Treino
+            <Plus className="w-5 h-5" />
+            <span className="font-bold tracking-tight">Novo Treino</span>
           </button>
         </div>
       </div>
@@ -74,13 +127,13 @@ export default function TrainingPage() {
                     <BookOpen className="w-8 h-8 text-surface-900" />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Foco da Semana (Global)</p>
+                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Foco da Semana</p>
                     <h2 className="text-2xl font-display font-black text-surface-900">{currentWeek}</h2>
                  </div>
               </div>
               <div className="flex items-center gap-6">
                  <div className="text-right">
-                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Status Local</p>
+                    <p className="text-[10px] font-black text-surface-900/60 uppercase tracking-widest">Status de Hoje</p>
                     <p className="text-xl font-bold text-surface-900">12 Alunos Atendidos</p>
                  </div>
                  <div className="w-px h-10 bg-surface-900/20" />
@@ -97,10 +150,6 @@ export default function TrainingPage() {
               <div className="kpi-card !rounded-[3rem] p-8">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-2xl font-display font-black text-text-primary">Grade de Técnicas</h2>
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Live Matriz
-                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -142,8 +191,8 @@ export default function TrainingPage() {
                 <div className="space-y-4">
                    {[
                      { time: '18:00', class: 'Iniciantes', coach: 'Prof. Marcos', students: 12 },
-                     { time: '19:30', class: 'Avançado (No-Gi)', coach: 'Mestre Italo', students: 18 },
-                     { time: '21:00', class: 'Open Mat', coach: 'Equipe GFTeam', students: 8 },
+                     { time: '19:30', class: 'Avançado (No-Gi)', coach: 'Prof. Marcos', students: 18 },
+                     { time: '21:00', class: 'Open Mat', coach: 'Prof. Marcos', students: 8 },
                    ].map((c, i) => (
                      <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-surface-600/50 border border-white/5">
                         <div className="flex items-center gap-3">
@@ -162,18 +211,14 @@ export default function TrainingPage() {
                 </div>
               </div>
 
-              <div className="kpi-card !rounded-[2.5rem] p-8 bg-surface-600 border-accent-primary/20">
+              <div className="kpi-card !rounded-[2.5rem] p-8 bg-surface-600 border-surface-500">
                  <div className="flex items-center gap-3 mb-4">
                     <Zap className="w-5 h-5 text-accent-primary" />
-                    <h3 className="text-xl font-display font-black text-text-primary">Dica do Julio</h3>
+                    <h3 className="text-xl font-display font-black text-text-primary">Anotações do Professor</h3>
                  </div>
                   <p className="text-sm text-text-secondary leading-relaxed italic opacity-80">
-                    &quot;Focar na distribuição de peso durante a raspagem. O gancho deve ser ativo.&quot;
+                    &quot;Focar na distribuição de peso durante a raspagem. O gancho deve ser ativo e não deixar o colega pesar a perna esquerda.&quot;
                   </p>
-                 <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-accent-primary" />
-                    <span className="text-[10px] font-black text-text-muted uppercase">Validado pela Matriz</span>
-                 </div>
               </div>
             </div>
           </div>
