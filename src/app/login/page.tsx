@@ -17,6 +17,9 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
+    // Força o logout ao acessar a página de login para evitar sessões presas durante os testes
+    supabase.auth.signOut()
+
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
       if (params.get('signup') === 'true') {

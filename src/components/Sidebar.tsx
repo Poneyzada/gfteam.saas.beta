@@ -217,6 +217,10 @@ export default function Sidebar() {
            {!sidebarCollapsed && <span className="font-black text-[10px] uppercase tracking-widest text-text-primary">{mode} Mode</span>}
         </button>
         <button 
+          onClick={async () => {
+             await supabase.auth.signOut()
+             window.location.href = '/login'
+          }}
           className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all group relative group"
         >
           <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />

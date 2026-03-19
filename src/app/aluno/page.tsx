@@ -4,7 +4,7 @@ import { useApp } from '@/contexts/AppContext'
 import { 
   QrCode, User, BookOpen, Award, CheckCircle2, 
   ChevronRight, Calendar, Clock, Trophy, Bell, Settings, Zap, Shield,
-  TrendingUp, Star, CreditCard, Camera, MapPin, Share2, Download
+  TrendingUp, Star, CreditCard, Camera, MapPin, Share2, Download, LogOut
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -129,9 +129,14 @@ export default function AlunoApp() {
              </div>
              
              <div className="flex items-center gap-3">
-                <button className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center relative hover:scale-110 transition-all">
-                  <Bell className="w-5 h-5 text-text-dim" />
-                  <div className="absolute top-3.5 right-3.5 w-1.5 h-1.5 rounded-full bg-accent-primary" />
+                <button 
+                  onClick={async () => {
+                    await supabase.auth.signOut()
+                    window.location.href = '/login'
+                  }}
+                  className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center relative hover:bg-red-500/20 active:scale-95 transition-all text-red-500"
+                >
+                  <LogOut className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={() => setShowID(!showID)}
