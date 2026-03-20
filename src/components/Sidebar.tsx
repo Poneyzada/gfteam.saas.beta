@@ -155,18 +155,19 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
               <Link
                 key={item.key}
                 href={item.href}
+                onClick={() => { if (mobileOpen && onMobileClose) onMobileClose() }}
                 className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                   isActive(item.href) 
-                    ? 'bg-accent-primary text-surface-900 shadow-xl shadow-accent-primary/20 hatched' 
+                    ? 'bg-accent-primary text-black shadow-xl shadow-accent-primary/20 hatched' 
                     : 'text-text-secondary hover:bg-surface-700 hover:text-text-primary'
                 }`}
               >
                 {/* Accent Line for Active Item */}
                 {isActive(item.href) && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-surface-900" />
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-black" />
                 )}
                 
-                <item.icon className={`w-5 h-5 relative z-10 ${isActive(item.href) ? 'text-surface-900' : 'group-hover:scale-110 transition-transform'}`} />
+                <item.icon className={`w-5 h-5 relative z-10 ${isActive(item.href) ? 'text-black' : 'group-hover:scale-110 transition-transform'}`} />
                 {!sidebarCollapsed || mobileOpen ? (
                   <span className="font-black text-xs uppercase tracking-widest relative z-10">{t[lang][item.key as keyof typeof t.pt]}</span>
                 ) : null}
@@ -205,13 +206,14 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
               <Link
                 key={item.key}
                 href={item.href}
+                onClick={() => { if (mobileOpen && onMobileClose) onMobileClose() }}
                 className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                   isActive(item.href) 
-                    ? 'bg-accent-primary text-surface-900 shadow-xl shadow-accent-primary/20 hatched' 
+                    ? 'bg-accent-primary text-black shadow-xl shadow-accent-primary/20 hatched' 
                     : 'text-text-secondary hover:bg-surface-700 hover:text-text-primary'
                 }`}
               >
-                <item.icon className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
+                <item.icon className={`w-5 h-5 relative z-10 ${isActive(item.href) ? 'text-black' : 'group-hover:scale-110 transition-transform'}`} />
                 {!sidebarCollapsed || mobileOpen ? (
                   <span className="font-black text-xs uppercase tracking-widest relative z-10">{t[lang][item.key as keyof typeof t.pt]}</span>
                 ) : null}
