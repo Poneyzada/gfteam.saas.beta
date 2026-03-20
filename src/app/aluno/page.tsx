@@ -140,9 +140,9 @@ export default function AlunoApp() {
                 </button>
                 <button 
                   onClick={() => setShowID(!showID)}
-                  className="w-12 h-12 rounded-2xl bg-accent-primary flex items-center justify-center shadow-xl hatched group active:scale-95 transition-all"
+                  className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shadow-xl group active:scale-95 transition-all border border-white/10"
                 >
-                  <QrCode className="w-6 h-6 text-black group-hover:rotate-12 transition-transform" />
+                  <QrCode className="w-6 h-6 text-white group-hover:rotate-12 transition-transform" />
                 </button>
              </div>
           </div>
@@ -179,7 +179,7 @@ export default function AlunoApp() {
                            <p className="text-[9px] text-text-dim font-medium mt-1 uppercase tracking-widest italic">Unidade Matriz • 19:00</p>
                         </div>
                      </div>
-                     <button className="w-12 h-12 rounded-2xl bg-accent-primary text-black flex items-center justify-center hatched shadow-xl">
+                     <button className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
                         <CheckCircle2 className="w-6 h-6" />
                      </button>
                   </div>

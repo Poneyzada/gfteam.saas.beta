@@ -234,7 +234,7 @@ export default function PremiumDashboard() {
                     <QrCode className="w-full h-full text-surface-900" />
                  </div>
 
-                 <button className="w-full py-5 rounded-2xl bg-surface-900 text-accent-primary text-[10px] font-black uppercase tracking-[0.3em] shadow-xl hover:scale-105 transition-all">
+                 <button className="w-full py-5 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-xl hover:scale-105 transition-all text-center">
                     Baixar QR 2.0
                  </button>
               </div>
