@@ -156,8 +156,8 @@ export default function PremiumDashboard() {
                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">{req.belt} • {req.time}</p>
                         </div>
                       </div>
-                      <button className="w-12 h-12 rounded-2xl bg-accent-primary text-surface-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-all hatched">
-                        <Zap className="w-5 h-5" />
+                      <button className="w-12 h-12 flex-shrink-0 rounded-2xl bg-black text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-all border border-white/10">
+                        <Zap className="w-5 h-5 text-white" />
                       </button>
                     </div>
                   ))}
@@ -226,12 +226,12 @@ export default function PremiumDashboard() {
               </div>
 
               {/* QR Marketing */}
-              <div className="kpi-card !p-10 bg-accent-primary text-surface-900 border-none shadow-[0_30px_60px_rgba(var(--accent-rgb),0.3)] hatched animate-fade-up">
+              <div className="kpi-card !p-10 bg-accent-primary text-black border-none shadow-[0_30px_60px_rgba(var(--accent-rgb),0.3)] hatched animate-fade-up">
                  <h2 className="text-2xl font-display font-black mb-1 italic tracking-tighter uppercase leading-none">KIT<br/>MARKETING</h2>
-                 <p className="text-[10px] font-bold uppercase tracking-widest mb-8 opacity-60">Gere novos alunos</p>
+                 <p className="text-[10px] font-bold uppercase tracking-widest mb-8 opacity-60 text-black">Gere novos alunos</p>
                  
                  <div className="aspect-square bg-white rounded-[2rem] p-4 mb-8 shadow-2xl flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer">
-                    <QrCode className="w-full h-full text-surface-900" />
+                    <QrCode className="w-full h-full text-black" />
                  </div>
 
                  <button className="w-full py-5 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-xl hover:scale-105 transition-all text-center">
