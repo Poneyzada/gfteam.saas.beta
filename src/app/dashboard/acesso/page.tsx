@@ -12,7 +12,7 @@ export default function OnboardingPage() {
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'link' | 'qr'>('link')
 
-  const registrationLink = "https://gfteam-saas.vercel.app/login?signup=true"
+  const registrationLink = "https://gfteam-saas-beta.vercel.app/login?signup=true"
 
   const handleCopy = () => {
     navigator.clipboard.writeText(registrationLink)
