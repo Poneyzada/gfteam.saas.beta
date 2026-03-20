@@ -1,13 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { AppProvider } from '@/contexts/AppContext'
 import Sidebar from '@/components/Sidebar'
-import { LayoutDashboard, Users, CheckSquare, Dumbbell } from 'lucide-react'
+import { LayoutDashboard, Users, CheckSquare, Dumbbell, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
   
   const mobileNav = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Resumo' },
@@ -18,9 +20,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex bg-surface-900 min-h-screen">
-      {/* Desktop Sidebar (Hidden on Mobile) */}
-      <div className="hidden md:block">
-        <Sidebar />
+      {/* Desktop Sidebar OR Full Screen Mobile Drawer */}
+      <div className={`${isMobileOpen ? 'block' : 'hidden md:block'}`}>
+        <Sidebar mobileOpen={isMobileOpen} onMobileClose={() => setIsMobileOpen(false)} />
       </div>
 
       <div className="flex-1 flex flex-col relative w-full overflow-hidden transition-all duration-300">
@@ -31,14 +33,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Mobile Bottom Navigation (Visible only on Mobile) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface-800/90 backdrop-blur-xl border-t border-white/5 px-6 flex items-center justify-between z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface-800/90 backdrop-blur-xl border-t border-white/5 px-4 flex items-center justify-between z-50">
         {mobileNav.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link 
               key={item.href} 
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 w-16 h-14 rounded-2xl relative ${
+              className={`flex flex-col items-center justify-center gap-1 flex-1 h-14 rounded-2xl relative ${
                 isActive ? 'text-surface-900 bg-accent-primary hatched shadow-lg shadow-accent-primary/20' : 'text-text-muted hover:text-white transition-colors'
               }`}
             >
@@ -49,6 +51,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           )
         })}
+        {/* Menu Toggle Button */}
+        <button 
+          onClick={() => setIsMobileOpen(true)}
+          className="flex flex-col items-center justify-center gap-1 flex-1 h-14 rounded-2xl relative text-text-muted hover:text-white transition-colors"
+        >
+          <Menu className="w-6 h-6 transition-transform hover:scale-110" />
+          <span className="text-[8px] font-black uppercase tracking-widest mt-1">Menu</span>
+        </button>
       </div>
     </div>
   )
