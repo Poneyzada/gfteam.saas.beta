@@ -169,8 +169,10 @@ export default function PremiumDashboard() {
 
            <div className="xl:col-span-4 h-full">
               {/* Marketing Tool - The "Kit" requested "Na Frente" */}
-              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden">
-                 <div className="card-accent opacity-20" />
+              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary !border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden relative">
+                 {/* Card Background Overlay - Ensuring the yellow is solid */}
+                 <div className="absolute inset-0 bg-accent-primary z-0" />
+                 
                  <div className="relative z-10">
                     <div className="flex items-center justify-between mb-8">
                        <h2 className="text-4xl font-display font-black text-black italic tracking-tighter uppercase leading-none">KIT<br/>MARKETING</h2>
@@ -191,8 +193,8 @@ export default function PremiumDashboard() {
                     <button className="w-full py-6 rounded-2xl bg-black text-white text-xs font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] transition-all">
                        Baixar Material
                     </button>
-                    <button className="w-full py-6 rounded-2xl bg-white/30 hover:bg-white/50 text-black text-xs font-black uppercase tracking-[0.3em] transition-all border border-black/10 flex items-center justify-center gap-3">
-                       <Share className="w-4 h-4" /> Compartilhar Link
+                    <button className="w-full py-6 rounded-2xl bg-black/10 hover:bg-black/20 text-black text-xs font-black uppercase tracking-[0.3em] transition-all border border-black/10 flex items-center justify-center gap-3">
+                       <Share className="w-4 h-4" /> Link de Convite
                     </button>
                  </div>
               </div>
