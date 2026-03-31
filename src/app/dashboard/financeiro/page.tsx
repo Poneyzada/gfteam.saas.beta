@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
 import TopBar from '@/components/TopBar'
-import { DollarSign, TrendingUp, TrendingDown, AlertCircle, Plus, Download, MessageCircle, Zap } from 'lucide-react'
+import { DollarSign, TrendingUp, TrendingDown, AlertCircle, Plus, Download, MessageCircle, Zap, Check } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
 const monthlyData = [
@@ -27,6 +28,20 @@ const texts = {
 export default function FinanceiroPage() {
   const { lang } = useApp()
   const tx = texts[lang]
+  const [quickItem, setQuickItem] = useState('')
+  const [quickValue, setQuickValue] = useState('')
+  const [launching, setLaunching] = useState(false)
+
+  const handleQuickLaunch = () => {
+    if (!quickItem || !quickValue) return
+    setLaunching(true)
+    // Simulação de lançamento
+    setTimeout(() => {
+      setLaunching(false)
+      setQuickItem('')
+      setQuickValue('')
+    }, 1000)
+  }
 
   return (
     <div className="min-h-screen bg-surface-900">
@@ -74,24 +89,48 @@ export default function FinanceiroPage() {
               ].map((item) => (
                 <button 
                   key={item.label}
-                  className="bg-surface-800 border border-white/5 hover:border-accent-primary/50 py-2.5 px-5 rounded-[1.2rem] flex items-center gap-2.5 transition-all group active:scale-95 shadow-lg hover:shadow-accent-primary/10"
-                  onClick={() => alert(`Lançado: ${item.label} (R$ 15,00)`)}
+                  className={`bg-surface-800 border py-2.5 px-5 rounded-[1.2rem] flex items-center gap-2.5 transition-all group active:scale-95 shadow-lg hover:shadow-accent-primary/10 ${quickItem === item.label ? 'border-accent-primary bg-accent-primary/5' : 'border-white/5 hover:border-accent-primary/50'}`}
+                  onClick={() => {
+                    setQuickItem(item.label)
+                    setQuickValue('15,00')
+                  }}
                 >
                   <span className="text-sm scale-110">{item.icon}</span>
                   <span className="text-[10px] font-black uppercase text-text-primary group-hover:text-accent-primary tracking-wider">{item.label}</span>
                 </button>
               ))}
               
-              <div className="h-10 w-px bg-white/10 mx-3 hidden md:block" />
+              <div className="h-10 w-px bg-white/10 mx-3 hidden lg:block" />
               
-              <div className="flex items-center gap-3 bg-surface-700/50 border border-white/10 rounded-[1.2rem] px-4 py-2 flex-1 md:max-w-[220px] focus-within:border-accent-primary/50 transition-all shadow-inner">
-                <Plus className="w-4 h-4 text-text-muted" />
+              <div className="flex items-center gap-3 bg-surface-700/50 border border-white/10 rounded-[1.2rem] px-4 py-2 flex-1 md:max-w-[180px] focus-within:border-accent-primary/50 transition-all shadow-inner group">
+                <Plus className="w-4 h-4 text-text-muted group-focus-within:text-accent-primary" />
                 <input 
                   type="text" 
-                  placeholder="item, valor..."
+                  placeholder="Item..."
+                  value={quickItem}
+                  onChange={(e) => setQuickItem(e.target.value)}
                   className="bg-transparent text-[11px] font-bold text-text-primary placeholder:text-text-muted outline-none w-full"
                 />
               </div>
+
+              <div className="flex items-center gap-2 bg-surface-700/50 border border-white/10 rounded-[1.2rem] px-4 py-2 w-28 focus-within:border-accent-primary/50 transition-all shadow-inner group">
+                <span className="text-[10px] font-black text-text-muted">R$</span>
+                <input 
+                  type="text" 
+                  placeholder="0,00"
+                  value={quickValue}
+                  onChange={(e) => setQuickValue(e.target.value)}
+                  className="bg-transparent text-[11px] font-bold text-text-primary placeholder:text-text-muted outline-none w-full"
+                />
+              </div>
+
+              <button 
+                onClick={handleQuickLaunch}
+                disabled={!quickItem || !quickValue || launching}
+                className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20 hover:scale-110 active:scale-95 transition-all text-surface-900 disabled:opacity-30 disabled:grayscale disabled:scale-100"
+              >
+                {launching ? <Zap className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+              </button>
             </div>
           </div>
         </div>

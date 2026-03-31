@@ -11,8 +11,8 @@
   --bg-card: #FFFFFF;
   --bg-hover: #F1F5F9;
   --border-app: rgba(0, 0, 0, 0.05);
-  --text-main: #09090B;
-  --text-dim: #71717A;
+  --text-main: #000000;
+  --text-dim: #444444;
 
   /* Surface System for Light Mode */
   --surface-900: #FFFFFF;
@@ -57,8 +57,8 @@
   --bg-card: #14141A;
   --bg-hover: #1A1A22;
   --border-app: rgba(255, 255, 255, 0.08);
-  --text-main: #FAFAFA;
-  --text-dim: #A1A1AA;
+  --text-main: #FFFFFF;
+  --text-dim: #D1D1D1;
 }
 
 @layer base {

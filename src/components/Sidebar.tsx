@@ -59,15 +59,15 @@ const t = {
 
 const mainNav = [
   { key: 'dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['manager', 'instructor', 'master'] },
-  { key: 'alunos', icon: Users, href: '/dashboard/alunos', roles: ['manager', 'instructor', 'master'] },
-  { key: 'crm', icon: TrendingUp, href: '/dashboard/crm', roles: ['manager', 'master'] },
-  { key: 'financeiro', icon: DollarSign, href: '/dashboard/financeiro', roles: ['manager', 'master'] },
-  { key: 'relatorios', icon: Activity, href: '/dashboard/financeiro/relatorios', roles: ['manager', 'master'] },
-  { key: 'loja', icon: Dumbbell, href: '/dashboard/loja', roles: ['manager', 'master'] },
-  { key: 'professores', icon: Shield, href: '/dashboard/professores', roles: ['manager', 'master'] },
-  { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos', roles: ['manager', 'instructor', 'master'] },
-  { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes', roles: ['manager', 'instructor', 'master'] },
-  { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin', roles: ['manager', 'instructor', 'master'] },
+  { key: 'alunos', icon: Users, href: '/dashboard/alunos', roles: ['manager', 'instructor', 'master'], permission: 'students' },
+  { key: 'crm', icon: TrendingUp, href: '/dashboard/crm', roles: ['manager', 'master'], permission: 'students' },
+  { key: 'financeiro', icon: DollarSign, href: '/dashboard/financeiro', roles: ['manager', 'master'], permission: 'finance' },
+  { key: 'relatorios', icon: Activity, href: '/dashboard/financeiro/relatorios', roles: ['manager', 'master'], permission: 'finance' },
+  { key: 'loja', icon: Dumbbell, href: '/dashboard/loja', roles: ['manager', 'master'], permission: 'finance' },
+  { key: 'professores', icon: Shield, href: '/dashboard/equipe', roles: ['manager', 'master'], permission: 'admin' }, 
+  { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos', roles: ['manager', 'instructor', 'master'], permission: 'training' },
+  { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes', roles: ['manager', 'instructor', 'master'], permission: 'training' },
+  { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin', roles: ['manager', 'instructor', 'master'], permission: 'students' },
 ]
 
 const settingsNav = [
@@ -87,16 +87,20 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
   const pathname = usePathname()
   const { sidebarCollapsed, setSidebarCollapsed, lang, mode, setMode, accent, setAccent } = useApp()
   const [role, setRole] = useState<string>('manager')
+  const [permissions, setPermissions] = useState<any>({})
 
   useEffect(() => {
-    async function loadRole() {
+    async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        if (data?.role) setRole(data.role)
+        const { data } = await supabase.from('profiles').select('role, permissions').eq('id', user.id).single()
+        if (data) {
+          setRole(data.role || 'instructor')
+          setPermissions(data.permissions || {})
+        }
       }
     }
-    loadRole()
+    loadProfile()
   }, [])
 
   const isActive = (href: string) => pathname === href
@@ -107,9 +111,20 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
     return true
   })
 
-  // Filter Main Nav based on roles
+  // Filter Main Nav based on roles AND granular permissions
   const filteredMainNav = mainNav.filter(item => {
+    // Master has total access
+    if (role === 'master') return true
+
+    // Check base group role access
     if (!item.roles.includes(role)) return false
+
+    // If item has a specific permission requirement, check it
+    if ((item as any).permission) {
+      const p = (item as any).permission
+      if (!permissions[p] && !permissions.admin) return false
+    }
+
     return true
   })
 

@@ -25,6 +25,11 @@ export default function LoginPage() {
       if (params.get('signup') === 'true') {
         setIsSignUp(true)
       }
+      
+      const urlRole = params.get('role') as any
+      if (urlRole && ['student', 'instructor', 'manager', 'experimental'].includes(urlRole)) {
+        setRole(urlRole)
+      }
     }
   }, [])
 
@@ -114,8 +119,14 @@ export default function LoginPage() {
       // Pequeno delay para evitar o "AbortError: Lock broken" do Supabase Auth ao lidar com localStorage (race condition)
       await new Promise(resolve => setTimeout(resolve, 500))
 
-      const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single()
-      const tenantId = tenantData?.id 
+      const params = new URLSearchParams(window.location.search)
+      let tenantId = params.get('tenant_id')
+
+      // Se não houver tenant_id na URL, tenta pegar o primeiro disponível como fallback (para testes)
+      if (!tenantId) {
+        const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single()
+        tenantId = tenantData?.id 
+      }
 
       const { error: profileError } = await supabase
         .from('profiles')
@@ -123,8 +134,18 @@ export default function LoginPage() {
           { 
             id: authData.user.id, 
             full_name: fullName, 
-            role: role,
-            tenant_id: tenantId 
+            role: role || 'student',
+            tenant_id: tenantId,
+            belt: 'Branca',
+            degree: 0,
+            status: 'pending', // Always pending for new signups
+            permissions: {
+              finance: false,
+              students: false,
+              training: false,
+              plans: false,
+              admin: false
+            }
           }
         ])
 

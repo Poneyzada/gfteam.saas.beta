@@ -21,6 +21,14 @@ CREATE TABLE IF NOT EXISTS profiles (
   role TEXT CHECK (role IN ('master', 'manager', 'instructor', 'student')) DEFAULT 'student',
   phone TEXT,
   avatar_url TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'inactive')),
+  permissions JSONB DEFAULT '{
+    "finance": false,
+    "students": false,
+    "training": false,
+    "plans": false,
+    "admin": false
+  }',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

@@ -1,18 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   QrCode, Share2, 
   Copy, CheckCircle2, Download, Smartphone, 
   UserPlus, ExternalLink, ShieldCheck, CreditCard
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 
 export default function OnboardingPage() {
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'link' | 'qr'>('link')
+  const [tenantId, setTenantId] = useState('')
 
-  const registrationLink = "https://gfteam-saas-beta.vercel.app/login?signup=true"
+  useEffect(() => {
+    async function getTenant() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+        if (data?.tenant_id) setTenantId(data.tenant_id)
+      }
+    }
+    getTenant()
+  }, [])
+
+  const registrationLink = `https://gfteam-saas-beta.vercel.app/login?signup=true&tenant_id=${tenantId}`
 
   const handleCopy = () => {
     navigator.clipboard.writeText(registrationLink)
@@ -86,7 +99,7 @@ export default function OnboardingPage() {
                     <input 
                       readOnly
                       value={registrationLink}
-                      className="w-full bg-surface-900/80 border border-white/10 rounded-2xl py-5 pl-6 pr-16 text-text-secondary font-mono text-xs focus:border-accent-primary/50 outline-none transition-all"
+                      className="w-full bg-surface-900 border border-white/10 rounded-2xl py-5 pl-6 pr-16 text-text-primary font-mono text-xs focus:border-accent-primary/50 outline-none transition-all shadow-inner"
                     />
                     <button 
                       onClick={handleCopy}
@@ -109,12 +122,12 @@ export default function OnboardingPage() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="kpi-card !bg-white p-10 h-full flex flex-col items-center justify-center text-surface-900"
+              className="kpi-card !bg-white p-10 h-full flex flex-col items-center justify-center text-surface-900 border-none shadow-[0_40px_80px_rgba(0,0,0,0.15)]"
             >
               <div className="w-full h-full flex flex-col items-center justify-center gap-8 text-center pt-8">
                 {/* Mock QR Code */}
-                <div className="w-48 h-48 border-2 border-accent-primary/20 rounded-3xl flex items-center justify-center relative bg-surface-900/50 backdrop-blur-md shadow-[0_0_30px_rgba(var(--accent-rgb),0.1)]">
-                      <QrCode className="w-24 h-24 text-text-primary relative z-10" />
+                <div className="w-48 h-48 border-2 border-surface-900/10 rounded-[3rem] flex items-center justify-center relative bg-surface-50 shadow-inner">
+                      <QrCode className="w-24 h-24 text-surface-900 relative z-10" />
                       <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-accent-primary rounded-tl-3xl rounded-br-md" />
                 </div>
                 

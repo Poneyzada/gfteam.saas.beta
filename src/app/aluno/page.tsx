@@ -261,11 +261,11 @@ export default function AlunoApp() {
                </div>
 
                <div className="grid grid-cols-2 gap-6">
-                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/5 bg-accent-primary">
-                     <p className="text-[10px] font-black text-surface-900 uppercase tracking-widest mb-2 opacity-60">Medalhas</p>
+                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/5 bg-accent-primary shadow-[0_20px_40px_rgba(var(--accent-rgb),0.3)]">
+                     <p className="text-[10px] font-black text-surface-900 uppercase tracking-widest mb-2 opacity-70">Medalhas</p>
                      <p className="text-5xl font-display font-black text-surface-900 italic tracking-tighter leading-none">08</p>
                   </div>
-                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/5 bg-surface-800">
+                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/10 bg-surface-800 shadow-xl">
                      <p className="text-[10px] font-black text-accent-primary uppercase tracking-widest mb-2">Treinos Total</p>
                      <p className="text-5xl font-display font-black text-text-primary italic tracking-tighter leading-none">412</p>
                   </div>
@@ -361,11 +361,11 @@ export default function AlunoApp() {
 
                       {/* QR Code and Meta */}
                       <div className="mt-auto flex flex-col items-center gap-8">
-                         <div className="p-5 bg-white rounded-[2.5rem] shadow-2xl group active:scale-95 transition-all">
-                            <QrCode className="w-28 h-28 text-surface-900" />
+                         <div className="p-6 bg-white rounded-[3rem] shadow-2xl group active:scale-95 transition-all max-w-[180px] aspect-square flex items-center justify-center">
+                            <QrCode className="w-full h-full text-surface-900" strokeWidth={1.5} />
                          </div>
                          <div className={`text-center space-y-2 ${currentTheme.text}`}>
-                            <p className={`text-[10px] font-black uppercase tracking-widest opacity-40`}>ID: 2026-GF-884-RIO</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">ID: 2026-GF-884-RIO</p>
                             <div className="flex justify-center gap-4 opacity-20">
                                <div className="w-1 h-3 bg-current rounded-full" />
                                <div className="w-1 h-3 bg-current rounded-full" />
@@ -401,9 +401,8 @@ export default function AlunoApp() {
         </AnimatePresence>
       </main>
 
-      {/* Bottom Nav Bar - Premium Floating */}
       <div className="fixed bottom-8 left-6 right-6 max-w-md mx-auto z-50">
-         <div className="glass !rounded-[2.5rem] !bg-surface-800/80 backdrop-blur-2xl border-white/5 px-8 h-20 flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+         <div className="glass !rounded-[3rem] !bg-surface-800/80 backdrop-blur-3xl border-white/10 px-8 h-22 flex justify-between items-center shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
             {[
               { id: 'home', icon: User, label: 'QG' },
               { id: 'performance', icon: Star, label: 'Track' },
@@ -413,16 +412,17 @@ export default function AlunoApp() {
               <button 
                 key={item.id} 
                 onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center gap-1.5 transition-all group relative ${activeTab === item.id ? 'text-accent-primary' : 'text-text-dim'}`}
+                className={`flex flex-col items-center gap-1.5 transition-all group relative px-4 py-2 rounded-2xl ${activeTab === item.id ? 'text-surface-900' : 'text-text-dim'}`}
               >
                 {activeTab === item.id && (
                   <motion.div 
-                    layoutId="nav_vibe" 
-                    className="absolute -top-1 w-12 h-12 bg-accent-primary/10 rounded-2xl border border-accent-primary/20 blur-sm"
+                    layoutId="nav_vibe_aluno" 
+                    className="absolute inset-0 bg-accent-primary rounded-2xl -z-10 shadow-[0_10px_30px_rgba(var(--accent-rgb),0.4)]"
+                    style={{ backgroundColor: 'var(--accent)' }}
                   />
                 )}
-                <item.icon className={`w-6 h-6 z-10 ${activeTab === item.id ? 'scale-110 drop-shadow-[0_0_8px_rgba(var(--accent-rgb),0.5)]' : 'group-hover:scale-110 transition-transform'}`} />
-                <span className="text-[8px] font-black uppercase tracking-[0.2em] z-10">{item.label}</span>
+                <item.icon className={`w-6 h-6 z-10 ${activeTab === item.id ? 'scale-110 !text-surface-900 transition-all' : 'group-hover:scale-110'}`} />
+                <span className={`text-[8px] font-black uppercase tracking-[0.2em] z-10 ${activeTab === item.id ? '!text-surface-900' : ''}`}>{item.label}</span>
               </button>
             ))}
          </div>

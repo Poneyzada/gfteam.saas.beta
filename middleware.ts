@@ -61,18 +61,57 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl
 
-  // Public — no auth required
+  // 1. PUBLIC ROUTES
   if (pathname.startsWith('/login') || pathname === '/') {
-    // If already logged in, redirect away from login
-    if (session && pathname.startsWith('/login')) {
-      return NextResponse.redirect(new URL('/dashboard', req.url))
-    }
+    if (session) return NextResponse.redirect(new URL('/dashboard', req.url))
     return res
   }
 
-  // Protected — must have session
+  // 2. PROTECTED ROUTES
   if (!session) {
     return NextResponse.redirect(new URL('/login', req.url))
+  }
+
+  // 3. FETCH COMPLEMENTARY DATA (Role, Status, Permissions)
+  // Note: For high traffic, consider moving these to JWT claims via Supabase Custom Claims
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, status, permissions')
+    .eq('id', session.user.id)
+    .single()
+
+  // 4. STATUS GUARD: Approval Flow
+  if (profile?.status === 'pending' && pathname !== '/aguardando') {
+    return NextResponse.redirect(new URL('/aguardando', req.url))
+  }
+
+  // 5. ROLE REDIRECTS
+  // Students ONLY go to /aluno
+  if (profile?.role === 'student' && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/aluno', req.url))
+  }
+
+  // Dashboard context guards
+  if (pathname.startsWith('/dashboard')) {
+    const perms = (profile?.permissions as any) || {}
+    
+    // Master is god
+    if (profile?.role === 'master') return res
+
+    // Finance Access
+    if (pathname.includes('/financeiro') && !perms.finance && !perms.admin) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+
+    // Student MGMT Access
+    if (pathname.includes('/alunos') && !perms.students && !perms.admin) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+
+    // Training MGMT Access
+    if (pathname.includes('/treinos') && !perms.training && !perms.admin) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
   }
 
   return res
