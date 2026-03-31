@@ -119,6 +119,10 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
     // Check base group role access
     if (!item.roles.includes(role)) return false
 
+    // FALLBACK: If permissions object is empty (SQL not run yet), allow manager/master to see all
+    const hasPermsSet = Object.keys(permissions).length > 0
+    if (!hasPermsSet && (role === 'manager' || role === 'master')) return true
+
     // If item has a specific permission requirement, check it
     if ((item as any).permission) {
       const p = (item as any).permission

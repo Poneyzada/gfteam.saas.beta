@@ -12,8 +12,9 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState('')
   const [role, setRole] = useState<'student'>('student')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [error, setError] = useState<string>('')
+  const [success, setSuccess] = useState<string>('')
+  const [isForgotPassword, setIsForgotPassword] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setError('')
 
     const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
       email,
@@ -97,7 +98,7 @@ export default function LoginPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setError('')
 
     const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email,
@@ -160,6 +161,24 @@ export default function LoginPage() {
     }
     setLoading(false)
   }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+
+      if (resetError) {
+        setError(resetError.message)
+      } else {
+        setSuccess('E-mail de recuperação enviado! Verifique sua caixa de entrada.')
+      }
+      setLoading(false)
+    }
 
   return (
     <div className="min-h-screen bg-surface-900 flex items-center justify-center p-6 relative overflow-hidden">
@@ -265,15 +284,27 @@ export default function LoginPage() {
                 <Loader2 className="w-6 h-6 animate-spin text-black" />
               ) : (
                 <span className="uppercase tracking-[0.3em] text-[10px] font-black text-black">
-                  {isSignUp ? 'Criar Cadastro' : 'Entrar no Sistema'}
+                  {isForgotPassword ? 'Enviar E-mail' : isSignUp ? 'Criar Cadastro' : 'Entrar no Sistema'}
                 </span>
               )}
             </button>
           </form>
 
+          {!isSignUp && (
+            <div className="mt-4 text-center">
+               <button 
+                type="button"
+                onClick={() => { setIsForgotPassword(!isForgotPassword); setError(''); setSuccess(''); }}
+                className="text-[10px] font-black text-accent-primary uppercase tracking-widest hover:underline"
+               >
+                 {isForgotPassword ? 'Voltar para o Login' : 'Esqueceu a senha?'}
+               </button>
+            </div>
+          )}
+
           <div className="mt-10 pt-8 border-t border-white/5 text-center flex flex-col gap-4">
             <button 
-              onClick={() => { setIsSignUp(!isSignUp); setError(null); setSuccess(null); }}
+              onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccess(''); }}
               className="group flex items-center justify-center gap-2 text-[10px] text-text-muted font-black uppercase tracking-widest hover:text-accent-primary transition-all"
             >
               <div className="w-8 h-[1px] bg-white/10 group-hover:w-12 group-hover:bg-accent-primary transition-all" />

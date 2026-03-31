@@ -97,7 +97,7 @@ export default function EquipePage() {
             Controle de Equipe
           </h1>
           <p className="text-text-muted font-bold mt-1 uppercase tracking-tighter opacity-60">
-            Gerencie acessos e permissões modulares (Estilo Meta Ads)
+            Gerencie acessos e permissões modulares da sua unidade
           </p>
         </div>
         
