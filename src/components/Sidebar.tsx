@@ -64,7 +64,7 @@ const mainNav = [
   { key: 'financeiro', icon: DollarSign, href: '/dashboard/financeiro', roles: ['manager', 'master'], permission: 'finance' },
   { key: 'relatorios', icon: Activity, href: '/dashboard/financeiro/relatorios', roles: ['manager', 'master'], permission: 'finance' },
   { key: 'loja', icon: Dumbbell, href: '/dashboard/loja', roles: ['manager', 'master'], permission: 'finance' },
-  { key: 'professores', icon: Shield, href: '/dashboard/equipe', roles: ['manager', 'master'], permission: 'admin' }, 
+  { key: 'professores', icon: Shield, href: '/dashboard/professores', roles: ['manager', 'master'], permission: 'admin' }, 
   { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos', roles: ['manager', 'instructor', 'master'], permission: 'training' },
   { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes', roles: ['manager', 'instructor', 'master'], permission: 'training' },
   { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin', roles: ['manager', 'instructor', 'master'], permission: 'students' },
