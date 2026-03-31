@@ -8,7 +8,7 @@ import {
   Calendar, Bell, Search,
   ChevronRight, ArrowRight, Clock, Shield,
   QrCode, LayoutDashboard, Rocket, Activity,
-  LogOut, Settings, BarChart3, Target, Share2
+  LogOut, Settings, BarChart3, Target, Share
 } from 'lucide-react'
 
 export default function PremiumDashboard() {
@@ -167,33 +167,32 @@ export default function PremiumDashboard() {
 
            </div>
 
-           {/* Right Column: Growth & Marketing (4 cols) */}
            <div className="xl:col-span-4 h-full">
               {/* Marketing Tool - The "Kit" requested "Na Frente" */}
-              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] hatched animate-fade-up flex flex-col justify-between">
-                 <div>
+              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden">
+                 <div className="card-accent opacity-20" />
+                 <div className="relative z-10">
                     <div className="flex items-center justify-between mb-8">
                        <h2 className="text-4xl font-display font-black text-black italic tracking-tighter uppercase leading-none">KIT<br/>MARKETING</h2>
                        <div className="w-16 h-16 rounded-[2rem] bg-black flex items-center justify-center shadow-2xl">
                           <Rocket className="w-8 h-8 text-accent-primary" />
                        </div>
                     </div>
-                    <p className="text-[11px] font-black text-black/80 uppercase tracking-widest mb-12">Capture novos alunos instantaneamente</p>
+                    <p className="text-[11px] font-black text-black/90 uppercase tracking-widest mb-12">Capture novos alunos instantaneamente</p>
                     
-                    <div className="relative group mx-auto mb-12">
-                       <div className="absolute inset-0 bg-black/10 blur-xl rounded-full scale-110 group-hover:scale-150 transition-all duration-700" />
-                       <div className="relative aspect-square bg-white rounded-[3rem] p-4 flex items-center justify-center transform group-hover:rotate-6 transition-all duration-500 shadow-2xl">
+                    <div className="relative group mx-auto mb-12 flex justify-center">
+                       <div className="relative w-48 h-48 bg-white rounded-[3rem] p-6 flex items-center justify-center transform group-hover:rotate-6 transition-all duration-500 shadow-2xl">
                           <QrCode className="w-full h-full text-black" />
                        </div>
                     </div>
                  </div>
 
-                 <div className="space-y-4">
-                    <button className="w-full py-6 rounded-2xl bg-black text-white text-xs font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">
+                 <div className="space-y-4 relative z-10">
+                    <button className="w-full py-6 rounded-2xl bg-black text-white text-xs font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] transition-all">
                        Baixar Material
                     </button>
-                    <button className="w-full py-6 rounded-2xl bg-white/20 hover:bg-white/40 text-black text-xs font-black uppercase tracking-[0.3em] transition-all border border-black/10 flex items-center justify-center gap-3">
-                       <Share2 className="w-4 h-4" /> Link de Convite
+                    <button className="w-full py-6 rounded-2xl bg-white/30 hover:bg-white/50 text-black text-xs font-black uppercase tracking-[0.3em] transition-all border border-black/10 flex items-center justify-center gap-3">
+                       <Share className="w-4 h-4" /> Compartilhar Link
                     </button>
                  </div>
               </div>
