@@ -16,17 +16,39 @@ export default function CompletePerformanceDashboard() {
   const { lang, mode } = useApp()
   const [userName, setUserName] = useState<string>('Mestre')
   const [userRole, setUserRole] = useState<string>('manager')
+  const [tenantId, setTenantId] = useState<string | null>(null)
+  
+  // Real-time Data States
+  const [expLeads, setExpLeads] = useState<any[]>([])
+  const [upcomingClasses, setUpcomingClasses] = useState<any[]>([])
+  const [announcements, setAnnouncements] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function getProfile() {
+    async function getData() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase.from('profiles').select('full_name, role').eq('id', user.id).single()
-        if (data?.full_name) setUserName(data.full_name)
-        if (data?.role) setUserRole(data.role)
+        const { data: profile } = await supabase.from('profiles').select('full_name, role, tenant_id').eq('id', user.id).single()
+        if (profile) {
+          setUserName(profile.full_name || 'Mestre')
+          setUserRole(profile.role)
+          setTenantId(profile.tenant_id)
+          
+          // Fetch Real Data
+          const [leadsRes, classesRes, newsRes] = await Promise.all([
+            supabase.from('leads').select('*').eq('tenant_id', profile.tenant_id).eq('status', 'agendado').order('created_at', { ascending: false }).limit(3),
+            supabase.from('schedules').select('*').eq('tenant_id', profile.tenant_id).limit(3),
+            supabase.from('notifications').select('*').limit(2).order('created_at', { ascending: false })
+          ])
+
+          if (leadsRes.data) setExpLeads(leadsRes.data)
+          if (classesRes.data) setUpcomingClasses(classesRes.data)
+          if (newsRes.data) setAnnouncements(newsRes.data)
+        }
       }
+      setLoading(false)
     }
-    getProfile()
+    getData()
   }, [])
 
   const stats = [
@@ -48,7 +70,7 @@ export default function CompletePerformanceDashboard() {
            <div className="flex items-center gap-3 mb-3">
               <div className="px-3 py-1 bg-accent-primary/10 border border-accent-primary/20 rounded-full flex items-center gap-2">
                  <div className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
-                 <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.2em]">Sistema Gfteam v1.3.0 • Produção</span>
+                 <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.2em]">Sistema Gfteam v1.3.1 • Live Syncing</span>
               </div>
            </div>
            <h1 className="text-5xl font-display font-black tracking-tighter italic uppercase text-white">
@@ -80,7 +102,7 @@ export default function CompletePerformanceDashboard() {
 
       <div className="px-10 space-y-12 relative z-10">
         
-        {/* KPIs - 100% Contrast */}
+        {/* KPIs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((s, i) => (
             <div key={i} className="kpi-card !p-8 group bg-[#121214] border-white/5 hover:border-accent-primary/40 transition-all">
@@ -105,98 +127,115 @@ export default function CompletePerformanceDashboard() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                  
-                 {/* Avisos QG - Restore Requested */}
+                 {/* Avisos QG - Real Data from Support/Matriz */}
                  <div className="kpi-card !p-10 border-white/10 bg-[#121214]">
                     <div className="flex items-center justify-between mb-10">
                        <h2 className="text-2xl font-display font-black text-white tracking-tighter italic uppercase">AVISOS QG</h2>
                        <Info className="w-5 h-5 text-accent-primary" />
                     </div>
                     <div className="space-y-6">
-                       {[
-                         { title: 'Exame de Faixa', date: 'Dez 15', urgency: 'high' },
-                         { title: 'Nova Turma Kids', date: 'Segunda', urgency: 'low' }
-                       ].map((news, idx) => (
+                       {announcements.length > 0 ? announcements.map((news, idx) => (
                          <div key={idx} className="p-6 rounded-3xl bg-surface-900/40 border border-white/5 flex flex-col gap-2">
                             <div className="flex justify-between items-start">
                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${news.urgency === 'high' ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
                                   {news.urgency === 'high' ? 'Importante' : 'Novidade'}
                                </span>
-                               <span className="text-[10px] text-[#A1A1AA] font-black">{news.date}</span>
+                               <span className="text-[10px] text-[#A1A1AA] font-black">{new Date(news.created_at).toLocaleDateString()}</span>
                             </div>
                             <p className="text-sm font-bold text-white uppercase">{news.title}</p>
                          </div>
-                       ))}
+                       )) : (
+                         <div className="text-center py-10 opacity-30 italic text-xs uppercase font-black tracking-widest">
+                            Nenhum aviso no momento
+                         </div>
+                       )}
                     </div>
-                    <button className="w-full mt-10 py-5 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/10 font-black">
-                       Ver Todos os Avisos
-                    </button>
                  </div>
 
-                 {/* Próximas Aulas - Restore Requested */}
+                 {/* Próximas Aulas - Real Data from Schedules */}
                  <div className="kpi-card !p-10 border-white/10 bg-[#121214]">
                     <div className="flex items-center justify-between mb-10">
                        <h2 className="text-2xl font-display font-black text-white tracking-tighter italic uppercase">PRÓXIMAS AULAS</h2>
                        <GraduationCap className="w-5 h-5 text-accent-primary" />
                     </div>
                     <div className="space-y-6">
-                       {[
-                         { title: 'Iniciação Adulto', time: '18:00', students: '12', color: 'bg-emerald-500' },
-                         { title: 'Mestra Frazão', time: '19:30', students: '08', color: 'bg-accent-primary' }
-                       ].map((classItem, idx) => (
+                       {upcomingClasses.length > 0 ? upcomingClasses.map((clItem, idx) => (
                          <div key={idx} className="p-6 rounded-3xl bg-surface-900/40 border border-white/5 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                               <div className={`w-1 h-8 rounded-full ${classItem.color}`} />
+                               <div className={`w-1 h-8 rounded-full ${clItem.class_type === 'No-Gi' ? 'bg-accent-primary' : 'bg-emerald-500'}`} />
                                <div>
-                                  <p className="text-sm font-bold text-white uppercase">{classItem.title}</p>
-                                  <p className="text-[10px] text-[#A1A1AA] font-black uppercase">{classItem.time} • {classItem.students} Check-ins</p>
+                                  <p className="text-sm font-bold text-white uppercase">{clItem.class_name}</p>
+                                  <p className="text-[10px] text-[#A1A1AA] font-black uppercase">{clItem.time_start} • {clItem.instructor_name}</p>
                                </div>
                             </div>
                             <ChevronRight className="w-4 h-4 text-white/20" />
                          </div>
-                       ))}
+                       )) : (
+                         <div className="text-center py-10 opacity-30 italic text-xs uppercase font-black tracking-widest">
+                            Nenhuma aula agendada hj
+                         </div>
+                       )}
                     </div>
-                    <button className="w-full mt-10 py-5 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/10 font-black">
-                       Gerenciar Escala
+                    <button 
+                      onClick={() => window.location.href='/dashboard/cronograma'}
+                      className="w-full mt-10 py-5 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/10 font-black"
+                    >
+                       Ajustar Cronograma
                     </button>
                  </div>
 
               </div>
 
-              {/* Check-ins Live Grid */}
+              {/* Aulas Experimentais - BACK FROM THE CRM (STATUS 'AGENDADO') */}
               <div className="kpi-card !p-10 border-accent-primary/20 bg-[#121214]">
                  <div className="flex items-center justify-between mb-10">
                     <div>
-                       <h2 className="text-3xl font-display font-black text-white tracking-tighter italic uppercase">TATAME AGORA</h2>
-                       <p className="text-[10px] text-[#A1A1AA] font-black uppercase tracking-widest mt-1">Status de Presença em Tempo Real</p>
+                       <h2 className="text-3xl font-display font-black text-white tracking-tighter italic uppercase underline decoration-accent-primary/30">Agendamentos CRM</h2>
+                       <p className="text-[10px] text-[#A1A1AA] font-black uppercase tracking-widest mt-1">Aulas Experimentais vindas da Landing Page/Wpp</p>
                     </div>
-                    <button className="flex items-center gap-2 px-8 py-4 bg-accent-primary text-black text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-accent-primary/20 hover:scale-[1.02] transition-all">
-                       <Rocket className="w-4 h-4" /> Chamada Rápida
-                    </button>
+                    {expLeads.length > 0 && (
+                      <div className="px-4 py-2 rounded-full bg-accent-primary/10 border border-accent-primary/30 text-accent-primary text-[9px] font-black uppercase tracking-widest animate-pulse">
+                        {expLeads.length} Agendado(s)
+                      </div>
+                    )}
                  </div>
 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {[
-                      { id: 1, name: 'Lucas Andrade', belt: 'Azul G3', time: '17:28', beltColor: 'bg-blue-600', img: 'https://i.pravatar.cc/100?u=lucas' },
-                      { id: 2, name: 'Ana Silva', belt: 'Branca G2', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
-                    ].map((req) => (
-                      <div key={req.id} className="p-6 rounded-[2.5rem] bg-[#0A0A0C] border border-white/5 flex items-center justify-between group hover:border-accent-primary/50 transition-all">
-                         <div className="flex items-center gap-4">
-                            <div className="relative">
-                               <div className="w-14 h-14 rounded-2xl bg-surface-700 overflow-hidden border border-white/10 group-hover:border-accent-primary/30 transition-all shadow-xl">
-                                  <img src={req.img} alt={req.name} className="w-full h-full object-cover" />
-                               </div>
-                               <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-lg ${req.beltColor} border-2 border-[#0A0A0C]`} />
-                            </div>
-                            <div>
-                               <p className="text-base font-black text-white tracking-tight uppercase">{req.name}</p>
-                               <p className="text-[10px] text-[#A1A1AA] font-black tracking-widest uppercase">{req.belt} • {req.time}</p>
-                            </div>
+                    {expLeads.length > 0 ? expLeads.map((lead) => (
+                      <div key={lead.id} className="p-8 rounded-[2.5rem] bg-[#0A0A0C] border border-white/5 relative overflow-hidden group hover:scale-[1.03] hover:border-accent-primary/50 transition-all shadow-xl">
+                         {/* High contrast text for the user */}
+                         <p className="text-lg font-black text-white tracking-tight uppercase mb-1">{lead.name}</p>
+                         <div className="flex flex-col gap-2">
+                           <div className="flex items-center gap-2 text-[10px] text-accent-primary font-black uppercase tracking-widest">
+                               <Clock className="w-3.5 h-3.5" /> Agendado em: {new Date(lead.created_at).toLocaleDateString()}
+                           </div>
+                           <div className="flex items-center gap-2 text-[9px] text-[#A1A1AA] font-black uppercase tracking-widest opacity-60">
+                               <Target className="w-3.5 h-3.5" /> Origem: {lead.source}
+                           </div>
                          </div>
-                         <button className="w-12 h-12 rounded-xl bg-surface-800 text-accent-primary flex items-center justify-center hover:bg-accent-primary hover:text-black transition-all border border-white/5 font-black">
-                            <Zap className="w-5 h-5 font-black" />
-                         </button>
+                         <div className="flex items-center gap-3 mt-8">
+                            <button className="flex-1 py-4 bg-accent-primary hover:bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95">
+                               Confirmar Presença
+                            </button>
+                            <button 
+                              onClick={() => window.open(`https://wa.me/${lead.phone.replace(/\D/g, '')}`, '_blank')}
+                              className="w-14 h-14 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-black flex items-center justify-center rounded-xl border border-emerald-500/20 transition-all font-black text-xs"
+                            >
+                               WPP
+                            </button>
+                         </div>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="col-span-2 p-16 rounded-[3rem] bg-surface-900/50 border border-dashed border-white/10 text-center flex flex-col items-center gap-4">
+                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                            <Users className="w-8 h-8 text-text-muted opacity-20" />
+                         </div>
+                         <div>
+                            <p className="text-sm font-black text-text-muted uppercase tracking-widest italic opacity-40">Nenhuma experimental agendada hj</p>
+                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter mt-2">DICA: Envie o link do Kit Marketing para novos leads!</p>
+                         </div>
+                      </div>
+                    )}
                  </div>
               </div>
 
@@ -205,7 +244,7 @@ export default function CompletePerformanceDashboard() {
            {/* Column 2: Growth & Marketing (4 cols) */}
            <div className="lg:col-span-4 h-full">
               
-              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary !border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden relative">
+              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary !border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden relative min-h-[600px]">
                  <div className="absolute inset-0 bg-accent-primary z-0" />
                  
                  <div className="relative z-10">
@@ -225,6 +264,7 @@ export default function CompletePerformanceDashboard() {
                  </div>
 
                  <div className="space-y-4 relative z-10">
+                    {/* BUTTONS WITH 100% CONTRAST (BLACK ON SOLID YELLOW/BACKGROUND) */}
                     <button className="w-full py-6 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] transition-all font-black">
                        Baixar Material
                     </button>

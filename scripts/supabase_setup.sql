@@ -59,6 +59,52 @@ CREATE TABLE IF NOT EXISTS expenses (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- 5. SCHEDULES (Cronograma de Aulas)
+CREATE TABLE IF NOT EXISTS schedules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID REFERENCES tenants(id) NOT NULL,
+  weekday TEXT NOT NULL,               -- 'Segunda-feira', 'Terça-feira', etc.
+  time_start TEXT NOT NULL,            -- '18:00'
+  time_end TEXT NOT NULL,              -- '19:30'
+  class_name TEXT NOT NULL,            -- 'Jiu-Jitsu Adulto'
+  instructor_name TEXT,
+  mat_name TEXT DEFAULT 'Principal',
+  class_type TEXT DEFAULT 'Gi',        -- Gi | No-Gi
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 6. LESSONS (Biblioteca de Técnicas/Vídeos)
+CREATE TABLE IF NOT EXISTS lessons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID REFERENCES tenants(id) NOT NULL,
+  title TEXT NOT NULL,
+  category TEXT,                       -- Guarda, Passagem, Finalização
+  level TEXT,                          -- Iniciante, Intermediário, Avançado
+  youtube_id TEXT,                     -- ex: 'dQw4w9WgXcQ'
+  views INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 7. TRAINING_PLANS (WOD / Foco da Semana)
+CREATE TABLE IF NOT EXISTS training_plans (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID REFERENCES tenants(id) NOT NULL,
+  week_focus TEXT NOT NULL,            -- ex: 'Semana 12: Fundamentos de Guarda'
+  active_date DATE DEFAULT current_date,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 8. NOTIFICATIONS (Avisos QG)
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID REFERENCES tenants(id) DEFAULT '00000000-0000-0000-0000-000000000001', -- Matriz por padrão
+  title TEXT NOT NULL,
+  content TEXT,
+  urgency TEXT DEFAULT 'low',          -- low | high
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- ============================================================
 -- ROW LEVEL SECURITY
 -- ============================================================
@@ -102,6 +148,40 @@ ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "managers manage own expenses" ON expenses
   FOR ALL USING (
     get_my_role() = 'master' OR tenant_id = get_my_tenant_id()
+  );
+
+-- Schedules: managers managed their own schedules
+ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "managers manage own schedules" ON schedules
+  FOR ALL USING (
+    get_my_role() = 'master' OR tenant_id = get_my_tenant_id()
+  );
+
+-- Lessons: master/managers manage, all see
+ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "masters manage lessons" ON lessons
+  FOR ALL USING (
+    get_my_role() = 'master' OR tenant_id = get_my_tenant_id()
+  );
+
+CREATE POLICY "everyone sees lessons" ON lessons
+  FOR SELECT USING (true); -- Lessons are public database for the tenant
+
+-- Training Plans:
+ALTER TABLE training_plans ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "managers manage plans" ON training_plans
+  FOR ALL USING (
+    get_my_role() = 'master' OR tenant_id = get_my_tenant_id()
+  );
+
+-- Notifications (Avisos QG):
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "everyone sees notifications" ON notifications
+  FOR SELECT USING (true);
+
+CREATE POLICY "masters manage notifications" ON notifications
+  FOR ALL USING (
+    get_my_role() = 'master' OR tenant_id = (SELECT id FROM tenants WHERE slug = 'gfteam-matriz')
   );
 
 -- ============================================================
