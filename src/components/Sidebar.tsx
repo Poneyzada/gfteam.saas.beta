@@ -139,16 +139,23 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
       {/* Header / Logo */}
       <div className="h-24 flex items-center justify-between px-6 border-b border-white/5">
         <div className={`flex items-center gap-3 transition-opacity duration-300 ${!sidebarCollapsed || mobileOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-          <div className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20 hatched">
-            <span className="font-display font-black text-xl text-surface-900 italic">GF</span>
+          {/* Custom Logo Spot */}
+          <div className="relative group">
+             <div className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20 hatched overflow-hidden">
+               {/* Show Image if available, fallback to dynamic text logo */}
+               <span className="font-display font-black text-xl text-black italic">GF</span>
+             </div>
           </div>
-          <span className="font-display font-black text-lg text-text-primary tracking-tighter italic uppercase">GFTEAM</span>
+          <div className="flex flex-col">
+             <span className="font-display font-black text-lg text-text-primary tracking-tighter italic uppercase leading-tight">GFTEAM</span>
+             <span className="text-[7px] font-black text-accent-primary uppercase tracking-[0.3em] opacity-80">UNIDADE OFICIAL</span>
+          </div>
         </div>
         
         {mobileOpen ? (
           <button 
             onClick={onMobileClose}
-            className="w-10 h-10 rounded-xl bg-surface-700 hover:bg-surface-600 border border-white/10 flex items-center justify-center transition-all text-white"
+            className="w-10 h-10 rounded-xl bg-surface-700 hover:bg-surface-600 border border-white/10 flex items-center justify-center transition-all text-text-primary"
           >
             <X className="w-5 h-5" />
           </button>

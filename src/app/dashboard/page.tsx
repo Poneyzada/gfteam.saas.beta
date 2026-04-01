@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import {
   Users, Zap, TrendingUp, DollarSign,
   Calendar, Bell, Search, Clock,
-  ArrowRight, QrCode, Target, MessageCircle
+  ArrowRight, QrCode, Target, MessageCircle, X, Plus
 } from 'lucide-react'
 
 export default function OriginalPremiumDashboard() {
@@ -23,6 +23,8 @@ export default function OriginalPremiumDashboard() {
     { id: 2, name: 'Ana Silva', belt: 'Branca', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
   ])
   const [loading, setLoading] = useState(true)
+  const [showPostModal, setShowPostModal] = useState(false)
+  const [newPost, setNewPost] = useState({ title: '', content: '' })
 
   useEffect(() => {
     async function getData() {
@@ -49,6 +51,32 @@ export default function OriginalPremiumDashboard() {
     }
     getData()
   }, [])
+
+  const handlePost = async () => {
+    if (!newPost.title || !newPost.content) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      
+      const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+      
+      const { error } = await supabase.from('notifications').insert({
+        title: newPost.title,
+        content: newPost.content,
+        tenant_id: profile?.tenant_id || null,
+        created_at: new Date().toISOString()
+      })
+      
+      if (!error) {
+        setAnnouncements([{ title: newPost.title, created_at: new Date().toISOString() }, ...announcements])
+        setShowPostModal(false)
+        setNewPost({ title: '', content: '' })
+        alert('Aviso postado com sucesso!')
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const stats = [
     { label: 'Alunos Ativos', value: '185', icon: Users, trend: '+8%', color: 'text-emerald-400' },
@@ -175,7 +203,7 @@ export default function OriginalPremiumDashboard() {
                         }}
                         className="w-10 h-10 rounded-xl bg-accent-primary border border-accent-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-accent-primary/20"
                        >
-                          <Zap className="w-5 h-5 text-white filter drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                          <Zap className={`w-5 h-5 ${mode === 'light' ? 'text-black' : 'text-white'} filter drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]`} />
                        </button>
                       </div>
                     ))}
@@ -186,7 +214,15 @@ export default function OriginalPremiumDashboard() {
                {/* Avisos QG */}
                <div className="kpi-card !p-8 md:!p-10">
                   <div className="card-accent opacity-20" />
-                  <h3 className="text-xl font-display font-black text-text-primary mb-6 italic tracking-tighter">AVISOS DO QG</h3>
+                  <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-display font-black text-text-primary italic tracking-tighter uppercase">Avisos do QG</h3>
+                      <button 
+                        onClick={() => setShowPostModal(true)}
+                        className="px-3 py-1.5 bg-accent-primary text-black text-[10px] font-black uppercase rounded-xl hover:scale-110 active:scale-95 transition-all shadow-lg shadow-accent-primary/20"
+                      >
+                        Postar
+                      </button>
+                  </div>
                   <div className="space-y-4">
                     {announcements.map((news, idx) => (
                       <div key={idx} className="p-4 rounded-2xl bg-surface-900 border border-white/5 hover:bg-surface-800 transition-all">
@@ -275,6 +311,43 @@ export default function OriginalPremiumDashboard() {
 
         </div>
       </div>
+
+      {/* Post Modal */}
+      {showPostModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPostModal(false)} />
+           <div className="bg-surface-800 border border-white/10 w-full max-w-lg rounded-[3rem] p-10 relative z-10 animate-fade-up shadow-2xl">
+              <h2 className="text-2xl font-display font-black text-text-primary tracking-tighter italic uppercase mb-6">Novo Aviso QG</h2>
+              
+              <div className="space-y-4">
+                 <div>
+                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Título do Aviso</label>
+                    <input 
+                      type="text" 
+                      value={newPost.title}
+                      onChange={(e) => setNewPost({...newPost, title: e.target.value})}
+                      className="w-full mt-2 bg-surface-900 border border-white/5 p-4 rounded-2xl outline-none focus:border-accent-primary text-text-primary font-bold placeholder:opacity-30"
+                      placeholder="Ex: Seminário este Sábado"
+                    />
+                 </div>
+                 <div>
+                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Conteúdo</label>
+                    <textarea 
+                      value={newPost.content}
+                      onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                      className="w-full mt-2 bg-surface-900 border border-white/5 p-4 rounded-2xl outline-none focus:border-accent-primary text-text-primary font-medium h-32 placeholder:opacity-30"
+                      placeholder="Descreva o aviso aqui..."
+                    />
+                 </div>
+              </div>
+
+              <div className="flex gap-4 mt-8">
+                 <button onClick={() => setShowPostModal(false)} className="flex-1 py-4 rounded-2xl bg-surface-700 text-text-primary font-black uppercase text-xs">Cancelar</button>
+                 <button onClick={handlePost} className="flex-1 py-4 rounded-2xl bg-accent-primary text-black font-black uppercase text-xs shadow-lg shadow-accent-primary/20 hover:scale-105 active:scale-95 transition-all">Postar Agora</button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   )
 }
