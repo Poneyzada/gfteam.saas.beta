@@ -59,6 +59,10 @@
   --border-app: rgba(255, 255, 255, 0.08);
   --text-main: #FFFFFF;
   --text-dim: #D1D1D1;
+  --surface-900: #0A0A0E;
+  --surface-800: #101015;
+  --surface-700: #14141A;
+  --surface-600: #1A1A22;
 }
 
 @layer base {
