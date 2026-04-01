@@ -5,7 +5,9 @@ import { Users, Award, Shield, Mail, Phone, Calendar, Plus, Search, Filter, More
 
 export default function ProfessorsPage() {
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showPermModal, setShowPermModal] = useState(false)
   const [selectedMember, setSelectedMember] = useState<any>(null)
+  const [selectedForPerm, setSelectedForPerm] = useState<any>(null)
   const [staff] = useState([
     { id: 1, name: 'Julio Cesar Pereira', role: 'Mestre Principal', perm: 'Acesso Total (Matriz)', belt: 'Coral', status: 'Ativo', classes: 12, since: '1990', email: 'julio.cesar@gfteam.com', phone: '+55 21 99999-0001', bio: 'Fundador da GFTeam. Faixa Coral 7º Grau.' },
     { id: 2, name: 'Marcos Freitas', role: 'Mestre', perm: 'Gestão de Filial', belt: 'Preta 4º Grau', status: 'Ativo', classes: 24, since: '2010', email: 'frazao@gfteam.com', phone: '+55 21 98888-0002', bio: 'Especialista em passagens de guarda e gestão de equipes.' },
@@ -14,20 +16,20 @@ export default function ProfessorsPage() {
   ])
 
   return (
-    <div className="p-10 space-y-10 animate-fade-up relative">
+    <div className="p-10 space-y-10 animate-fade-up relative transition-colors duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-display font-black text-text-primary tracking-tight">Equipe & Professores</h1>
-          <p className="text-text-muted font-semibold mt-1">Gerencie permissões, instrutores e mestres da sua unidade.</p>
+          <h1 className="text-4xl font-display font-black text-text-primary tracking-tight italic uppercase">Equipe & Professores</h1>
+          <p className="text-text-muted font-bold mt-1 uppercase tracking-widest text-[10px]">Gerencie permissões, instrutores e mestres da sua unidade.</p>
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setShowAddModal(true)}
-            className="btn-primary flex items-center gap-2 bg-accent-primary text-black border-none px-6 py-4 shadow-xl shadow-accent-primary/20"
+            className="btn-primary flex items-center gap-2"
           >
             <Plus className="w-5 h-5 text-black" />
-            <span className="font-extrabold uppercase tracking-widest text-[#000] text-[10px]">Adicionar Membro</span>
+            <span className="font-extrabold uppercase tracking-widest text-black text-[10px]">Adicionar Membro</span>
           </button>
         </div>
       </div>
@@ -79,7 +81,10 @@ export default function ProfessorsPage() {
                  Ver Perfil
                </button>
                <button 
-                onClick={() => alert('Gestão de Permissões será liberada em breve.')}
+                onClick={() => {
+                   setSelectedForPerm(member);
+                   setShowPermModal(true);
+                }}
                 className="flex-1 py-3 rounded-2xl bg-surface-600 text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-surface-500 transition-all border border-white/5"
                >
                  Permissões
@@ -129,6 +134,55 @@ export default function ProfessorsPage() {
                      <MessageCircle className="w-5 h-5" /> Conversar no WhatsApp
                   </button>
                </div>
+            </div>
+         </div>
+      )}
+
+      {/* Permissions Modal */}
+      {showPermModal && selectedForPerm && (
+         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPermModal(false)} />
+            <div className="bg-surface-800 border border-white/10 w-full max-w-lg rounded-[3rem] p-10 relative z-10 animate-fade-up shadow-2xl">
+               <button onClick={() => setShowPermModal(false)} className="absolute top-8 right-8 w-10 h-10 rounded-full bg-surface-700 flex items-center justify-center text-text-muted hover:text-white transition-all">
+                 <X className="w-5 h-5" />
+               </button>
+
+               <div className="flex items-center gap-4 mb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-accent-primary/20 flex items-center justify-center border border-accent-primary/30">
+                     <Lock className="w-7 h-7 text-accent-primary" />
+                  </div>
+                  <div>
+                     <h2 className="text-2xl font-display font-black text-text-primary tracking-tighter uppercase italic">Permissões</h2>
+                     <p className="text-xs text-text-muted font-bold tracking-widest uppercase mt-1">{selectedForPerm.name}</p>
+                  </div>
+               </div>
+
+               <div className="space-y-4">
+                  {[
+                    { id: 'finance', label: 'Acesso Financeiro', desc: 'Ver DRE, faturas e relatórios.' },
+                    { id: 'students', label: 'Gestão de Alunos', desc: 'Matricular, editar e ver dados.' },
+                    { id: 'crm', label: 'CRM / Vendas', desc: 'Gerenciar leads e experimentais.' },
+                    { id: 'training', label: 'Treinos & Graduações', desc: 'Criar aulas e dar graus.' },
+                  ].map((perm) => (
+                    <div key={perm.id} className="p-4 rounded-2xl bg-surface-900 border border-white/5 flex items-start gap-4 hover:border-accent-primary/40 transition-all cursor-pointer group">
+                       <input type="checkbox" className="mt-1.5 w-5 h-5 rounded-md accent-accent-primary" defaultChecked={selectedForPerm.role === 'Mestre Principal'} />
+                       <div>
+                          <p className="text-sm font-black text-text-primary uppercase tracking-tight">{perm.label}</p>
+                          <p className="text-[10px] text-text-muted font-medium">{perm.desc}</p>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+
+               <button 
+                onClick={() => {
+                   alert('Permissões atualizadas com sucesso!');
+                   setShowPermModal(false);
+                }}
+                className="w-full mt-8 btn-primary"
+               >
+                 Salvar Alterações
+               </button>
             </div>
          </div>
       )}

@@ -151,12 +151,32 @@ export default function OriginalPremiumDashboard() {
                                <p className="text-[9px] text-text-muted font-bold uppercase">{c.belt} • {c.time}</p>
                             </div>
                          </div>
-                         <button 
-                          onClick={() => setCheckins(checkins.filter(item => item.id !== c.id))}
-                          className="w-10 h-10 rounded-xl bg-black border border-white/10 flex items-center justify-center hover:scale-110 transition-all"
-                         >
-                            <Zap className="w-4 h-4 text-accent-primary" />
-                         </button>
+                      <button 
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          // Real Database Connection
+                          try {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (user) {
+                              const { error } = await supabase.from('attendance').insert({
+                                student_name: c.name,
+                                student_belt: c.belt,
+                                instructor_id: user.id,
+                                status: 'presenca_marcada'
+                              });
+                              if (error) console.error('Erro ao marcar presença:', error);
+                            }
+                          } catch (err) {
+                            console.error('Falha de conexão:', err);
+                          }
+                          
+                          alert(`Presença confirmada para ${c.name}`);
+                          setCheckins(checkins.filter(item => item.id !== c.id));
+                        }}
+                        className="w-10 h-10 rounded-xl bg-accent-primary border border-accent-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-accent-primary/20"
+                       >
+                          <Zap className="w-5 h-5 text-white filter drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                       </button>
                       </div>
                     ))}
                     {checkins.length === 0 && <p className="text-center py-4 text-[10px] text-text-muted uppercase font-black opacity-30">Sem pendências</p>}
