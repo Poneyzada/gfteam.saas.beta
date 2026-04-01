@@ -71,10 +71,10 @@ export default function ProfessorsPage() {
             </div>
 
             <div className="mt-8 flex gap-2 w-full">
-               <button className="flex-1 py-3 rounded-2xl bg-surface-600 text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-accent-primary hover:text-black transition-all">
+               <button onClick={() => alert('Módulo de Perfil em desenvolvimento. Em breve.')} className="flex-1 py-3 rounded-2xl bg-surface-600 text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-accent-primary hover:text-black transition-all">
                  Ver Perfil
                </button>
-               <button className="flex-1 py-3 rounded-2xl bg-surface-600 text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-surface-500 transition-all border border-white/5">
+               <button onClick={() => alert('Gestão de Permissões será liberada em breve.')} className="flex-1 py-3 rounded-2xl bg-surface-600 text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-surface-500 transition-all border border-white/5">
                  Permissões
                </button>
             </div>

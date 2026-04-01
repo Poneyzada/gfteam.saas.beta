@@ -5,11 +5,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
   Users, DollarSign, Zap, TrendingUp,
-  Calendar, Bell, Search,
-  ChevronRight, ArrowRight, Clock, Shield,
-  QrCode, LayoutDashboard, Rocket, Activity,
-  LogOut, Settings, BarChart3, Target, Share,
-  GraduationCap, ClipboardList, Info
+  Calendar, Bell, Search, Clock,
+  ChevronRight, ArrowRight, Shield, QrCode
 } from 'lucide-react'
 
 export default function CompletePerformanceDashboard() {
@@ -22,6 +19,10 @@ export default function CompletePerformanceDashboard() {
   const [expLeads, setExpLeads] = useState<any[]>([])
   const [upcomingClasses, setUpcomingClasses] = useState<any[]>([])
   const [announcements, setAnnouncements] = useState<any[]>([])
+  const [checkins, setCheckins] = useState<any[]>([
+    { id: 1, name: 'Lucas Andrade', belt: 'Azul', time: '17:28', beltColor: 'bg-blue-600', img: 'https://i.pravatar.cc/100?u=lucas' },
+    { id: 2, name: 'Ana Silva', belt: 'Branca', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
+  ])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -54,230 +55,256 @@ export default function CompletePerformanceDashboard() {
   const stats = [
     { label: 'Alunos Ativos', value: '185', icon: Users, trend: '+8%', color: 'text-emerald-400' },
     { label: 'Novos Leads', value: '12', icon: Zap, trend: '+3 hoje', color: 'text-amber-400' },
-    { label: 'Frequência', value: '82%', icon: BarChart3, trend: '+2%', color: 'text-blue-400' },
-    { label: 'Faturamento', value: 'R$ 14.2k', icon: DollarSign, trend: '94% em dia', color: 'text-emerald-400' },
+    { label: 'Frequência', value: '82%', icon: TrendingUp, trend: '+2%', color: 'text-blue-400' },
+    { label: 'Faturamento', value: '14.2k', icon: DollarSign, trend: '94% em dia', color: 'text-emerald-400' },
   ]
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white pb-20 relative overflow-hidden stippled">
+    <div className="min-h-screen bg-surface-900 text-text-primary pb-20 relative overflow-hidden stippled">
       {/* Background Orbs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-primary/5 blur-[180px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/5 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-primary/10 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
       
-      {/* Header Section */}
-      <div className="px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+      {/* Header Area */}
+      <div className="px-6 md:px-12 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
         <div>
-           <div className="flex items-center gap-3 mb-3">
-              <div className="px-3 py-1 bg-accent-primary/10 border border-accent-primary/20 rounded-full flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
-                 <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.2em]">Sistema Gfteam v1.3.1 • Live Syncing</span>
-              </div>
-           </div>
-           <h1 className="text-5xl font-display font-black tracking-tighter italic uppercase text-white">
-             Olá, <span className="text-accent-primary underline decoration-accent-primary/20">{userName.split(' ')[0]}</span>
-           </h1>
-           <p className="text-[#A1A1AA] mt-2 font-bold uppercase tracking-widest text-[10px]">
-             {userRole === 'master' ? 'Visão Consolidada • Painel Administrativo' : 'Comando Central • Gestão de Performance'}
-           </p>
+          <div className="flex items-center gap-3 mb-2">
+             <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
+             <p className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em]">Sistema de Elite • Online</p>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-black text-text-primary tracking-tighter italic">
+            Olá, <span className="text-accent-primary">{userName.split(' ')[0]}</span>
+          </h1>
+          <p className="text-text-muted mt-2 font-bold uppercase tracking-widest text-[10px] md:opacity-60">
+            {userRole === 'instructor' ? 'Monitoramento Técnico • Visão Restrita' : 'Comando Central • Gestão de Performance'}
+          </p>
         </div>
         
-        <div className="flex items-center gap-6 bg-surface-800/40 p-3 rounded-[2rem] border border-white/5 backdrop-blur-xl">
-           <div className="flex items-center gap-3 px-4">
-              <button className="w-10 h-10 rounded-xl bg-surface-700/50 flex items-center justify-center text-text-muted hover:text-accent-primary transition-all">
-                 <Bell className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 rounded-xl bg-surface-700/50 flex items-center justify-center text-text-muted hover:text-accent-primary transition-all">
-                 <Search className="w-5 h-5" />
-              </button>
-           </div>
-           <div className="w-px h-8 bg-white/10" />
-           <button 
-             onClick={() => window.location.href='/login'}
-             className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-red-500/10"
-           >
-             Sair
-           </button>
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4">
+            <button className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center hover:border-accent-primary/50 transition-all group">
+              <Search className="w-5 h-5 text-text-muted group-hover:text-accent-primary transition-colors" />
+            </button>
+            <button className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center hover:border-accent-primary/50 transition-all group relative">
+              <Bell className="w-5 h-5 text-text-muted group-hover:text-accent-primary transition-colors" />
+              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-accent-primary accent-shadow" />
+            </button>
+            <button 
+              onClick={() => { window.location.href = '/login' }} 
+              className="px-6 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all"
+            >
+              Logoff
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="px-10 space-y-12 relative z-10">
+      <div className="px-6 md:px-12 space-y-12 relative z-10">
         
-        {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* KPI Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
           {stats.map((s, i) => (
-            <div key={i} className="kpi-card !p-8 group bg-[#121214] border-white/5 hover:border-accent-primary/40 transition-all">
+            <div 
+              key={i} 
+              className="kpi-card group cursor-pointer active:scale-95 transition-all !bg-surface-800"
+            >
+              <div className="card-accent" />
               <div className="flex items-center justify-between mb-8">
-                 <div className="w-14 h-14 rounded-2xl bg-surface-700/40 flex items-center justify-center group-hover:bg-accent-primary/20 transition-colors">
-                    <s.icon className="w-7 h-7 text-accent-primary" />
-                 </div>
-                 <div className="text-right">
-                    <p className="text-[10px] font-black text-white uppercase tracking-widest opacity-80">{s.label}</p>
-                    <span className={`text-[10px] font-black ${s.color} uppercase tracking-tighter`}>{s.trend}</span>
-                 </div>
+                <div className="w-14 h-14 rounded-3xl bg-surface-700 flex items-center justify-center border border-white/5 group-hover:bg-accent-primary/20 transition-all duration-500">
+                  <s.icon className="w-6 h-6 text-accent-primary" />
+                </div>
+                <div className="text-right">
+                   <span className={`text-[10px] font-black ${s.color} bg-surface-700 px-3 py-1 rounded-full uppercase tracking-tighter`}>{s.trend}</span>
+                   <p className="text-[10px] text-text-muted font-black uppercase tracking-widest mt-2">{s.label}</p>
+                </div>
               </div>
-              <p className="text-5xl font-display font-black text-white italic tracking-tighter leading-none">{s.value}</p>
+              <div>
+                <p className="text-5xl md:text-6xl font-display font-black text-text-primary leading-none tracking-tighter mb-4 italic group-hover:translate-x-2 transition-transform duration-500">{s.value}</p>
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                   <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Performance Semanal</p>
+                   <ArrowRight className="w-4 h-4 text-accent-primary opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" />
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-           
-           {/* Column 1: Tatame & QG (8 cols) */}
-           <div className="lg:col-span-8 space-y-10">
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                 
-                 {/* Avisos QG - Real Data from Support/Matriz */}
-                 <div className="kpi-card !p-10 border-white/10 bg-[#121214]">
-                    <div className="flex items-center justify-between mb-10">
-                       <h2 className="text-2xl font-display font-black text-white tracking-tighter italic uppercase">AVISOS QG</h2>
-                       <Info className="w-5 h-5 text-accent-primary" />
+        {/* Content Modules */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+          
+          {/* Main Content (8 cols) */}
+          <div className="xl:col-span-8 space-y-12">
+            
+            {/* Top Area: Check-ins & Social */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+               {/* Manual Check-in */}
+               <div className="kpi-card !p-8 md:!p-12 border-accent-primary/20 bg-surface-800 relative z-10 overflow-hidden">
+                <div className="card-accent" />
+                <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-accent-primary/5 blur-[80px] rounded-full" />
+                <div className="flex items-center justify-between mb-10 relative z-10">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary tracking-tighter italic">CHECK-INS</h2>
+                    <p className="text-[10px] text-text-muted font-black mt-1 uppercase tracking-widest">Alunos no Tatame</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-accent-primary flex items-center justify-center shadow-xl hatched border border-white/10 hidden md:flex">
+                    <Users className="w-6 h-6 text-black" />
+                  </div>
+                </div>
+                
+                <div className="space-y-4 relative z-10">
+                  {checkins.map((req) => (
+                    <div key={req.id} className="flex items-center justify-between p-4 md:p-5 rounded-[2rem] bg-surface-900 border border-white/5 group hover:border-accent-primary/40 transition-all cursor-pointer">
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                           <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-surface-700 border border-white/10 overflow-hidden">
+                              <img src={req.img} alt={req.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                           </div>
+                           <div className={`absolute -bottom-1 -right-1 w-4 h-4 md:w-5 md:h-5 rounded-lg ${req.beltColor} border-2 border-surface-800`} />
+                        </div>
+                        <div>
+                           <p className="text-sm font-black text-text-primary tracking-tight">{req.name}</p>
+                           <p className="text-[9px] md:text-[10px] text-text-muted font-bold uppercase tracking-widest">{req.belt} • {req.time}</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alert(`Presença confirmada para ${req.name}`);
+                          setCheckins(checkins.filter(c => c.id !== req.id));
+                        }}
+                        className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-2xl bg-black border border-white/10 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:border-accent-primary/50 transition-all"
+                      >
+                        <Zap className="w-4 h-4 md:w-5 md:h-5 text-accent-primary" />
+                      </button>
                     </div>
-                    <div className="space-y-6">
-                       {announcements.length > 0 ? announcements.map((news, idx) => (
-                         <div key={idx} className="p-6 rounded-3xl bg-surface-900/40 border border-white/5 flex flex-col gap-2">
-                            <div className="flex justify-between items-start">
-                               <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${news.urgency === 'high' ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
-                                  {news.urgency === 'high' ? 'Importante' : 'Novidade'}
-                               </span>
-                               <span className="text-[10px] text-[#A1A1AA] font-black">{new Date(news.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <p className="text-sm font-bold text-white uppercase">{news.title}</p>
-                         </div>
-                       )) : (
-                         <div className="text-center py-10 opacity-30 italic text-xs uppercase font-black tracking-widest">
-                            Nenhum aviso no momento
-                         </div>
-                       )}
-                    </div>
-                 </div>
-
-                 {/* Próximas Aulas - Real Data from Schedules */}
-                 <div className="kpi-card !p-10 border-white/10 bg-[#121214]">
-                    <div className="flex items-center justify-between mb-10">
-                       <h2 className="text-2xl font-display font-black text-white tracking-tighter italic uppercase">PRÓXIMAS AULAS</h2>
-                       <GraduationCap className="w-5 h-5 text-accent-primary" />
-                    </div>
-                    <div className="space-y-6">
-                       {upcomingClasses.length > 0 ? upcomingClasses.map((clItem, idx) => (
-                         <div key={idx} className="p-6 rounded-3xl bg-surface-900/40 border border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                               <div className={`w-1 h-8 rounded-full ${clItem.class_type === 'No-Gi' ? 'bg-accent-primary' : 'bg-emerald-500'}`} />
-                               <div>
-                                  <p className="text-sm font-bold text-white uppercase">{clItem.class_name}</p>
-                                  <p className="text-[10px] text-[#A1A1AA] font-black uppercase">{clItem.time_start} • {clItem.instructor_name}</p>
-                               </div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-white/20" />
-                         </div>
-                       )) : (
-                         <div className="text-center py-10 opacity-30 italic text-xs uppercase font-black tracking-widest">
-                            Nenhuma aula agendada hj
-                         </div>
-                       )}
-                    </div>
-                    <button 
-                      onClick={() => window.location.href='/dashboard/cronograma'}
-                      className="w-full mt-10 py-5 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/10 font-black"
-                    >
-                       Ajustar Cronograma
-                    </button>
-                 </div>
-
+                  ))}
+                  {checkins.length === 0 && (
+                     <div className="text-center py-6">
+                        <p className="text-xs text-text-muted font-black uppercase tracking-widest opacity-40">Nenhum check-in pendente</p>
+                     </div>
+                  )}
+                </div>
               </div>
 
-              {/* Aulas Experimentais - BACK FROM THE CRM (STATUS 'AGENDADO') */}
-              <div className="kpi-card !p-10 border-accent-primary/20 bg-[#121214]">
-                 <div className="flex items-center justify-between mb-10">
-                    <div>
-                       <h2 className="text-3xl font-display font-black text-white tracking-tighter italic uppercase underline decoration-accent-primary/30">Agendamentos CRM</h2>
-                       <p className="text-[10px] text-[#A1A1AA] font-black uppercase tracking-widest mt-1">Aulas Experimentais vindas da Landing Page/Wpp</p>
+              {/* Announcements / Grade */}
+              <div className="kpi-card !p-8 md:!p-12 border-white/5 bg-surface-800">
+                <div className="card-accent opacity-20" />
+                <h3 className="text-2xl md:text-3xl font-display font-black text-text-primary mb-8 tracking-tighter italic">AVISOS DO QG</h3>
+                <div className="space-y-4 md:space-y-6">
+                  {announcements.length > 0 ? announcements.map((news, idx) => (
+                    <div key={idx} className="p-5 md:p-6 rounded-[2rem] bg-surface-900 border border-white/5 relative overflow-hidden group hover:bg-surface-800 transition-all">
+                      <div className="absolute top-0 right-0 w-24 h-full hatched opacity-5 group-hover:opacity-10 transition-opacity" />
+                      <p className="text-xs md:text-sm text-text-primary font-black uppercase tracking-widest mb-1 italic">{news.title}</p>
+                      <p className="text-[10px] text-text-muted font-bold">{new Date(news.created_at).toLocaleDateString()} • {news.urgency === 'high' ? 'Importante' : 'Novidade'}</p>
                     </div>
-                    {expLeads.length > 0 && (
-                      <div className="px-4 py-2 rounded-full bg-accent-primary/10 border border-accent-primary/30 text-accent-primary text-[9px] font-black uppercase tracking-widest animate-pulse">
-                        {expLeads.length} Agendado(s)
-                      </div>
-                    )}
-                 </div>
+                  )) : (
+                    <div className="text-center py-10 opacity-30 italic text-xs uppercase font-black tracking-widest text-text-muted">
+                        Nenhum aviso
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {expLeads.length > 0 ? expLeads.map((lead) => (
-                      <div key={lead.id} className="p-8 rounded-[2.5rem] bg-[#0A0A0C] border border-white/5 relative overflow-hidden group hover:scale-[1.03] hover:border-accent-primary/50 transition-all shadow-xl">
-                         {/* High contrast text for the user */}
-                         <p className="text-lg font-black text-white tracking-tight uppercase mb-1">{lead.name}</p>
-                         <div className="flex flex-col gap-2">
-                           <div className="flex items-center gap-2 text-[10px] text-accent-primary font-black uppercase tracking-widest">
-                               <Clock className="w-3.5 h-3.5" /> Agendado em: {new Date(lead.created_at).toLocaleDateString()}
+            {/* Bottom Area: Experimental & Marketing */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+               {/* Agenda Experimental */}
+               <div className="md:col-span-2 kpi-card !p-8 md:!p-12 border-white/5 bg-surface-800">
+                <div className="card-accent opacity-30" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 md:mb-10">
+                   <div>
+                    <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary tracking-tighter italic text-accent-primary uppercase">Experimentais</h2>
+                    <p className="text-[10px] text-text-muted font-black mt-1 uppercase tracking-widest">Aulas CRM • Agendados</p>
+                  </div>
+                  <div className="hidden md:flex w-14 h-14 rounded-[1.5rem] bg-surface-700 items-center justify-center border border-white/5">
+                    <Calendar className="w-6 h-6 text-text-muted" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                   {expLeads.length > 0 ? expLeads.map((exp, idx) => (
+                     <div key={idx} className="p-5 md:p-6 rounded-[2.5rem] bg-surface-900 border border-white/5 group hover:border-accent-primary transition-all shadow-md">
+                        <div className="flex items-center gap-4 mb-4">
+                           <div className="w-12 h-12 rounded-2xl bg-surface-700 overflow-hidden border border-white/10 flex items-center justify-center">
+                              <Users className="w-6 h-6 text-text-muted opacity-50" />
                            </div>
-                           <div className="flex items-center gap-2 text-[9px] text-[#A1A1AA] font-black uppercase tracking-widest opacity-60">
-                               <Target className="w-3.5 h-3.5" /> Origem: {lead.source}
+                           <div>
+                              <p className="text-sm font-black text-text-primary tracking-tight uppercase truncate max-w-[120px]">{exp.name}</p>
+                              <span className="text-[8px] font-black bg-accent-primary/10 text-accent-primary px-2 py-0.5 rounded-md uppercase tracking-[0.2em]">Agendou Hoje</span>
                            </div>
-                         </div>
-                         <div className="flex items-center gap-3 mt-8">
-                            <button className="flex-1 py-4 bg-accent-primary hover:bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95">
-                               Confirmar Presença
-                            </button>
-                            <button 
-                              onClick={() => window.open(`https://wa.me/${lead.phone.replace(/\D/g, '')}`, '_blank')}
-                              className="w-14 h-14 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-black flex items-center justify-center rounded-xl border border-emerald-500/20 transition-all font-black text-xs"
-                            >
-                               WPP
-                            </button>
-                         </div>
-                      </div>
-                    )) : (
-                      <div className="col-span-2 p-16 rounded-[3rem] bg-surface-900/50 border border-dashed border-white/10 text-center flex flex-col items-center gap-4">
-                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-                            <Users className="w-8 h-8 text-text-muted opacity-20" />
-                         </div>
-                         <div>
-                            <p className="text-sm font-black text-text-muted uppercase tracking-widest italic opacity-40">Nenhuma experimental agendada hj</p>
-                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter mt-2">DICA: Envie o link do Kit Marketing para novos leads!</p>
-                         </div>
-                      </div>
-                    )}
-                 </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                           <div className="flex items-center gap-2 text-[10px] text-text-muted font-bold uppercase tracking-widest">
+                              <Target className="w-3 h-3" />
+                              {exp.source}
+                           </div>
+                           <button onClick={() => window.open(`https://wa.me/${exp.phone.replace(/\D/g, '')}`, '_blank')} className="text-[10px] font-black text-accent-primary uppercase tracking-[0.2em] hover:underline">WhatsApp</button>
+                        </div>
+                     </div>
+                   )) : (
+                     <div className="col-span-2 text-center py-6 opacity-40">
+                        <p className="text-[10px] font-black uppercase text-text-muted">Nenhuma experimental agendada hj</p>
+                     </div>
+                   )}
+                </div>
               </div>
 
-           </div>
-
-           {/* Column 2: Growth & Marketing (4 cols) */}
-           <div className="lg:col-span-4 h-full">
-              
-              <div className="kpi-card h-full !p-10 !rounded-[4rem] bg-accent-primary !border-none shadow-[0_40px_80px_rgba(var(--accent-rgb),0.3)] flex flex-col justify-between overflow-hidden relative min-h-[600px]">
-                 <div className="absolute inset-0 bg-accent-primary z-0" />
+              {/* QR Marketing - Small version as requested */}
+              <div className="kpi-card !p-8 md:!p-10 bg-accent-primary text-black border-none shadow-[0_30px_60px_rgba(var(--accent-rgb),0.3)] hatched animate-fade-up flex flex-col justify-center items-center">
+                 <h2 className="text-2xl md:text-3xl font-display font-black mb-1 italic tracking-tighter uppercase leading-none text-center text-black">KIT<br/>MARKETING</h2>
+                 <p className="text-[9px] font-black uppercase tracking-widest mb-6 opacity-60 text-black text-center">Gere novos alunos</p>
                  
-                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-8">
-                       <h2 className="text-4xl font-display font-black text-black italic tracking-tighter uppercase leading-none">KIT<br/>MARKETING</h2>
-                       <div className="w-16 h-16 rounded-[2rem] bg-black flex items-center justify-center shadow-2xl">
-                          <Rocket className="w-8 h-8 text-accent-primary" />
+                 <div className="w-32 h-32 md:w-full md:aspect-square bg-white rounded-[2rem] p-4 mb-6 md:mb-8 shadow-2xl flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer">
+                    <QrCode className="w-full h-full text-black" />
+                 </div>
+
+                 <button className="w-full py-4 md:py-5 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] shadow-xl hover:scale-105 transition-all text-center">
+                    Baixar App
+                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar: Local Schedule (4 cols) */}
+          <div className="xl:col-span-4 h-fit">
+            <div className="kpi-card !p-8 md:!p-12 h-full bg-surface-800">
+               <div className="card-accent h-[150px]" />
+               <div className="flex items-center justify-between mb-8 md:mb-12 relative z-10">
+                 <h2 className="text-2xl font-display font-black text-text-primary tracking-tighter italic uppercase">Próximas Aulas</h2>
+                 <p className="text-[10px] font-black text-accent-primary uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', { month: 'short' })}</p>
+               </div>
+               
+               <div className="space-y-6 md:space-y-8 relative z-10">
+                 {upcomingClasses.length > 0 ? upcomingClasses.map((cls, idx) => (
+                    <div key={idx} className="p-6 md:p-8 rounded-[3rem] bg-surface-900 border border-white/5 relative overflow-hidden group transition-all hover:border-accent-primary/40 cursor-pointer shadow-md">
+                       <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:rotate-12 transition-transform">
+                         <Zap className="w-8 h-8 text-white" />
+                       </div>
+                       <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3 group-hover:text-accent-primary transition-colors">{cls.class_type}</p>
+                       <h3 className="text-xl md:text-2xl font-display font-black text-text-primary mb-6 leading-tight italic tracking-tighter uppercase">{cls.class_name}</h3>
+                       <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-full bg-surface-800 flex items-center justify-center border border-white/10 shadow-xl">
+                           <Clock className="w-4 h-4 text-text-muted" />
+                         </div>
+                         <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">{cls.time_start} • {cls.instructor_name}</span>
                        </div>
                     </div>
-                    <p className="text-[11px] font-black text-black/90 uppercase tracking-widest mb-12">Capture novos alunos instantaneamente</p>
-                    
-                    <div className="relative group mx-auto mb-12 flex justify-center">
-                       <div className="relative w-48 h-48 bg-white rounded-[3rem] p-6 flex items-center justify-center transform group-hover:rotate-6 transition-all duration-500 shadow-2xl">
-                          <QrCode className="w-full h-full text-black" />
-                       </div>
+                 )) : (
+                    <div className="p-10 text-center opacity-30 text-text-muted">
+                        <p className="font-black text-xs uppercase italic tracking-widest">Nenhuma aula<br/>Hoje</p>
                     </div>
-                 </div>
+                 )}
+               </div>
 
-                 <div className="space-y-4 relative z-10">
-                    {/* BUTTONS WITH 100% CONTRAST (BLACK ON SOLID YELLOW/BACKGROUND) */}
-                    <button className="w-full py-6 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.02] transition-all font-black">
-                       Baixar Material
-                    </button>
-                    <button className="w-full py-6 rounded-2xl bg-black/10 hover:bg-black/20 text-black text-[10px] font-black uppercase tracking-[0.3em] transition-all border border-black/10 flex items-center justify-center gap-3 font-black">
-                       <Share className="w-4 h-4" /> Link de Convite
-                    </button>
-                 </div>
-              </div>
-
-           </div>
+               <button 
+                 onClick={() => window.location.href='/dashboard/cronograma'}
+                 className="w-full mt-10 md:mt-12 py-5 rounded-[2rem] border border-dashed border-white/10 text-[10px] font-black text-text-muted uppercase tracking-[0.3em] hover:border-accent-primary hover:text-accent-primary transition-all text-center flex items-center justify-center gap-2"
+               >
+                  Ver Cronograma
+               </button>
+            </div>
+          </div>
 
         </div>
-
       </div>
     </div>
   )
