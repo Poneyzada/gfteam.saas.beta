@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useApp } from '@/contexts/AppContext'
 import { 
@@ -61,7 +61,7 @@ export default function AlunoApp() {
         >
           <h1 className="text-4xl font-display font-black text-text-primary mb-4 tracking-tighter italic uppercase">Bem-vindo, <br/><span className="text-accent-primary">{userName.split(' ')[0]}!</span></h1>
           <p className="text-text-dim text-sm font-medium mb-12 max-w-xs mx-auto leading-relaxed">
-            Seu **Portal Elite** está pronto. Você tem <span className="text-text-primary">3 dias</span> de acesso total para treinar e sentir o DNA GFTeam.
+            Seu **Portal Elite** estÃ¡ pronto. VocÃª tem <span className="text-text-primary">3 dias</span> de acesso total para treinar e sentir o DNA GFTeam.
           </p>
         </motion.div>
 
@@ -96,7 +96,7 @@ export default function AlunoApp() {
            </button>
         </motion.div>
 
-        <p className="mt-12 text-[10px] text-text-dim font-black uppercase tracking-[0.4em] opacity-40 relative z-10">GFTeam International • Elite Only</p>
+        <p className="mt-12 text-[10px] text-text-dim font-black uppercase tracking-[0.4em] opacity-40 relative z-10">GFTeam International â€¢ Elite Only</p>
       </div>
     )
   }
@@ -163,7 +163,7 @@ export default function AlunoApp() {
                <div className="kpi-card !p-10 !rounded-[3rem] border-accent-primary/20 bg-accent-primary/5 overflow-visible">
                   <div className="card-accent" />
                   <div className="flex items-center justify-between mb-8">
-                     <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.4em]">Próximo Treino</span>
+                     <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.4em]">PrÃ³ximo Treino</span>
                      <div className="h-6 px-3 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center gap-2">
                         <div className="w-1 h-1 rounded-full bg-accent-primary animate-pulse" />
                         <span className="text-[8px] font-black text-accent-primary uppercase tracking-widest">Em 45 min</span>
@@ -175,8 +175,8 @@ export default function AlunoApp() {
                      <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-surface-800 border border-white/10 flex items-center justify-center font-black text-xs text-text-dim uppercase">F</div>
                         <div>
-                           <p className="text-[10px] font-bold text-text-primary uppercase tracking-widest leading-none">Mestre Frazão</p>
-                           <p className="text-[9px] text-text-dim font-medium mt-1 uppercase tracking-widest italic">Unidade Matriz • 19:00</p>
+                           <p className="text-[10px] font-bold text-text-primary uppercase tracking-widest leading-none">Mestre FrazÃ£o</p>
+                           <p className="text-[9px] text-text-dim font-medium mt-1 uppercase tracking-widest italic">Unidade Matriz â€¢ 19:00</p>
                         </div>
                      </div>
                      <button className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
@@ -197,7 +197,7 @@ export default function AlunoApp() {
                   <div className="kpi-card !p-8 !rounded-[2.5rem] bg-surface-800/40">
                      <div className="flex items-center gap-3 mb-6">
                         <TrendingUp className="w-5 h-5 text-accent-primary" />
-                        <span className="text-[10px] font-black text-text-dim uppercase tracking-[0.2em]">Frequência</span>
+                        <span className="text-[10px] font-black text-text-dim uppercase tracking-[0.2em]">FrequÃªncia</span>
                      </div>
                      <p className="text-4xl font-display font-black text-text-primary tracking-tighter italic">92%</p>
                   </div>
@@ -207,8 +207,8 @@ export default function AlunoApp() {
                <div className="space-y-4">
                   <h3 className="text-[10px] font-black text-text-dim uppercase tracking-[0.3em] ml-2">Timeline do QG</h3>
                   {[
-                    { title: 'Exame de Faixa', desc: '12 de Abril • 09:00', icon: Award, color: 'text-accent-primary' },
-                    { title: 'Novo Video: Estratégia', desc: 'Assistir para o treino de hoje', icon: Zap, color: 'text-accent-primary' },
+                    { title: 'Exame de Faixa', desc: '12 de Abril â€¢ 09:00', icon: Award, color: 'text-accent-primary' },
+                    { title: 'Novo Video: EstratÃ©gia', desc: 'Assistir para o treino de hoje', icon: Zap, color: 'text-accent-primary' },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-5 p-6 rounded-[2rem] bg-surface-800/50 border border-white/5 hover:border-white/10 transition-all group cursor-pointer">
                        <div className="w-12 h-12 rounded-2xl bg-surface-700 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
@@ -233,18 +233,18 @@ export default function AlunoApp() {
             >
                <div className="kpi-card !p-10 !rounded-[3rem] bg-surface-800 border-none relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-48 h-full hatched opacity-10" />
-                  <p className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em] mb-4">Sua Trajetória</p>
+                  <p className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em] mb-4">Sua TrajetÃ³ria</p>
                   <h2 className="text-3xl font-display font-black text-text-primary italic tracking-tighter uppercase leading-none mb-10">CAMINHO DO <br/>GUERREIRO</h2>
                   
                   <div className="space-y-12">
                      <div className="flex gap-6 relative">
                         <div className="absolute left-6 top-10 w-[1px] h-12 bg-white/10" />
-                        <div className="w-12 h-12 rounded-[1.2rem] bg-accent-primary flex items-center justify-center text-surface-900 shadow-xl hatched z-10">
+                        <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center shadow-xl hatched z-10 text-black" style={{backgroundColor:"var(--accent)"}}>
                            <Star className="w-6 h-6" />
                         </div>
                         <div>
-                           <p className="text-xs font-black text-text-primary uppercase tracking-widest">Graduação Azul G3</p>
-                           <p className="text-[10px] text-text-dim font-medium mt-1 uppercase tracking-widest opacity-60">Outubro 2025 • Mestre Julio Cesar</p>
+                           <p className="text-xs font-black text-text-primary uppercase tracking-widest">GraduaÃ§Ã£o Azul G3</p>
+                           <p className="text-[10px] text-text-dim font-medium mt-1 uppercase tracking-widest opacity-60">Outubro 2025 â€¢ Mestre Julio Cesar</p>
                         </div>
                      </div>
                      <div className="flex gap-6 relative">
@@ -254,16 +254,16 @@ export default function AlunoApp() {
                         </div>
                         <div>
                            <p className="text-xs font-black text-text-primary uppercase tracking-widest">Bronze - Open Rio</p>
-                           <p className="text-[10px] text-text-dim font-medium mt-1 uppercase tracking-widest opacity-60">Janeiro 2026 • Categoria Médio</p>
+                           <p className="text-[10px] text-text-dim font-medium mt-1 uppercase tracking-widest opacity-60">Janeiro 2026 â€¢ Categoria MÃ©dio</p>
                         </div>
                      </div>
                   </div>
                </div>
 
                <div className="grid grid-cols-2 gap-6">
-                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/5 bg-accent-primary shadow-[0_20px_40px_rgba(var(--accent-rgb),0.3)]">
-                     <p className="text-[10px] font-black text-surface-900 uppercase tracking-widest mb-2 opacity-70">Medalhas</p>
-                     <p className="text-5xl font-display font-black text-surface-900 italic tracking-tighter leading-none">08</p>
+                  <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/5 shadow-xl" style={{backgroundColor:'var(--accent)'}}>
+                     <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2 opacity-70">Medalhas</p>
+                     <p className="text-5xl font-display font-black text-black italic tracking-tighter leading-none">08</p>
                   </div>
                   <div className="kpi-card !p-8 !rounded-[2.5rem] border-white/10 bg-surface-800 shadow-xl">
                      <p className="text-[10px] font-black text-accent-primary uppercase tracking-widest mb-2">Treinos Total</p>
@@ -284,13 +284,13 @@ export default function AlunoApp() {
                    <div className="flex justify-between items-start mb-16">
                       <div>
                          <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em] mb-2">Plano Ativo</p>
-                         <h2 className="text-2xl font-display font-black text-white tracking-tighter uppercase italic">GFTEAM PRO • FULL</h2>
+                         <h2 className="text-2xl font-display font-black text-white tracking-tighter uppercase italic">GFTEAM PRO â€¢ FULL</h2>
                       </div>
                       <CreditCard className="w-8 h-8 text-white/30" />
                    </div>
                    <div className="flex items-end justify-between">
                       <div>
-                         <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Próximo Vencimento</p>
+                         <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">PrÃ³ximo Vencimento</p>
                          <p className="text-xl font-bold text-white tracking-widest">05 / ABR / 2026</p>
                       </div>
                       <div className="px-4 py-2 rounded-2xl bg-white/20 backdrop-blur-md border border-white/10 text-[10px] font-black text-white uppercase tracking-widest">RECORRENTE</div>
@@ -298,7 +298,7 @@ export default function AlunoApp() {
                 </div>
 
                 <div className="space-y-4">
-                   <h3 className="text-[10px] font-black text-text-dim uppercase tracking-[0.3em] ml-2">Histórico de Pagamento</h3>
+                   <h3 className="text-[10px] font-black text-text-dim uppercase tracking-[0.3em] ml-2">HistÃ³rico de Pagamento</h3>
                    {[1,2,3].map(i => (
                      <div key={i} className="flex items-center justify-between p-6 rounded-[2rem] bg-surface-800/50 border border-white/5">
                         <div className="flex items-center gap-4">
@@ -306,7 +306,7 @@ export default function AlunoApp() {
                               <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                            </div>
                            <div>
-                              <p className="text-xs font-black text-text-primary uppercase tracking-widest">Mensalidade Março</p>
+                              <p className="text-xs font-black text-text-primary uppercase tracking-widest">Mensalidade MarÃ§o</p>
                               <p className="text-[10px] text-text-dim font-medium mt-1 uppercase tracking-widest opacity-40 italic">Pago em 05/03/2026</p>
                            </div>
                         </div>
@@ -354,7 +354,7 @@ export default function AlunoApp() {
                          <h2 className={`text-3xl font-display font-black tracking-tighter italic uppercase leading-tight ${currentTheme.text}`}>LUCAS <br/>ANDRADE</h2>
                          <div className={`flex items-center justify-center gap-2 mt-4 opacity-80 ${currentTheme.text}`}>
                             <div className="w-1.5 h-1.5 rounded-full bg-current" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em]">AZUL • G3 • ATLETA</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em]">AZUL â€¢ G3 â€¢ ATLETA</p>
                             <div className="w-1.5 h-1.5 rounded-full bg-current" />
                          </div>
                       </div>
@@ -430,3 +430,4 @@ export default function AlunoApp() {
     </div>
   )
 }
+
