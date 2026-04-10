@@ -219,7 +219,7 @@ export default function DashboardPage() {
                         <button onClick={(e) => { 
                           e.stopPropagation(); 
                           const phone = pay.student.phone.replace(/\D/g, '');
-                          const text = encodeURIComponent(`Fala ${pay.student.full_name}, tudo bem? Aqui é do QG da GFTeam. Vi que consta em aberto o valor de R$ ${pay.amount} referente ao: ${pay.description}. Consegue regularizar hoje pra gente alinhar a sua grade de treinos? 🥋`);
+                          const text = encodeURIComponent(`Fala ${pay.student.full_name}, tudo bem? Aqui é do QG da GFTeam.\n\nConsta aqui na sua ficha de Faixa ${pay.student.belt} que o item "${pay.description}" (R$ ${pay.amount}) está em aberto há ${pay.days_overdue} dias. Consegue verificar pra gente não travar sua grade de treinos? Oss! 🥋`);
                           window.open(`https://wa.me/55${phone}?text=${text}`, '_blank');
                         }} className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all pointer-events-auto relative z-60 cursor-pointer text-center flex items-center justify-center">COBRAR</button>
                       </div>
@@ -312,7 +312,7 @@ export default function DashboardPage() {
                     <button onClick={() => setSelectedOverdue(null)} className="py-6 bg-surface-700 text-text-primary rounded-[2rem] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-surface-600 transition-all pointer-events-auto border-none active:scale-95 shadow-xl">POSTPONAR</button>
                     <button onClick={() => {
                           const phone = selectedOverdue.student.phone.replace(/\D/g, '');
-                          const text = encodeURIComponent(`Fala ${selectedOverdue.student.full_name}, tudo bem? Aqui é da GFTeam. Estou vendo aqui na ficha que estamos com ${selectedOverdue.days_overdue} dias de atraso na ${selectedOverdue.description} (R$ ${selectedOverdue.amount}). Você reportou como motivo: "${selectedOverdue.reason}". Como posso te ajudar a resolver isso hoje? Oss! 🥋`);
+                          const text = encodeURIComponent(`Fala ${selectedOverdue.student.full_name}, tudo bem? Aqui é da GFTeam.\n\nEstou vendo aqui na sua ficha (Faixa ${selectedOverdue.student.belt}) que estamos com ${selectedOverdue.days_overdue} dias de atraso referente a ${selectedOverdue.description} (R$ ${selectedOverdue.amount}).\n\nComo você tinha nos passado que o motivo era: "${selectedOverdue.reason}", eu queria saber como posso te ajudar a resolver isso hoje pra não travar sua evolução no tatame?\n\nOss! 🥋`);
                           window.open(`https://wa.me/55${phone}?text=${text}`, '_blank');
                     }} className="py-6 bg-emerald-500 text-black rounded-[2rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-emerald-500/30 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-3 pointer-events-auto border-none cursor-pointer">
                        <Phone className="w-5 h-5 fill-current" />
