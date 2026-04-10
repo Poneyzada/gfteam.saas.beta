@@ -72,12 +72,12 @@ export default function TrainingPage() {
       {/* New Training Modal */}
       <AnimatePresence>
         {isNewTrainingModalOpen && (
-          <div className="fixed inset-0 z-[10000] flex items-start md:items-center justify-center p-4 bg-black/90 backdrop-blur-3xl overflow-y-auto pointer-events-auto shadow-inner">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-3xl overflow-y-auto pointer-events-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="relative w-full max-w-2xl bg-surface-800 border border-white/10 rounded-[3.5rem] shadow-[0_0_100px_rgba(0,0,0,1)] p-10 my-auto pointer-events-auto"
+              className="relative w-full max-w-2xl bg-surface-800 border border-white/10 rounded-[3.5rem] shadow-[0_0_100px_rgba(0,0,0,1)] p-10 pointer-events-auto"
             >
               <button 
                 onClick={() => setIsNewTrainingModalOpen(false)} 
@@ -141,16 +141,18 @@ export default function TrainingPage() {
         <button 
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTab('wod'); }}
           className={`flex-1 md:flex-none px-10 py-5 rounded-[1.8rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all relative z-10 pointer-events-auto cursor-pointer ${
-            activeTab === 'wod' ? 'bg-accent-primary text-black dark:text-black shadow-xl' : 'text-text-muted hover:text-text-primary dark:text-text-muted/60'
+            activeTab === 'wod' ? 'bg-accent-primary !text-black shadow-xl' : 'text-text-muted hover:text-text-primary dark:text-text-muted/60'
           }`}
+          style={activeTab === 'wod' ? { color: '#000000' } : {}}
         >
           Treino do Dia
         </button>
         <button 
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTab('library'); }}
           className={`flex-1 md:flex-none px-10 py-5 rounded-[1.8rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all relative z-10 pointer-events-auto cursor-pointer ${
-            activeTab === 'library' ? 'bg-accent-primary text-black dark:text-black shadow-xl' : 'text-text-muted hover:text-text-primary dark:text-text-muted/60'
+            activeTab === 'library' ? 'bg-accent-primary !text-black shadow-xl' : 'text-text-muted hover:text-text-primary dark:text-text-muted/60'
           }`}
+          style={activeTab === 'library' ? { color: '#000000' } : {}}
         >
           Biblioteca Técnica
         </button>
