@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
@@ -15,17 +15,17 @@ interface Class {
   prof: string
   type: string
   mat: string
-  sport?: 'BJJ' | 'Muay Thai' | 'Boxe' | 'JudÃ´'
+  sport?: 'BJJ' | 'Muay Thai' | 'Boxe' | 'JudÃƒÂ´'
 }
 
 const schedule = [
   { day: 'Segunda-feira', classes: [
     { time: '06:30 - 08:00', name: 'Jiu-Jitsu Adulto', prof: 'Prof. Julio', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
     { time: '09:00 - 10:30', name: 'Muay Thai Matutino', prof: 'Prof. Marcus', type: 'Striking', mat: 'B', sport: 'Muay Thai' },
-    { time: '17:00 - 18:00', name: 'JudÃ´ Infantil', prof: 'Profa. Ana', type: 'Gi', mat: 'Principal', sport: 'JudÃ´' },
+    { time: '17:00 - 18:00', name: 'JudÃƒÂ´ Infantil', prof: 'Profa. Ana', type: 'Gi', mat: 'Principal', sport: 'JudÃƒÂ´' },
     { time: '19:00 - 20:30', name: 'Boxe Profissional', prof: 'Prof. Julio', type: 'Striking', mat: 'B', sport: 'Boxe' },
   ]},
-  { day: 'TerÃ§a-feira', classes: [
+  { day: 'TerÃƒÂ§a-feira', classes: [
     { time: '07:00 - 08:30', name: 'Fundamentos Jiu-Jitsu', prof: 'Prof. Rafael', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
     { time: '18:00 - 19:00', name: 'Muay Thai Feminino', prof: 'Profa. Ana', type: 'Striking', mat: 'B', sport: 'Muay Thai' },
     { time: '19:30 - 21:00', name: 'Jiu-Jitsu Iniciante', prof: 'Prof. Rafael', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
@@ -36,8 +36,15 @@ export default function CronogramaPage() {
   const { lang } = useApp()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDay, setSelectedDay] = useState(0)
+  const [selectedSport, setSelectedSport] = useState('')
+  const [selectedDays, setSelectedDays] = useState<number[]>([])
+  const [autoRepeat, setAutoRepeat] = useState(false)
 
-  const days = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
+  const days = ['SEGUNDA', 'TERÃ‡A', 'QUARTA', 'QUINTA', 'SEXTA', 'SÃBADO']
+
+  const toggleDay = (i: number) => {
+    setSelectedDays(prev => prev.includes(i) ? prev.filter(d => d !== i) : [...prev, i])
+  }
 
   return (
     <div className="min-h-screen bg-surface-900 pb-32 text-left relative z-10 pointer-events-auto">
@@ -55,65 +62,62 @@ export default function CronogramaPage() {
                <button onClick={() => setIsModalOpen(false)} className="absolute top-8 right-8 p-3 text-text-muted hover:text-white border border-white/5 rounded-full bg-surface-900 shadow-xl"><X className="w-6 h-6" /></button>
                <h2 className="text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter mb-10 leading-none">Nova Grade <br /><span className="text-accent-primary italic">de Treinamento</span></h2>
                
-               <div className="space-y-8">
-                  <div className="space-y-3">
-                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TIPO DE MODALIDADE</label>
-                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {['Jiu-Jitsu', 'Muay Thai', 'Boxe', 'JudÃ´'].map((tag) => (
-                          <button key={tag} className="py-3 px-2 rounded-xl bg-surface-900 border border-white/5 text-[9px] font-black uppercase text-text-muted hover:border-accent-primary hover:text-accent-primary transition-all pointer-events-auto cursor-pointer">{tag}</button>
-                        ))}
-                     </div>
-                  </div>
-                  <div className="space-y-3">
-                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO TREINO</label>
-                     <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: GraduaÃ§Ã£o Adulto G1..." />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">PROFESSOR</label>
-                        <select className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner appearance-none">
-                           <option>Prof. Julio</option>
-                           <option>Prof. Marcos</option>
-                           <option>Profa. Ana</option>
-                           <option>Prof. Rafael</option>
-                        </select>
-                     </div>
-                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TATAME</label>
-                        <select className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner appearance-none">
-                           <option>Tatame Principal</option>
-                           <option>Tatame B (Strike)</option>
-                           <option>Tatame C (Infantil)</option>
-                        </select>
-                     </div>
-                  </div>
-
-                  <div className="space-y-3">
-                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">DIAS DA SEMANA</label>
-                     <div className="flex flex-wrap gap-2">
-                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'SÃ¡b'].map((day, i) => (
-                          <button key={day} className={`py-3 px-4 rounded-xl border border-white/5 text-[10px] font-black uppercase transition-all pointer-events-auto cursor-pointer ${i === 0 || i === 2 ? 'bg-accent-primary text-black shadow-xl shadow-accent-primary/20' : 'bg-surface-900 text-text-muted hover:border-accent-primary hover:text-accent-primary'}`}>{day}</button>
-                        ))}
-                     </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-surface-900 border border-white/5 rounded-2xl">
-                     <div className="flex items-center gap-3">
-                        <Zap className="w-5 h-5 text-accent-primary" />
-                        <div>
-                           <p className="text-xs font-black text-text-primary uppercase tracking-widest">Auto-Repetir</p>
-                           <p className="text-[9px] text-text-muted font-bold">Replicar essa aula para as prÃ³ximas semanas</p>
-                        </div>
-                     </div>
-                     <div className="w-12 h-6 rounded-full bg-accent-primary flex items-center p-1 cursor-pointer pointer-events-auto shadow-inner shadow-black/20">
-                        <div className="w-4 h-4 rounded-full bg-black translate-x-6 shadow-md" />
-                     </div>
-                  </div>
-                  <div className="flex gap-4 pt-6 border-t border-white/5">
-                    <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-surface-700 text-text-primary rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-600 transition-all">CANCELAR</button>
-                    <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"><span>SALVAR AULA</span><Check className="w-6 h-6 stroke-[3]" /></button>
-                  </div>
+               <div className="space-y-6 max-h-[65vh] overflow-y-auto pr-1">
+                   <div className="space-y-3">
+                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TIPO DE MODALIDADE</label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                         {['Jiu-Jitsu', 'Muay Thai', 'Boxe', 'Jud\u00f4'].map((tag) => (
+                           <button key={tag} type="button" onClick={() => setSelectedSport(tag)}
+                             className={`py-3 px-2 rounded-xl border text-[9px] font-black uppercase transition-all pointer-events-auto cursor-pointer active:scale-95 ${selectedSport === tag ? 'border-accent-primary text-black' : 'bg-surface-900 border-white/10 text-text-muted hover:border-accent-primary hover:text-accent-primary'}`}
+                             style={selectedSport === tag ? {backgroundColor:'var(--accent)'} : {}}
+                           >{tag}</button>
+                         ))}
+                      </div>
+                   </div>
+                   <div className="space-y-3">
+                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO TREINO</label>
+                      <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: Gradua\u00e7\u00e3o Adulto, Iniciantes..." />
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                         <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">PROFESSOR</label>
+                         <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Nome do professor..." />
+                      </div>
+                      <div className="space-y-3">
+                         <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TATAME</label>
+                         <select className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner appearance-none">
+                            <option>Principal</option><option>Tatame B</option><option>Tatame C</option>
+                         </select>
+                      </div>
+                   </div>
+                   <div className="space-y-3">
+                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">DIAS DA SEMANA</label>
+                      <div className="flex flex-wrap gap-2">
+                         {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'S\u00e1b'].map((day, i) => (
+                           <button key={day} type="button" onClick={() => toggleDay(i)}
+                             className={`py-3 px-4 rounded-xl border text-[10px] font-black uppercase transition-all pointer-events-auto cursor-pointer active:scale-95 ${selectedDays.includes(i) ? 'border-accent-primary text-black' : 'bg-surface-900 border-white/10 text-text-muted hover:border-accent-primary hover:text-accent-primary'}`}
+                             style={selectedDays.includes(i) ? {backgroundColor:'var(--accent)'} : {}}
+                           >{day}</button>
+                         ))}
+                      </div>
+                   </div>
+                   <div onClick={() => setAutoRepeat(!autoRepeat)} className="flex items-center justify-between p-4 bg-surface-900 border border-white/5 rounded-2xl cursor-pointer hover:border-accent-primary/40 transition-all pointer-events-auto">
+                      <div className="flex items-center gap-3">
+                         <Zap className="w-5 h-5 text-accent-primary" />
+                         <div>
+                            <p className="text-xs font-black text-text-primary uppercase tracking-widest">Auto-Repetir</p>
+                            <p className="text-[9px] text-text-muted font-bold">Replicar para as pr\u00f3ximas semanas</p>
+                         </div>
+                      </div>
+                      <div className={`w-12 h-6 rounded-full flex items-center p-1 transition-all ${autoRepeat ? '' : 'bg-surface-700'}`} style={autoRepeat ? {backgroundColor:'var(--accent)'} : {}}>
+                         <div className={`w-4 h-4 rounded-full shadow-md transition-all ${autoRepeat ? 'translate-x-6 bg-black' : 'translate-x-0 bg-gray-500'}`} />
+                      </div>
+                   </div>
+                   <div className="flex gap-4 pt-4 border-t border-white/5">
+                     <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-surface-700 text-text-primary rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-600 transition-all">CANCELAR</button>
+                     <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"><span>SALVAR AULA</span><Check className="w-6 h-6 stroke-[3]" /></button>
+                   </div>
+                </div>
                </div>
             </motion.div>
           </div>
@@ -125,7 +129,7 @@ export default function CronogramaPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
            <div className="text-left">
               <h1 className="text-4xl md:text-6xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none mb-4">Cronograma <br /><span className="text-accent-primary italic">Operacional</span></h1>
-              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Grade de horÃ¡rios e ocupaÃ§Ã£o de tatames</p>
+              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Grade de horÃƒÂ¡rios e ocupaÃƒÂ§ÃƒÂ£o de tatames</p>
            </div>
            <button 
              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsModalOpen(true); }}
@@ -181,7 +185,7 @@ export default function CronogramaPage() {
                           {cls.sport === 'BJJ' && <Award className="w-8 h-8 stroke-[2.5]" />}
                           {cls.sport === 'Muay Thai' && <Swords className="w-8 h-8 stroke-[2.5]" />}
                           {cls.sport === 'Boxe' && <Target className="w-8 h-8 stroke-[2.5]" />}
-                          {cls.sport === 'JudÃ´' && <Dumbbell className="w-8 h-8 stroke-[2.5]" />}
+                          {cls.sport === 'JudÃƒÂ´' && <Dumbbell className="w-8 h-8 stroke-[2.5]" />}
                        </div>
                        <div className="text-left">
                           <p className="text-xl font-black text-text-primary uppercase tracking-tighter leading-none mb-2 italic">{cls.name}</p>
@@ -222,4 +226,5 @@ export default function CronogramaPage() {
     </div>
   )
 }
+
 
