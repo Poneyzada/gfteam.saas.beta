@@ -23,15 +23,13 @@ export default function TrainingPage() {
 
   const handleCreateNew = () => {
     setLessons([])
-    setCurrentWeek('Nova Semana: Defina o Foco')
+    setCurrentWeek('Nova Semana — Defina o Foco')
     setIsNewTrainingModalOpen(false)
-    alert('Novo cronograma em branco criado! 🥋🏗️')
   }
 
   const handleDuplicate = () => {
     setLessons([...lessons])
     setIsNewTrainingModalOpen(false)
-    alert('Cronograma anterior duplicado com sucesso! 🥋📋')
   }
 
   return (

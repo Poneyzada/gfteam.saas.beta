@@ -109,7 +109,7 @@ export default function CronogramaPage() {
                   </div>
                   <div className="flex gap-4 pt-6 border-t border-white/5">
                     <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-surface-700 text-text-primary rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-600 transition-all">CANCELAR</button>
-                    <button onClick={() => { setIsModalOpen(false); alert('Grade Atualizada! 🥋🚀'); }} className="flex-1 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"><span>SALVAR AULA</span><Check className="w-6 h-6 stroke-[3]" /></button>
+                    <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"><span>SALVAR AULA</span><Check className="w-6 h-6 stroke-[3]" /></button>
                   </div>
                </div>
             </motion.div>
