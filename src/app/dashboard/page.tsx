@@ -11,7 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
 export default function UnifiedPremiumDashboard() {
-  const { lang, studentCount = 142, revenue = "18.400" } = useApp()
+  const { lang } = useApp()
+  const studentCount = 142
+  const revenue = "18.400"
   const [isNoteOpen, setIsNoteOpen] = useState(false)
   const [activeNotification, setActiveNotification] = useState<number | null>(null)
 
