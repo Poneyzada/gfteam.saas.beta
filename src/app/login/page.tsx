@@ -65,10 +65,13 @@ export default function LoginPage() {
       .single()
 
     if (!profile) {
+      const params = new URLSearchParams(window.location.search)
+      const urlRole = params.get('role') as any
+      const fallbackRole = (urlRole && ['student', 'instructor', 'manager'].includes(urlRole)) ? urlRole : 'student'
       const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single()
       const { data: newProfile, error: insertError } = await supabase
         .from('profiles')
-        .insert([{ id: authData.user.id, full_name: 'Usuário Beta', role: 'manager', tenant_id: tenantData?.id }])
+        .insert([{ id: authData.user.id, full_name: fullName || authData.user.email, role: fallbackRole, tenant_id: tenantData?.id }])
         .select()
         .single()
       
@@ -86,8 +89,11 @@ export default function LoginPage() {
             router.push('/dashboard/master')
             break
           case 'student':
+          case 'experimental':
             router.push('/aluno')
             break
+          case 'instructor':
+          case 'manager':
           default:
             router.push('/dashboard')
             break

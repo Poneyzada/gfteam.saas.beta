@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
@@ -15,17 +15,17 @@ interface Class {
   prof: string
   type: string
   mat: string
-  sport?: 'BJJ' | 'Muay Thai' | 'Boxe' | 'Judô'
+  sport?: 'BJJ' | 'Muay Thai' | 'Boxe' | 'JudÃ´'
 }
 
 const schedule = [
   { day: 'Segunda-feira', classes: [
     { time: '06:30 - 08:00', name: 'Jiu-Jitsu Adulto', prof: 'Prof. Julio', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
     { time: '09:00 - 10:30', name: 'Muay Thai Matutino', prof: 'Prof. Marcus', type: 'Striking', mat: 'B', sport: 'Muay Thai' },
-    { time: '17:00 - 18:00', name: 'Judô Infantil', prof: 'Profa. Ana', type: 'Gi', mat: 'Principal', sport: 'Judô' },
+    { time: '17:00 - 18:00', name: 'JudÃ´ Infantil', prof: 'Profa. Ana', type: 'Gi', mat: 'Principal', sport: 'JudÃ´' },
     { time: '19:00 - 20:30', name: 'Boxe Profissional', prof: 'Prof. Julio', type: 'Striking', mat: 'B', sport: 'Boxe' },
   ]},
-  { day: 'Terça-feira', classes: [
+  { day: 'TerÃ§a-feira', classes: [
     { time: '07:00 - 08:30', name: 'Fundamentos Jiu-Jitsu', prof: 'Prof. Rafael', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
     { time: '18:00 - 19:00', name: 'Muay Thai Feminino', prof: 'Profa. Ana', type: 'Striking', mat: 'B', sport: 'Muay Thai' },
     { time: '19:30 - 21:00', name: 'Jiu-Jitsu Iniciante', prof: 'Prof. Rafael', type: 'Gi', mat: 'Principal', sport: 'BJJ' },
@@ -56,14 +56,14 @@ export default function CronogramaPage() {
                   <div className="space-y-3">
                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TIPO DE MODALIDADE</label>
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {['Jiu-Jitsu', 'Muay Thai', 'Boxe', 'Judô'].map((tag) => (
+                        {['Jiu-Jitsu', 'Muay Thai', 'Boxe', 'JudÃ´'].map((tag) => (
                           <button key={tag} className="py-3 px-2 rounded-xl bg-surface-900 border border-white/5 text-[9px] font-black uppercase text-text-muted hover:border-accent-primary hover:text-accent-primary transition-all pointer-events-auto cursor-pointer">{tag}</button>
                         ))}
                      </div>
                   </div>
                   <div className="space-y-3">
                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO TREINO</label>
-                     <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: Graduação Adulto G1..." />
+                     <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: GraduaÃ§Ã£o Adulto G1..." />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
@@ -89,7 +89,7 @@ export default function CronogramaPage() {
                   <div className="space-y-3">
                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">DIAS DA SEMANA</label>
                      <div className="flex flex-wrap gap-2">
-                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, i) => (
+                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'SÃ¡b'].map((day, i) => (
                           <button key={day} className={`py-3 px-4 rounded-xl border border-white/5 text-[10px] font-black uppercase transition-all pointer-events-auto cursor-pointer ${i === 0 || i === 2 ? 'bg-accent-primary text-black shadow-xl shadow-accent-primary/20' : 'bg-surface-900 text-text-muted hover:border-accent-primary hover:text-accent-primary'}`}>{day}</button>
                         ))}
                      </div>
@@ -100,7 +100,7 @@ export default function CronogramaPage() {
                         <Zap className="w-5 h-5 text-accent-primary" />
                         <div>
                            <p className="text-xs font-black text-text-primary uppercase tracking-widest">Auto-Repetir</p>
-                           <p className="text-[9px] text-text-muted font-bold">Replicar essa aula para as próximas semanas</p>
+                           <p className="text-[9px] text-text-muted font-bold">Replicar essa aula para as prÃ³ximas semanas</p>
                         </div>
                      </div>
                      <div className="w-12 h-6 rounded-full bg-accent-primary flex items-center p-1 cursor-pointer pointer-events-auto shadow-inner shadow-black/20">
@@ -122,7 +122,7 @@ export default function CronogramaPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
            <div className="text-left">
               <h1 className="text-4xl md:text-6xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none mb-4">Cronograma <br /><span className="text-accent-primary italic">Operacional</span></h1>
-              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Grade de horários e ocupação de tatames</p>
+              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Grade de horÃ¡rios e ocupaÃ§Ã£o de tatames</p>
            </div>
            <button 
              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsModalOpen(true); }}
@@ -136,10 +136,10 @@ export default function CronogramaPage() {
         <div className="kpi-card !rounded-[3rem] bg-surface-800 border border-white/5 shadow-2xl p-6 flex items-center justify-between group">
            <button className="w-14 h-14 rounded-2xl bg-surface-900 border border-white/5 flex items-center justify-center text-text-muted hover:bg-accent-primary hover:text-black transition-all shadow-xl"><ChevronLeft className="w-7 h-7" /></button>
            <div className="flex gap-4 overflow-x-auto scrollbar-hide py-4 px-4 mask-fade-edges">
-              {['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'].map((day, i) => (
+              {['SEGUNDA', 'TERÃ‡A', 'QUARTA', 'QUINTA', 'SEXTA', 'SÃBADO'].map((day, i) => (
                 <div key={i} className={`flex flex-col items-center gap-2 min-w-[100px] p-4 rounded-[2rem] transition-all cursor-pointer shadow-lg group/item ${i === 0 ? 'bg-accent-primary shadow-accent-primary/20 scale-105' : 'bg-surface-900 border border-white/5 hover:border-accent-primary/40'}`}>
                   <span className={`text-[10px] font-black tracking-widest ${i === 0 ? 'text-black' : 'text-text-muted group-hover/item:text-text-primary'}`}>{day}</span>
-                  <span className={`text-xl font-display font-black italic ${i === 0 ? 'text-black' : 'text-white'}`}>{16 + i} MAR</span>
+                  <span className={`text-xl font-display font-black italic ${i === 0 ? 'text-black' : 'text-text-primary'}`}>{16 + i} MAR</span>
                 </div>
               ))}
            </div>
@@ -155,7 +155,7 @@ export default function CronogramaPage() {
                    <div className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center text-accent-primary"><Calendar className="w-6 h-6" /></div>
                    <h2 className="text-2xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">{day.day}</h2>
                 </div>
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); alert('Automação ativada para esta grade! ⚡'); }} className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-surface-800/50 border border-white/5 text-[9px] font-black uppercase tracking-widest text-text-muted hover:text-accent-primary hover:border-accent-primary transition-all pointer-events-auto relative z-50 cursor-pointer">
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-surface-800/50 border border-white/5 text-[9px] font-black uppercase tracking-widest text-text-muted hover:text-accent-primary hover:border-accent-primary transition-all pointer-events-auto relative z-50 cursor-pointer">
                   <Zap className="w-4 h-4" /> AUTO-REPETIR
                 </button>
               </div>
@@ -173,7 +173,7 @@ export default function CronogramaPage() {
                           {cls.sport === 'BJJ' && <Award className="w-8 h-8 stroke-[2.5]" />}
                           {cls.sport === 'Muay Thai' && <Swords className="w-8 h-8 stroke-[2.5]" />}
                           {cls.sport === 'Boxe' && <Target className="w-8 h-8 stroke-[2.5]" />}
-                          {cls.sport === 'Judô' && <Dumbbell className="w-8 h-8 stroke-[2.5]" />}
+                          {cls.sport === 'JudÃ´' && <Dumbbell className="w-8 h-8 stroke-[2.5]" />}
                        </div>
                        <div className="text-left">
                           <p className="text-xl font-black text-text-primary uppercase tracking-tighter leading-none mb-2 italic">{cls.name}</p>
@@ -214,3 +214,4 @@ export default function CronogramaPage() {
     </div>
   )
 }
+
