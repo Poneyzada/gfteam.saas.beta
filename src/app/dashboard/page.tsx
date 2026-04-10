@@ -1,209 +1,314 @@
 'use client'
 
 import { useApp } from '@/contexts/AppContext'
-import { 
-  Users, TrendingUp, DollarSign, Calendar, 
-  MapPin, Clock, ArrowUpRight, ChevronRight, 
-  Zap, Bell, Search, Plus, Target, Shield,
-  Award, Swords, Dumbbell, Play, BookOpen, X
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import {
+  Users, Zap, TrendingUp, DollarSign,
+  Calendar, Bell, Search, Clock,
+  ArrowRight, QrCode, Target, MessageCircle, X, Plus,
+  AlertCircle, Phone, MessageSquare
+} from 'lucide-react'
 
-export default function UnifiedPremiumDashboard() {
-  const { lang } = useApp()
-  const studentCount = 142
-  const revenue = "18.400"
-  const [isNoteOpen, setIsNoteOpen] = useState(false)
-  const [activeNotification, setActiveNotification] = useState<number | null>(null)
+export default function OriginalRaizDashboard() {
+  const { lang, mode } = useApp()
+  const [userName, setUserName] = useState<string>('Mestre')
+  const [userRole, setUserRole] = useState<string>('manager')
+  
+  // Real-time Data States
+  const [expLeads, setExpLeads] = useState<any[]>([])
+  const [upcomingClasses, setUpcomingClasses] = useState<any[]>([])
+  const [announcements, setAnnouncements] = useState<any[]>([])
+  const [checkins, setCheckins] = useState<any[]>([
+    { id: 1, name: 'Lucas Andrade', belt: 'Azul', time: '17:28', beltColor: 'bg-blue-600', img: 'https://i.pravatar.cc/100?u=lucas' },
+    { id: 2, name: 'Ana Silva', belt: 'Branca', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
+  ])
+  const [loading, setLoading] = useState(true)
+  const [showPostModal, setShowPostModal] = useState(false)
+  const [newPost, setNewPost] = useState({ title: '', content: '' })
+  const [selectedOverdue, setSelectedOverdue] = useState<any | null>(null)
 
-  const stats = [
-    { label: 'Alunos Ativos', value: studentCount, icon: Users, color: 'text-accent-primary', trend: '+12%' },
-    { label: 'Receita (MRR)', value: `R$ ${revenue}`, icon: DollarSign, color: 'text-emerald-400', trend: '+5.4%' },
-    { label: 'Novos Leads', value: 24, icon: Target, color: 'text-blue-400', trend: '+18%' },
-    { label: 'Retenção', value: '94%', icon: Shield, color: 'text-purple-400', trend: 'Estável' },
+  const overdueStudents = [
+    { id: 1, student: { full_name: 'Eduardo Faria', belt: 'Azul', phone: '11999990001' }, amount: '360,00', days_overdue: 45, reason: 'Estava desempregado, já estou trabalhando.', description: 'Mensalidade Fev/Mar', due_date: '01/02/2026' },
+    { id: 2, student: { full_name: 'Natalia Gomes', belt: 'Branca', phone: '11999990002' }, amount: '120,00', days_overdue: 22, reason: 'Problema no cartão, vou regularizar.', description: 'Mensalidade Mar', due_date: '01/03/2026' },
   ]
 
-  const agendaHoje = [
-    { time: '07:00', name: 'Fundamentos JJ', prof: 'Prof. Rafael', color: 'bg-accent-primary' },
-    { time: '18:00', name: 'Jiu-Jitsu Kids', prof: 'Mestre Frazão', color: 'bg-accent-primary' },
-    { time: '19:30', name: 'Muay Thai Interm.', prof: 'Prof. Marcus', color: 'bg-red-500' },
-    { time: '21:00', name: 'Open Mat Elite', prof: 'Graduados', color: 'bg-accent-primary' },
+  useEffect(() => {
+    async function getData() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase.from('profiles').select('full_name, role, tenant_id').eq('id', user.id).single()
+        if (profile) {
+          setUserName(profile.full_name || 'Mestre')
+          setUserRole(profile.role)
+          
+          const [leadsRes, classesRes, newsRes] = await Promise.all([
+            supabase.from('leads').select('*').eq('tenant_id', profile.tenant_id).eq('status', 'agendado').order('created_at', { ascending: false }).limit(3),
+            supabase.from('schedules').select('*').eq('tenant_id', profile.tenant_id).limit(4),
+            supabase.from('notifications').select('*').limit(2).order('created_at', { ascending: false })
+          ])
+
+          if (leadsRes.data) setExpLeads(leadsRes.data)
+          if (classesRes.data) setUpcomingClasses(classesRes.data)
+          if (newsRes.data) setAnnouncements(newsRes.data)
+        }
+      }
+      setLoading(false)
+    }
+    getData()
+  }, [])
+
+  const handlePost = async () => {
+    if (!newPost.title || !newPost.content) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
+      const { error } = await supabase.from('notifications').insert({
+        title: newPost.title,
+        content: newPost.content,
+        tenant_id: profile?.tenant_id || null,
+        created_at: new Date().toISOString()
+      })
+      if (!error) {
+        setAnnouncements([{ title: newPost.title, created_at: new Date().toISOString() }, ...announcements])
+        setShowPostModal(false)
+        setNewPost({ title: '', content: '' })
+        alert('Aviso postado com sucesso!')
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const stats = [
+    { label: 'Alunos Ativos', value: '185', icon: Users, trend: '+8%', color: 'text-emerald-500' },
+    { label: 'Novos Leads', value: '12', icon: Zap, trend: '+3 hoje', color: 'text-amber-500' },
+    { label: 'Frequência', value: '82%', icon: TrendingUp, trend: '+2%', color: 'text-blue-500' },
+    { label: 'Faturamento', value: '14.2k', icon: DollarSign, trend: '94%', color: 'text-emerald-500' },
   ]
 
   return (
-    <div className="min-h-screen bg-surface-900 pb-32 text-left relative z-[1] selection:bg-accent-primary selection:text-black overflow-x-hidden">
-      
-      {/* Header Section */}
-      <div className="p-6 md:p-12 space-y-12 animate-fade-in relative z-10 pointer-events-auto">
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-10">
-          <div className="text-left">
-            <h1 className="text-5xl md:text-8xl font-display font-black text-text-primary tracking-tighter italic uppercase leading-none mb-4">
-              Quartel <br /><span className="text-accent-primary italic tracking-tight">General</span>
-            </h1>
-            <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Centro de comando estratégico GFTeam</p>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="bg-surface-800 p-2 rounded-[2.5rem] flex items-center gap-2 border border-white/5 shadow-2xl">
-               <button className="w-14 h-14 bg-surface-900 rounded-full flex items-center justify-center text-accent-primary hover:text-white transition-all shadow-xl active:scale-95"><Search className="w-6 h-6" /></button>
-               <button onClick={() => setIsNoteOpen(true)} className="px-8 py-4 bg-accent-primary text-black rounded-[2rem] text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
-                  <Plus className="w-5 h-5 stroke-[2.5]" /> Postar Aviso
-               </button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-app pb-20 relative selection:bg-accent-primary selection:text-black">
+      {/* Header */}
+      <div className="px-6 md:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 border-b border-white/5">
+        <div className="text-left">
+          <h1 className="text-4xl md:text-5xl font-display font-black text-black dark:text-white tracking-tighter italic">
+            Olá, <span className="text-accent-primary">{userName.split(' ')[0]}</span>
+          </h1>
+          <p className="text-black dark:text-white mt-2 font-black uppercase tracking-widest text-[10px]">
+            {userRole === 'instructor' ? 'Monitoramento Técnico' : 'Comando Central • Gestão de Performance'}
+          </p>
         </div>
+        
+        <div className="flex items-center gap-4">
+           <button className="w-12 h-12 rounded-xl bg-surface-800 border border-black/10 dark:border-white/10 flex items-center justify-center">
+             <Search className="w-5 h-5 text-black dark:text-white" />
+           </button>
+           <button className="w-12 h-12 rounded-xl bg-surface-800 border border-black/10 dark:border-white/10 flex items-center justify-center relative">
+             <Bell className="w-5 h-5 text-black dark:text-white" />
+             <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-accent-primary" />
+           </button>
+           <button 
+             onClick={() => { window.location.href = '/login' }} 
+             className="px-6 py-3 rounded-xl bg-red-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all border-none cursor-pointer"
+           >
+             Sair
+           </button>
+        </div>
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+      <div className="px-6 md:px-12 py-10 space-y-12">
+        {/* KPI Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {stats.map((s, i) => (
-            <div key={i} className="kpi-card !rounded-[3.5rem] bg-surface-800 border border-white/5 p-10 flex flex-col justify-between shadow-2xl group transition-all hover:border-accent-primary/20">
-              <div className="flex justify-between items-start mb-6">
-                <div className={`p-4 rounded-2xl bg-surface-900 border border-white/5 group-hover:scale-110 group-hover:bg-accent-primary group-hover:text-black transition-all shadow-inner`}>
-                   <s.icon className={`w-8 h-8 ${s.color} group-hover:text-inherit`} />
+            <div key={i} className="kpi-card !bg-surface-900 border-black/10 dark:border-white/10 text-left">
+              <div className="flex items-center justify-between mb-8">
+                <div className="w-12 h-12 rounded-xl bg-surface-700 flex items-center justify-center border border-black/5">
+                  <s.icon className="w-6 h-6 text-accent-primary" />
                 </div>
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-3 py-1.5 rounded-xl border border-emerald-400/20 shadow-inner group-hover:animate-pulse">{s.trend}</span>
+                <div className="text-right">
+                   <span className={`text-[10px] font-black ${s.color} bg-surface-700 px-3 py-1 rounded-full`}>{s.trend}</span>
+                   <p className="text-[10px] text-black dark:text-white font-black uppercase tracking-widest mt-2">{s.label}</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 opacity-40">{s.label}</p>
-                <p className="text-5xl font-display font-black text-text-primary italic tracking-tighter leading-none">{s.value}</p>
-              </div>
+              <p className="text-4xl md:text-5xl font-display font-black text-black dark:text-white tracking-tighter italic">{s.value}</p>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
-          {/* Main Content: Agenda Local (The Bridge) */}
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+          {/* Main Area (8 cols) */}
           <div className="xl:col-span-8 space-y-10">
-            <div className="flex items-center justify-between ml-4">
-               <div className="flex items-center gap-4">
-                  <Calendar className="w-6 h-6 text-accent-primary" />
-                  <h2 className="text-2xl font-display font-black text-text-primary uppercase italic tracking-tighter">Agenda Local</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
+               {/* Presença */}
+               <div className="kpi-card !p-8 bg-surface-800 border-black/10 dark:border-white/10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h3 className="text-2xl font-display font-black text-black dark:text-white tracking-tighter italic">PRESENÇA</h3>
+                      <p className="text-[10px] text-black dark:text-white font-black uppercase">Confirmar Alunos</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-accent-primary flex items-center justify-center">
+                      <Users className="w-6 h-6 text-black" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {checkins.map(c => (
+                      <div key={c.id} className="flex items-center justify-between p-4 rounded-2xl bg-surface-900 border border-black/5 group hover:border-accent-primary transition-all">
+                         <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-surface-700 overflow-hidden relative">
+                               <img src={c.img} alt={c.name} className="w-full h-full object-cover" />
+                               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${c.beltColor} border border-surface-900`} />
+                            </div>
+                            <div className="text-left">
+                               <p className="text-xs font-black text-black dark:text-white leading-none mb-1">{c.name}</p>
+                               <p className="text-[9px] text-black dark:text-white font-black uppercase">{c.belt} • {c.time}</p>
+                            </div>
+                         </div>
+                        <button 
+                          onClick={() => { alert(`Presença confirmada!`); setCheckins(checkins.filter(item => item.id !== c.id)); }}
+                          className="w-10 h-10 rounded-xl bg-accent-primary border-none flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-lg"
+                        >
+                           <Zap className="w-5 h-5 text-black" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                </div>
-               <button 
-                onClick={() => window.location.href='/dashboard/cronograma'}
-                className="text-[10px] font-black text-accent-primary uppercase tracking-widest flex items-center gap-2 hover:opacity-100 transition-opacity"
-               >
-                 Gerenciar Grade <ChevronRight className="w-4 h-4" />
-               </button>
+
+               {/* Avisos */}
+               <div className="kpi-card !p-8 bg-surface-800 border-black/10 dark:border-white/10">
+                  <div className="flex items-center justify-between mb-8">
+                       <h3 className="text-2xl font-display font-black text-black dark:text-white italic uppercase tracking-tighter">Avisos QG</h3>
+                       <button onClick={() => setShowPostModal(true)} className="px-4 py-2 bg-accent-primary text-black text-[10px] font-black uppercase rounded-xl hover:scale-105 transition-all cursor-pointer border-none shadow-lg">Postar</button>
+                  </div>
+                  <div className="space-y-4">
+                    {announcements.map((news, idx) => (
+                      <div key={idx} className="p-4 rounded-xl bg-surface-900 border border-black/5 text-left">
+                         <p className="text-xs text-black dark:text-white font-black uppercase italic mb-1">{news.title}</p>
+                         <p className="text-[9px] text-black dark:text-white font-black">{new Date(news.created_at).toLocaleDateString()}</p>
+                      </div>
+                    ))}
+                  </div>
+               </div>
             </div>
 
-            <div className="p-10 md:p-14 bg-surface-800 border border-white/5 rounded-[4rem] shadow-2xl space-y-8 pointer-events-auto">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {agendaHoje.map((cls, i) => (
-                    <div key={i} className="p-8 bg-surface-900 border border-white/5 rounded-[2.5rem] hover:border-accent-primary group transition-all cursor-pointer flex items-center justify-between shadow-xl">
-                       <div className="flex items-center gap-6 text-left">
-                          <div className={`w-14 h-14 rounded-2xl ${cls.color} flex items-center justify-center text-black shadow-lg group-hover:scale-110 transition-transform`}>
-                             <Clock className="w-7 h-7" />
-                          </div>
-                          <div>
-                             <p className="text-2xl font-display font-black text-text-primary uppercase italic leading-none mb-2">{cls.name}</p>
-                             <p className="text-[9px] font-black text-text-muted uppercase tracking-widest opacity-40">{cls.prof}</p>
-                          </div>
-                       </div>
-                       <div className="text-right">
-                          <span className="text-xl font-display font-black text-accent-primary italic">{cls.time}</span>
+            {/* Experimentais & Marketing */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 text-left">
+               <div className="md:col-span-8 kpi-card !p-8">
+                  <h3 className="text-2xl font-display font-black text-black dark:text-white mb-8 italic uppercase tracking-tighter">Experimentais</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {expLeads.length > 0 ? expLeads.map((exp, i) => (
+                      <div key={i} className="p-5 rounded-2xl bg-surface-900 border border-black/5 text-left">
+                         <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-surface-700 flex items-center justify-center">
+                               <MessageCircle className="w-5 h-5 text-accent-primary" />
+                            </div>
+                            <div>
+                               <p className="text-xs font-black text-black dark:text-white uppercase">{exp.name}</p>
+                               <span className="text-[8px] font-black bg-accent-primary text-black px-2 py-0.5 rounded-md uppercase">Agendado</span>
+                            </div>
+                         </div>
+                         <div className="flex items-center justify-between pt-3 border-t border-black/5">
+                            <span className="text-[9px] text-black dark:text-white font-black">{exp.source}</span>
+                            <button onClick={() => window.open(`https://wa.me/${exp.phone.replace(/\D/g,'')}`)} className="text-[9px] font-black text-accent-primary uppercase hover:underline cursor-pointer border-none bg-transparent">WhatsApp</button>
+                         </div>
+                      </div>
+                    )) : <p className="text-black dark:text-white opacity-40 font-black uppercase text-[10px] py-10 text-center col-span-2 italic">Sem agendamentos...</p>}
+                  </div>
+               </div>
+
+               <div className="md:col-span-4 kpi-card !p-8 bg-accent-primary border-none text-black flex flex-col items-center justify-center">
+                  <h3 className="text-xl font-display font-black mb-1 italic uppercase tracking-tighter text-black leading-none text-center">KIT<br/>MARKETING</h3>
+                  <div className="w-20 h-20 bg-black rounded-2xl p-2 my-6">
+                      <QrCode className="w-full h-full text-white" />
+                  </div>
+                  <button className="w-full py-4 rounded-xl bg-black text-white text-[10px] font-black uppercase tracking-widest border-none cursor-pointer">BAIXAR</button>
+               </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar (4 cols) */}
+          <div className="xl:col-span-4 text-left">
+            <div className="kpi-card !p-8 bg-surface-800 border-black/10 dark:border-white/10 h-full">
+               <div className="flex items-center justify-between mb-10">
+                  <h2 className="text-2xl font-display font-black text-black dark:text-white tracking-tighter italic uppercase">Agenda Local</h2>
+                  <Calendar className="w-5 h-5 text-accent-primary" />
+               </div>
+               <div className="space-y-6">
+                  {upcomingClasses.length > 0 ? upcomingClasses.map((cls, idx) => (
+                    <div key={idx} className="p-6 rounded-3xl bg-surface-900 border border-black/5 text-left">
+                       <p className="text-[9px] font-black text-accent-primary uppercase tracking-widest mb-2">{cls.class_type}</p>
+                       <h4 className="text-lg font-display font-black text-black dark:text-white tracking-tighter italic uppercase mb-4 leading-tight">{cls.class_name}</h4>
+                       <div className="flex items-center gap-3 text-[10px] text-black dark:text-white font-black uppercase">
+                          <Clock className="w-4 h-4 text-accent-primary" />
+                          <span>{cls.time_start} • {cls.instructor_name}</span>
                        </div>
                     </div>
-                  ))}
+                  )) : <p className="text-black dark:text-white opacity-40 font-black uppercase text-[10px] py-20 text-center italic">Agenda vazia...</p>}
                </div>
-               
-               <button 
-                onClick={() => window.location.href='/dashboard/cronograma'}
-                className="w-full py-8 border-2 border-dashed border-white/5 bg-surface-900/40 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 group hover:border-accent-primary/20 transition-all pointer-events-auto"
-               >
-                  <Plus className="w-8 h-8 text-text-muted group-hover:text-accent-primary transition-all" />
-                  <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.4em] group-hover:text-accent-primary transition-all">Expandir Visão de Agenda</p>
-               </button>
+               <button onClick={() => window.location.href='/dashboard/cronograma'} className="w-full mt-10 py-5 rounded-xl border-2 border-dashed border-black/10 dark:border-white/10 text-[10px] font-black text-black dark:text-white uppercase tracking-widest hover:border-accent-primary transition-all cursor-pointer bg-transparent">+ Ver Completo</button>
             </div>
           </div>
 
-          {/* Sidebar: Plano de Aula Active Bridge */}
-          <div className="xl:col-span-4 space-y-10">
-            <div className="flex items-center gap-4 ml-4">
-               <Zap className="w-6 h-6 text-accent-primary" />
-               <h2 className="text-2xl font-display font-black text-text-primary uppercase italic tracking-tighter">Plano de Aula</h2>
-            </div>
-            
-            <div className="accent-bg p-10 rounded-[3.5rem] shadow-2xl relative overflow-hidden hatched text-black pointer-events-auto flex flex-col justify-between h-full min-h-[500px]">
-               <div className="relative z-10 space-y-8 text-left">
-                  <div className="space-y-2">
-                     <p className="text-[11px] font-black text-black/40 uppercase tracking-[0.2em] italic leading-none">Status Técnico</p>
-                     <h3 className="text-3xl font-display font-black uppercase italic tracking-tighter leading-none mb-2">Engenharia de Passagem</h3>
-                  </div>
-
-                  <div className="space-y-4">
-                     {[
-                       { title: 'Pressão no Quadril', dur: '15min' },
-                       { title: 'Cruzada de Joelho', dur: '20min' }
-                     ].map((item, id) => (
-                       <div key={id} className="flex items-center gap-4 p-4 bg-black/5 rounded-2xl border border-black/5">
-                          <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-accent-primary text-[10px] font-black">0{id+1}</div>
-                          <p className="text-[11px] font-black uppercase italic text-black/70">{item.title}</p>
-                       </div>
-                     ))}
-                  </div>
-
-                  <button 
-                    onClick={() => window.location.href='/dashboard/treinos'}
-                    className="w-full py-5 bg-black text-accent-primary rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-4"
-                  >
-                    <BookOpen className="w-5 h-5" /> EDITAR CURRÍCULO
-                  </button>
-               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Center - Stories/Marketing */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pointer-events-auto">
-          <div className="kpi-card !rounded-[3rem] p-8 border border-white/5 bg-surface-800 flex items-center justify-between group cursor-pointer hover:border-accent-primary/30 transition-all shadow-2xl">
-             <div className="flex items-center gap-6 text-left">
-                <div className="w-14 h-14 rounded-2xl bg-surface-900 flex items-center justify-center border border-white/5 shadow-inner">
-                   <Target className="w-7 h-7 text-accent-primary" />
-                </div>
+          {/* Lista Negra */}
+          <div className="xl:col-span-12 text-left">
+            <div className="kpi-card !p-8 border-red-500/20">
+              <div className="flex items-center justify-between mb-8">
                 <div>
-                   <h4 className="text-lg font-display font-black text-text-primary uppercase italic tracking-tighter leading-none mb-1">Dossiê de <br/>Inadimplência</h4>
-                   <p className="text-[9px] text-text-muted font-black uppercase tracking-widest opacity-40 italic">Ação financeira elite</p>
+                  <h3 className="text-3xl font-display font-black text-red-600 italic uppercase tracking-tighter">Lista Negra</h3>
+                  <p className="text-[10px] text-black dark:text-white font-black uppercase">Inadimplentes · Clique para cobrar</p>
                 </div>
-             </div>
-             <ChevronRight className="w-6 h-6 text-text-muted group-hover:translate-x-3 transition-transform" />
+                <AlertCircle className="w-10 h-10 text-red-600" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {overdueStudents.map((ov) => (
+                  <div key={ov.id} onClick={() => setSelectedOverdue(ov)} className="p-6 rounded-3xl bg-surface-900 border border-red-500/10 hover:border-red-500/40 transition-all cursor-pointer">
+                    <div className="flex items-center gap-4 mb-4">
+                        <AlertCircle className="w-6 h-6 text-red-600" />
+                        <div>
+                          <p className="text-sm font-black text-black dark:text-white uppercase leading-none mb-1">{ov.student.full_name}</p>
+                          <span className="text-[9px] font-black bg-red-500 text-white px-2 py-0.5 rounded-md uppercase">{ov.days_overdue} Dias</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10">
+                      <span className="text-xs font-black text-black dark:text-white italic">R$ {ov.amount}</span>
+                      <span className="text-[10px] font-black text-emerald-600 uppercase">Cobrar</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
 
-      {/* MODAL: POSTAR AVISO (Bug Fix: z-index / Interatividade) */}
-      <AnimatePresence>
-        {isNoteOpen && (
-          <div className="fixed inset-0 z-[60000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-3xl overflow-y-auto">
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9, y: 30 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               className="bg-surface-800 w-full max-w-lg rounded-[3.5rem] p-10 md:p-14 border border-white/10 shadow-2xl relative text-left my-auto pointer-events-auto"
-             >
-                <button onClick={() => setIsNoteOpen(false)} className="absolute top-8 right-8 w-12 h-12 rounded-full bg-surface-900 border border-white/5 flex items-center justify-center text-text-muted hover:text-white shadow-xl active:scale-95 transition-all cursor-pointer"><X className="w-5 h-5" /></button>
-                <h2 className="text-4xl font-display font-black text-text-primary uppercase italic tracking-tighter mb-10 leading-none">Aviso <br /><span className="text-accent-primary italic">Operacional</span></h2>
-                
-                <div className="space-y-6 mb-12">
-                   <div className="space-y-3">
-                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">Título do Comunicado</label>
-                      <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: Graduação 2024" />
-                   </div>
-                   <div className="space-y-3">
-                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">Conteúdo do Aviso</label>
-                      <textarea className="w-full h-32 bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner resize-none" placeholder="Escreva a mensagem mestre..." />
-                   </div>
-                </div>
-
-                <div className="flex gap-4">
-                   <button onClick={() => setIsNoteOpen(false)} className="flex-1 py-6 bg-surface-700 text-text-primary rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-600 shadow-xl transition-all">CANCELAR</button>
-                   <button onClick={() => { setIsNoteOpen(false); alert('Aviso enviado para todos os alunos! 📢'); }} className="flex-1 py-6 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl shadow-accent-primary/20 hover:scale-[1.05] active:scale-95 transition-all">PUBLICAR NO QG</button>
-                </div>
-             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Post Modal */}
+      {showPostModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPostModal(false)} />
+           <div className="bg-surface-800 w-full max-w-lg rounded-[3rem] p-10 relative z-10 shadow-2xl text-left border border-white/10">
+              <h2 className="text-3xl font-display font-black text-black dark:text-white tracking-tighter italic uppercase mb-8">Novo Aviso QG</h2>
+              <div className="space-y-6">
+                 <div>
+                    <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest pl-2">Título do Aviso</label>
+                    <input type="text" value={newPost.title} onChange={(e) => setNewPost({...newPost, title: e.target.value})} className="w-full mt-2 bg-surface-900 border border-black/10 dark:border-white/10 p-5 rounded-2xl text-black dark:text-white font-black uppercase text-sm outline-none focus:border-accent-primary" placeholder="TÍTULO..." />
+                 </div>
+                 <div>
+                    <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest pl-2">Conteúdo</label>
+                    <textarea value={newPost.content} onChange={(e) => setNewPost({...newPost, content: e.target.value})} className="w-full mt-2 bg-surface-900 border border-black/10 dark:border-white/10 p-5 rounded-2xl text-black dark:text-white font-bold text-sm h-32 outline-none focus:border-accent-primary" placeholder="DESCREVA O AVISO..." />
+                 </div>
+              </div>
+              <div className="flex gap-4 mt-10">
+                 <button onClick={() => setShowPostModal(false)} className="flex-1 py-5 rounded-2xl bg-surface-700 text-black dark:text-white font-black uppercase text-[10px] tracking-widest border-none cursor-pointer">Cancelar</button>
+                 <button onClick={handlePost} className="flex-1 py-5 rounded-2xl bg-accent-primary text-black font-black uppercase text-[10px] tracking-widest shadow-xl border-none cursor-pointer">Postar Agora</button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   )
 }

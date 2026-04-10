@@ -5,63 +5,40 @@
 @tailwind utilities;
 
 :root {
-  /* Default mode colors (Light) */
-  --bg-app: #F4F4F5;
+  /* Raiz / High Contrast - Light */
+  --bg-app: #FFFFFF;
   --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-hover: #F1F5F9;
-  --border-app: rgba(0, 0, 0, 0.05);
+  --bg-hover: #F8FAFC;
+  --border-app: rgba(0, 0, 0, 0.1);
   --text-main: #000000;
-  --text-dim: #444444;
+  --text-dim: #000000; /* No more gray */
 
-  /* Surface System for Light Mode */
+  /* Surface System */
   --surface-900: #FFFFFF;
   --surface-800: #FAFAFA;
   --surface-700: #F4F4F5;
   --surface-600: #E4E4E7;
   --surface-500: #D4D4D8;
 
-  /* Dynamic Accents - Default is Gold */
   --accent: #FFC700;
   --accent-rgb: 255, 199, 0;
-
-  --radius-premium: 3rem;
+  --radius-premium: 2rem;
 }
-
-/* --- Accent Themes --- */
-[data-accent="green"] {
-  --accent: #00B341;
-  --accent-rgb: 0, 179, 65;
-}
-
-[data-accent="gold"] {
-  --accent: #FFC700;
-  --accent-rgb: 255, 199, 0;
-}
-
-[data-accent="blue"] {
-  --accent: #0052CC;
-  --accent-rgb: 0, 82, 204;
-}
-
-[data-accent="red"] {
-  --accent: #E63B2E;
-  --accent-rgb: 230, 59, 46;
-}
-
-/* --- THEME MODES (Backgrounds & Text) --- */
 
 [data-mode="dark"] {
-  --bg-app: #0A0A0E;
-  --bg-sidebar: #101015;
-  --bg-card: #14141A;
-  --bg-hover: #1A1A22;
-  --border-app: rgba(255, 255, 255, 0.08);
+  /* Raiz / High Contrast - Dark */
+  --bg-app: #000000;
+  --bg-sidebar: #0A0A0E;
+  --bg-card: #0F0F14;
+  --bg-hover: #16161D;
+  --border-app: rgba(255, 255, 255, 0.15);
   --text-main: #FFFFFF;
-  --text-dim: #D1D1D1;
-  --surface-900: #0A0A0E;
-  --surface-800: #101015;
-  --surface-700: #14141A;
+  --text-dim: #FFFFFF; /* No more gray */
+
+  --surface-900: #000000;
+  --surface-800: #0A0A0E;
+  --surface-700: #0F0F14;
   --surface-600: #1A1A22;
 }
 
@@ -76,90 +53,46 @@
 }
 
 @layer components {
-  /* Hatched pattern (Diagonal Lines) - Focused on Boxes/Bars */
-  .hatched {
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      rgba(var(--accent-rgb), 0.07) 10px,
-      rgba(var(--accent-rgb), 0.07) 11px
-    );
+  /* Simplified KPI Card - NO DECORATION */
+  .kpi-card {
+    @apply rounded-3xl p-8 border transition-all duration-300 relative overflow-hidden;
+    background: var(--bg-card);
+    border-color: var(--border-app);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
-  /* Stippled / Dotted pattern - Restricted to Student App or Login if requested */
-  .stippled-clean {
-    background-image: radial-gradient(rgba(var(--accent-rgb), 0.1) 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.5;
+  .btn-primary {
+    @apply relative overflow-hidden px-8 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 flex items-center justify-center gap-3;
+    background-color: var(--accent) !important;
+    color: #000000 !important;
   }
-
-  .noise-overlay { position: relative; isolation: isolate; }
-  .noise-overlay::before {
-    content: ''; position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.03; z-index: 0; pointer-events: none; border-radius: inherit;
+  
+  .btn-primary:hover { 
+    transform: translateY(-2px); 
+    filter: brightness(1.1);
   }
 
   .accent-bg { background-color: var(--accent); }
   .accent-text { color: var(--accent); }
-  .accent-shadow { box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.3); }
 
-  .kpi-card {
-    @apply rounded-[3rem] p-10 border transition-all duration-500 hover:scale-[1.02] relative overflow-hidden;
-    background: linear-gradient(145deg, var(--bg-card), var(--bg-app));
-    border-color: var(--border-app);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  }
+  /* Removed Noise and Hatched patterns because they was making text "invisible" */
+  .hatched { background: var(--accent); } 
+  .noise-overlay { display: none; }
+  .card-accent { display: none; }
 
-  .card-accent {
-    @apply absolute top-0 left-0 w-full h-[80px] opacity-10;
-    background: repeating-linear-gradient(
-      -45deg,
-      var(--accent),
-      var(--accent) 1px,
-      transparent 1px,
-      transparent 8px
-    );
-    mask-image: linear-gradient(to bottom, black, transparent);
-  }
-
-  .btn-primary {
-    @apply relative overflow-hidden px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 flex items-center justify-center gap-3;
-    background-color: var(--accent) !important;
-    color: #000000 !important;
-    box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.2);
-  }
-  .btn-primary:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 15px 40px rgba(var(--accent-rgb), 0.4); 
-    filter: brightness(1.05); 
-    color: #000000 !important;
-  }
-
-  .force-black {
-    color: #000000 !important;
-  }
-
-  .nav-tab-active {
-    @apply bg-accent-primary shadow-xl force-black !text-black font-black transition-all;
-    background-color: var(--accent) !important;
-  }
+  .force-black { color: #000000 !important; }
+  .force-white { color: #FFFFFF !important; }
   
-  .force-white {
-    color: #FFFFFF !important;
-  }
-
-  .glass {
-    @apply backdrop-blur-3xl bg-white/5 border border-white/10;
-  }
-
-  .progress-ring {
-    stroke-dasharray: 100 100;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 1s ease-in-out;
-  }
+  .text-text-primary { color: var(--text-main) !important; opacity: 1 !important; }
+  .text-text-muted { color: var(--text-dim) !important; opacity: 1 !important; }
 }
 
-.animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+/* Force legibility globally */
+.opacity-40, .opacity-60, .opacity-30, .opacity-50 {
+    opacity: 1 !important;
+}
+
+.text-text-muted {
+    opacity: 1 !important;
+    color: var(--text-main) !important;
+}
