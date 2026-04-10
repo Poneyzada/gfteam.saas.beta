@@ -297,7 +297,7 @@ export default function DashboardPage() {
                              <p className="text-[11px] font-black text-text-muted uppercase tracking-widest opacity-40">Motivo Reportado</p>
                           </div>
                           <div className="p-6 rounded-2xl bg-surface-800 border border-white/5 shadow-inner">
-                             <p className="text-[13px] font-bold text-text-primary leading-relaxed antialiased italic">"{selectedOverdue.reason}"</p>
+                             <p className="text-[13px] font-bold text-text-primary leading-relaxed antialiased italic">&quot;{selectedOverdue.reason}&quot;</p>
                           </div>
                        </div>
 
