@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useApp, Mode, Accent } from '@/contexts/AppContext'
 import { supabase } from '@/lib/supabase'
 import {
-  LayoutDashboard, Users, DollarSign, BookOpen, Award,
+  LayoutDashboard, Users, DollarSign, BookOpen, Award, Calendar,
   CheckSquare, TrendingUp, Trophy, Settings, ChevronLeft,
   ChevronRight, Globe2, Shield, LogOut, Zap, Sun, Moon, Palette,
   Activity, Dumbbell, X, Camera
@@ -19,9 +19,10 @@ const t = {
     dashboard: 'Dashboard',
     alunos: 'Alunos',
     financeiro: 'Financeiro',
-    treinos: 'Plano de Aula',
+    treinos: 'Planejamento Técnico',
     graduacoes: 'Graduações',
     checkin: 'Check-in',
+    cronograma: 'Gestão Operacional',
     retencao: 'Retenção',
     competicoes: 'Competições',
     settings_label: 'Configurações',
@@ -43,6 +44,7 @@ const t = {
     treinos: 'Class Syllabus',
     graduacoes: 'Promotions',
     checkin: 'Check-in',
+    cronograma: 'Schedule (Tatami)',
     retencao: 'Retention',
     competicoes: 'Competitions',
     settings_label: 'Settings',
@@ -66,6 +68,7 @@ const mainNav = [
   { key: 'loja', icon: Dumbbell, href: '/dashboard/loja', roles: ['manager', 'master'], permission: 'finance' },
   { key: 'professores', icon: Shield, href: '/dashboard/professores', roles: ['manager', 'master'], permission: 'admin' }, 
   { key: 'treinos', icon: BookOpen, href: '/dashboard/treinos', roles: ['manager', 'instructor', 'master'], permission: 'training' },
+  { key: 'cronograma', icon: Calendar, href: '/dashboard/cronograma', roles: ['manager', 'instructor', 'master'], permission: 'training' },
   { key: 'graduacoes', icon: Award, href: '/dashboard/graduacoes', roles: ['manager', 'instructor', 'master'], permission: 'training' },
   { key: 'checkin', icon: CheckSquare, href: '/dashboard/checkin', roles: ['manager', 'instructor', 'master'], permission: 'students' },
 ]
