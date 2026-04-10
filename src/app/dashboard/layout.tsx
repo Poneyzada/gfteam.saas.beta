@@ -26,38 +26,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       <div className="flex-1 flex flex-col relative w-full overflow-hidden transition-all duration-300">
-         {/* Main Content Area */}
-         <main className="flex-1 overflow-x-hidden overflow-y-auto pb-24 md:pb-8">
-           {children}
+         {/* Main Content Area - Responsive padding */}
+         <main className="flex-1 overflow-x-hidden overflow-y-auto pb-24 md:pb-8 relative z-30 pointer-events-auto">
+            <div className="max-w-[1600px] mx-auto pointer-events-auto">
+               {children}
+            </div>
          </main>
       </div>
 
-      {/* Mobile Bottom Navigation (Visible only on Mobile) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface-800/90 backdrop-blur-xl border-t border-white/5 px-4 flex items-center justify-between z-50">
+      {/* Mobile Bottom Navigation (Aprimorada Visibilidade) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-surface-800/95 backdrop-blur-2xl border-t border-white/10 px-4 flex items-center justify-between z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
         {mobileNav.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link 
               key={item.href} 
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 h-14 rounded-2xl relative ${
-                isActive ? 'text-surface-900 bg-accent-primary hatched shadow-lg shadow-accent-primary/20' : 'text-text-muted hover:text-white transition-colors'
+              className={`flex flex-col items-center justify-center gap-1 flex-1 h-16 rounded-[1.2rem] transition-all relative ${
+                isActive ? 'bg-accent-primary shadow-xl shadow-accent-primary/20 hatched translate-y-[-4px]' : 'text-text-muted hover:text-white'
               }`}
+              style={isActive ? { color: '#000000', pointerEvents: 'auto' } : {}}
             >
-              <item.icon className={`w-6 h-6 ${isActive ? 'scale-110' : ''} transition-transform`} />
+              <item.icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'scale-110 !text-black' : ''} transition-all`} style={isActive ? { color: '#000000' } : {}} />
               {isActive && (
-                <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
+                <span className="text-[7px] font-black uppercase tracking-[0.2em] animate-fade-in !text-black" style={{ color: '#000000' }}>{item.label}</span>
               )}
             </Link>
           )
         })}
+        
         {/* Menu Toggle Button */}
         <button 
           onClick={() => setIsMobileOpen(true)}
-          className="flex flex-col items-center justify-center gap-1 flex-1 h-14 rounded-2xl relative text-text-muted hover:text-white transition-colors"
+          className="flex flex-col items-center justify-center gap-1 flex-1 h-14 rounded-2xl relative text-text-muted hover:text-white transition-all active:scale-90"
         >
-          <Menu className="w-6 h-6 transition-transform hover:scale-110" />
-          <span className="text-[8px] font-black uppercase tracking-widest mt-1">Menu</span>
+          <Menu className="w-5 h-5 md:w-6 md:h-6" />
+          <span className="text-[7px] font-black uppercase tracking-widest mt-1">Menu</span>
         </button>
       </div>
     </div>

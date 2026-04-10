@@ -1,76 +1,237 @@
 'use client'
 
-import { Settings, Shield, Globe, Bell, CreditCard, User, Mail, Smartphone, Save } from 'lucide-react'
+import { useState } from 'react'
+import { 
+  Settings, Shield, Globe, Bell, CreditCard, 
+  User, Mail, Smartphone, Save, Image as ImageIcon, 
+  Cloud, Webhook, Zap, ChevronRight, X, CheckCircle2,
+  Plus
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+type Section = 'unidade' | 'perfil' | 'notificacoes' | 'pagamentos' | 'integracoes'
 
 export default function SettingsPage() {
+  const [activeSection, setActiveSection] = useState<Section>('unidade')
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+
+  const sections = [
+    { id: 'unidade', label: 'Matriz / Unidade', icon: Shield },
+    { id: 'perfil', label: 'Meu Perfil', icon: User },
+    { id: 'notificacoes', label: 'Notificações', icon: Bell },
+    { id: 'pagamentos', label: 'Pagamentos', icon: CreditCard },
+    { id: 'integracoes', label: 'Integrações', icon: Globe },
+  ]
+
   return (
-    <div className="p-10 space-y-12 animate-fade-up">
+    <div className="p-4 md:p-10 space-y-8 md:space-y-12 animate-fade-in min-h-screen pb-32 text-left relative z-10 pointer-events-auto bg-surface-900">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-display font-black text-text-primary tracking-tight">Configurações</h1>
-        <p className="text-text-muted font-semibold mt-1">Gerencie as preferências da unidade e do seu perfil</p>
+      <div className="text-left">
+        <h1 className="text-3xl md:text-5xl font-display font-black text-text-primary tracking-tighter italic uppercase leading-none mb-2">Configurações <br /><span className="text-accent-primary">do Sistema</span></h1>
+        <p className="text-[10px] md:text-xs text-text-muted font-black uppercase tracking-widest opacity-60">Matriz de controle e personalização de unidade</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
-        {/* Nav Tabs */}
-        <div className="xl:col-span-3 space-y-2">
-          {[
-            { label: 'Unidade', icon: Shield, active: true },
-            { label: 'Perfil', icon: User },
-            { label: 'Notificações', icon: Bell },
-            { label: 'Pagamentos', icon: CreditCard },
-            { label: 'Integrações', icon: Globe },
-          ].map((item, i) => (
-            <div key={i} className={`flex items-center gap-3 px-6 py-4 rounded-[1.5rem] cursor-pointer transition-all ${
-              item.active ? 'accent-bg text-surface-900 font-bold shadow-lg accent-shadow' : 'text-text-muted hover:bg-surface-600 font-semibold'
-            }`}>
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm">{item.label}</span>
-            </div>
+        
+        {/* Navigation Sidebar */}
+        <div className="xl:col-span-3 flex xl:flex-col gap-3 overflow-x-auto pb-4 xl:pb-0 scrollbar-hide relative z-20 pointer-events-auto">
+          {sections.map((section) => (
+            <button 
+              key={section.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveSection(section.id as Section);
+              }}
+              className={`flex items-center gap-5 px-8 py-5 rounded-[2rem] cursor-pointer transition-all whitespace-nowrap border border-white/5 relative z-50 pointer-events-auto hover:bg-surface-800 group ${
+                activeSection === section.id 
+                  ? 'bg-accent-primary text-black dark:text-black shadow-2xl translate-x-2 font-black uppercase text-[10px] tracking-widest' 
+                  : 'bg-surface-800/50 text-text-muted font-black uppercase text-[10px] tracking-widest'
+              }`}
+            >
+              <section.icon className={`w-5 h-5 ${activeSection === section.id ? 'text-black' : 'group-hover:text-text-primary transition-colors'}`} />
+              <span className={activeSection === section.id ? 'text-black font-black' : ''}>{section.label}</span>
+            </button>
           ))}
         </div>
 
-        {/* Content */}
-        <div className="xl:col-span-9 space-y-8">
-          <div className="kpi-card !rounded-[3.5rem] p-10 space-y-10">
-            <h2 className="text-2xl font-display font-black text-text-primary">Informações da Unidade</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-1">Nome da Academia</label>
-                <input type="text" defaultValue="GFTeam Matriz" className="w-full bg-surface-600 border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all" />
-              </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-1">CNPJ / Identificação</label>
-                <input type="text" defaultValue="12.345.678/0001-90" className="w-full bg-surface-600 border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all" />
-              </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-1">E-mail Administrativo</label>
-                <input type="email" defaultValue="contato@gfteam.com" className="w-full bg-surface-600 border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all" />
-              </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-1">Telefone / WhatsApp</label>
-                <input type="text" defaultValue="+55 21 99999-9999" className="w-full bg-surface-600 border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all" />
-              </div>
-            </div>
+        {/* Content Area */}
+        <div className="xl:col-span-9 relative z-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+              className="pointer-events-auto"
+            >
+              {activeSection === 'unidade' && (
+                <div className="kpi-card !rounded-[3rem] p-8 md:p-12 space-y-10 bg-surface-800 border border-white/5 shadow-2xl text-left relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                     <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">A Identidade</h2>
+                     <Shield className="w-8 h-8 text-accent-primary" />
+                  </div>
 
-            <div className="pt-6 border-t border-white/5 flex gap-4">
-               <button className="btn-primary flex items-center gap-2">
-                 <Save className="w-4 h-4" />
-                 Salvar Alterações
-               </button>
-               <button className="btn-ghost">Cancelar</button>
-            </div>
-          </div>
+                  <div className="space-y-6">
+                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">LOGO OFICIAL (MOSTRAR NO MENU/BOLETOS)</label>
+                     <div 
+                        onClick={() => document.getElementById('logo-upload')?.click()}
+                        className="flex flex-col md:flex-row items-center gap-10 p-10 rounded-[2.5rem] bg-surface-900 border-2 border-dashed border-white/5 hover:border-accent-primary transition-all cursor-pointer group pointer-events-auto shadow-inner"
+                     >
+                        <input 
+                          id="logo-upload" 
+                          type="file" 
+                          hidden 
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) setLogoPreview(URL.createObjectURL(file));
+                          }}
+                        />
+                        <div className="w-32 h-32 rounded-[2rem] bg-surface-800 border border-white/5 flex items-center justify-center relative overflow-hidden shadow-2xl group-hover:scale-105 transition-transform">
+                           {logoPreview ? (
+                             <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-4" />
+                           ) : (
+                             <ImageIcon className="w-10 h-10 text-text-muted opacity-20" />
+                           )}
+                        </div>
+                        <div className="flex-1 text-center md:text-left">
+                           <h4 className="text-lg font-black text-text-primary uppercase italic mb-1">Selecionar Nova Assinatura</h4>
+                           <p className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-40 leading-relaxed max-w-sm">Esta imagem será sincronizada em todo o ecossistema da unidade, incluindo o app do aluno.</p>
+                           <button className="mt-6 px-10 py-3 rounded-xl bg-surface-700 text-[10px] font-black uppercase text-text-primary opacity-100 group-hover:bg-accent-primary group-hover:text-black transition-all">Alterar Arquivo</button>
+                        </div>
+                     </div>
+                  </div>
 
-          {/* Danger Zone */}
-          <div className="kpi-card !rounded-[3.5rem] p-10 border-red-500/20 bg-red-500/5">
-            <h2 className="text-xl font-display font-black text-red-400">Zona de Risco</h2>
-            <p className="text-sm text-red-400/60 font-medium mt-2">Ações permanentes que não podem ser desfeitas.</p>
-            <button className="mt-6 px-6 py-3 rounded-2xl bg-red-500/10 text-red-500 text-xs font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
-              Suspender Operação Local
-            </button>
-          </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DA MATRIZ / UNIDADE</label>
+                      <input type="text" defaultValue="GFTeam Frazão" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all text-left shadow-inner" />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">E-MAIL DO ADMINISTRADOR</label>
+                      <input type="email" defaultValue="contato@gfteam.com" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all text-left shadow-inner" />
+                    </div>
+                  </div>
+
+                  <button onClick={(e) => { e.preventDefault(); alert('Configurações da Matriz salvas com sucesso! 🛡️'); }} className="px-12 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-accent-primary/20 hover:scale-[1.02] active:scale-95 transition-all pointer-events-auto relative z-50">
+                    SALVAR ALTERAÇÕES
+                  </button>
+                </div>
+              )}
+
+              {activeSection === 'pagamentos' && (
+                <div className="kpi-card !rounded-[3rem] p-10 md:p-12 space-y-10 bg-surface-800 border border-white/5 shadow-2xl text-left relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">Gateway Financeiro</h2>
+                    <CreditCard className="w-8 h-8 text-accent-primary" />
+                  </div>
+                  <p className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-40 leading-relaxed max-w-lg">Conecte sua conta bancária para gerenciar mensalidades, vendas de suplementos e kits com automação total.</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="p-10 rounded-[3rem] bg-surface-900 border border-white/5 hover:border-blue-400 group cursor-pointer transition-all text-left relative overflow-hidden pointer-events-auto shadow-inner">
+                       <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-400/5 blur-3xl" />
+                       <div className="flex items-center justify-between mb-8 relative z-10">
+                          <div className="px-4 py-1.5 bg-blue-500/10 text-blue-400 rounded-lg text-[9px] font-black uppercase italic border border-blue-400/20">Homologado</div>
+                          <div className="w-4 h-4 rounded-full bg-blue-400 animate-pulse shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
+                       </div>
+                       <h3 className="text-3xl font-display font-black text-text-primary mb-2">Asaas</h3>
+                       <p className="text-[10px] text-text-muted font-black uppercase opacity-40 tracking-widest">Ideal para Cobranças Inteligentes.</p>
+                       <div className="mt-10 space-y-6 relative z-10">
+                          <input type="password" placeholder="TOKEN DA API" className="w-full bg-surface-800 border border-white/5 rounded-2xl px-6 py-4 text-xs font-black text-text-primary focus:border-blue-400 transition-all outline-none" />
+                          <button onClick={(e) => { e.preventDefault(); alert('Token Asaas conectado com sucesso! 🚀'); }} className="w-full py-5 bg-blue-500 text-black rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all pointer-events-auto relative z-50">CONECTAR ASAAS</button>
+                       </div>
+                    </div>
+
+                    <div className="p-10 rounded-[3rem] bg-surface-900 border border-white/5 hover:border-emerald-400 group cursor-pointer transition-all text-left relative overflow-hidden pointer-events-auto shadow-inner">
+                       <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-400/5 blur-3xl" />
+                       <div className="flex items-center justify-between mb-8 relative z-10">
+                          <div className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-[9px] font-black uppercase italic border border-emerald-400/20">Taxa Baixa</div>
+                       </div>
+                       <h3 className="text-3xl font-display font-black text-text-primary mb-2">InfinitePay</h3>
+                       <p className="text-[10px] text-text-muted font-black uppercase opacity-40 tracking-widest">Receba na hora via Link/Loja.</p>
+                       <div className="mt-10 relative z-10">
+                          <button onClick={(e) => { e.preventDefault(); alert('InfinitePay ativada! 💳'); }} className="w-full py-5 bg-emerald-400 text-black rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-400/20 hover:scale-[1.02] active:scale-95 transition-all pointer-events-auto relative z-50">ATIVAR INFINITEPAY</button>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'perfil' && (
+                <div className="kpi-card !rounded-[3rem] p-10 md:p-12 space-y-10 bg-surface-800 border border-white/5 shadow-2xl text-left relative overflow-hidden">
+                   <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">Perfil do Comandante</h2>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO MESTRE/PROFESSOR</label>
+                        <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary text-left outline-none focus:border-accent-primary" defaultValue="Mestre Julio" />
+                     </div>
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TELEFONE DE COMANDO</label>
+                        <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary text-left outline-none focus:border-accent-primary" defaultValue="+55 21 99999-9999" />
+                     </div>
+                   </div>
+                   <button onClick={(e) => { e.preventDefault(); alert('Perfil de Comando salvo! 🥋'); }} className="px-12 py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-2xl shadow-accent-primary/20 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 pointer-events-auto relative z-50">
+                      <Save className="w-6 h-6 stroke-[3]" /> SALVAR PROFILE
+                   </button>
+                </div>
+              )}
+
+              {activeSection === 'notificacoes' && (
+                <div className="kpi-card !rounded-[3rem] p-10 md:p-12 space-y-12 bg-surface-800 border border-white/5 shadow-2xl text-left relative overflow-hidden">
+                  <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">Alertas Inteligentes</h2>
+                  <div className="space-y-8">
+                    {[
+                      { l: 'Alertas de Lista Negra', d: 'Notificar master quando houver atraso > 5 dias' },
+                      { l: 'Novos Combates (Leads)', d: 'Enviar WhatsApp quando chegar novo lead' },
+                      { l: 'Check-ins Presenciais', d: 'Resumo diário de alunos no tatame' },
+                    ].map((notif, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-8 rounded-3xl bg-surface-900 border border-white/5 shadow-inner hover:bg-surface-800 transition-colors pointer-events-auto cursor-pointer group">
+                        <div className="text-left flex-1">
+                          <p className="text-base font-black text-text-primary uppercase tracking-tight leading-none mb-2 group-hover:text-accent-primary transition-colors">{notif.l}</p>
+                          <p className="text-[10px] text-text-muted font-black uppercase opacity-40 tracking-widest">{notif.d}</p>
+                        </div>
+                        <div className="w-16 h-8 bg-accent-primary/10 rounded-full relative border border-accent-primary/30 group-hover:border-accent-primary transition-all">
+                           <div className="absolute right-1 top-1 w-6 h-6 bg-accent-primary rounded-full shadow-[0_0_15px_rgba(255,199,0,0.4)]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'integracoes' && (
+                <div className="kpi-card !rounded-[3rem] p-10 md:p-12 space-y-10 bg-surface-800 border border-white/5 shadow-2xl text-left relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">Ecossistema</h2>
+                    <Zap className="w-8 h-8 text-accent-primary" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {[
+                      { n: 'WhatsApp (n8n)', d: 'Automação de cobrança', i: Smartphone, c: 'text-emerald-400' },
+                      { n: 'Instagram Meta', d: 'Leads e Posts no QG', i: Globe, c: 'text-pink-400' },
+                      { n: 'E-mail Marketing', d: 'Retenção de alunos', i: Mail, c: 'text-blue-400' },
+                    ].map((int, idx) => (
+                      <div key={idx} className="p-8 rounded-[2.5rem] bg-surface-900 border border-white/5 hover:border-accent-primary transition-all group cursor-pointer text-left shadow-inner flex flex-col justify-between">
+                         <div>
+                            <div className="w-14 h-14 rounded-2xl bg-surface-800 flex items-center justify-center mb-8 group-hover:bg-accent-primary transition-all border border-white/5 shadow-xl">
+                               <int.i className={`w-7 h-7 ${int.c} group-hover:text-black`} />
+                            </div>
+                            <h4 className="text-lg font-black text-text-primary uppercase mb-2 italic tracking-tighter">{int.n}</h4>
+                            <p className="text-[10px] text-text-muted font-black uppercase opacity-40 leading-relaxed tracking-widest">{int.d}</p>
+                         </div>
+                         <div className="mt-10 flex items-center justify-between pt-6 border-t border-white/5">
+                            <span className="text-[9px] font-black uppercase text-text-muted opacity-40">DESCONECTADO</span>
+                            <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-accent-primary transition-all" />
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

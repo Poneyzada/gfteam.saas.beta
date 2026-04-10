@@ -1,187 +1,196 @@
 'use client'
 
-import { useState } from 'react'
-import { useApp } from '@/contexts/AppContext'
-import TopBar from '@/components/TopBar'
-import { DollarSign, TrendingUp, TrendingDown, AlertCircle, Plus, Download, MessageCircle, Zap, Check } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { useState, useEffect } from 'react'
+import { 
+  DollarSign, TrendingUp, TrendingDown, AlertCircle, 
+  Plus, Download, MessageCircle, Zap, Check, 
+  CreditCard, ShoppingBag, X, BarChart3, PieChart
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-const monthlyData = [
-  { m: 'Jan', r: 18400, d: 9200 }, { m: 'Fev', r: 20100, d: 9800 },
-  { m: 'Mar', r: 19600, d: 10100 }, { m: 'Abr', r: 22300, d: 9600 },
-  { m: 'Mai', r: 21800, d: 10400 }, { m: 'Jun', r: 24100, d: 10900 },
-  { m: 'Jul', r: 23600, d: 11200 }, { m: 'Ago', r: 25800, d: 10700 },
-]
-
-const inadimplentes = [
-  { nome: 'Eduardo Faria', valor: 'R$ 180', venc: '01/02/2025', dias: 43, faixa: 'Azul' },
-  { nome: 'Natalia Gomes', valor: 'R$ 180', venc: '01/02/2025', dias: 43, faixa: 'Branca' },
-  { nome: 'Bruno Cardoso', valor: 'R$ 180', venc: '15/02/2025', dias: 29, faixa: 'Azul' },
-  { nome: 'Marcos Torres', valor: 'R$ 200', venc: '01/03/2025', dias: 15, faixa: 'Roxa' },
-]
-
-const texts = {
-  pt: { title: 'Financeiro', revenue: 'Receita do mês', expenses: 'Despesas', profit: 'Lucro líquido', overdue: 'Em aberto', chart: 'Receita vs Despesas', late: 'Inadimplentes', name: 'Aluno', amount: 'Valor', due: 'Vencimento', days: 'Dias', contact: 'WhatsApp', newLaunch: 'Novo Lançamento', export: 'Exportar DRE' },
-  en: { title: 'Financial', revenue: 'Monthly Revenue', expenses: 'Expenses', profit: 'Net Profit', overdue: 'Overdue', chart: 'Revenue vs Expenses', late: 'Late Payments', name: 'Student', amount: 'Amount', due: 'Due Date', days: 'Days', contact: 'WhatsApp', newLaunch: 'New Entry', export: 'Export P&L' },
-}
+type FinanceTab = 'resumo' | 'dre' | 'idr'
 
 export default function FinanceiroPage() {
-  const { lang } = useApp()
-  const tx = texts[lang]
+  const [activeTab, setActiveTab] = useState<FinanceTab>('resumo')
   const [quickItem, setQuickItem] = useState('')
   const [quickValue, setQuickValue] = useState('')
   const [launching, setLaunching] = useState(false)
+  const [isNewLaunchModalOpen, setIsNewLaunchModalOpen] = useState(false)
+  
+  const [kpis, setKpis] = useState({ revenue: 42500, expenses: 18200, profit: 24300, overdue: 1250, overdueCount: 5 })
 
-  const handleQuickLaunch = () => {
+  const handleQuickLaunch = async () => {
     if (!quickItem || !quickValue) return
     setLaunching(true)
-    // Simulação de lançamento
     setTimeout(() => {
       setLaunching(false)
+      setIsNewLaunchModalOpen(false)
       setQuickItem('')
       setQuickValue('')
+      alert('Lançamento realizado com sucesso!')
     }, 1000)
   }
 
+  const tabs = [
+    { id: 'resumo', label: 'Resumo Operacional', icon: BarChart3 },
+    { id: 'dre', label: 'DRE (Resultados)', icon: PieChart },
+    { id: 'idr', label: 'IDR (Indicadores)', icon: TrendingUp },
+  ]
+
   return (
-    <div className="min-h-screen bg-surface-900">
-      <TopBar title={tx.title} />
-      <div className="p-6 space-y-5">
-        {/* KPI Row */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {[
-            { l: tx.revenue, v: 'R$ 25.800', icon: TrendingUp, trend: '+8.4%', up: true },
-            { l: tx.expenses, v: 'R$ 10.700', icon: TrendingDown, trend: '-2.1%', up: true },
-            { l: tx.profit, v: 'R$ 15.100', icon: DollarSign, trend: '+14.2%', up: true },
-            { l: tx.overdue, v: 'R$ 3.240', icon: AlertCircle, trend: '18 alunos', up: false },
-          ].map((k, i) => (
-            <div key={i} className="kpi-card">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(var(--accent-rgb), 0.12)' }}>
-                  <k.icon className="w-4.5 h-4.5" style={{ color: i === 3 ? '#EF4444' : 'var(--accent)' }} />
-                </div>
-                <span className={`text-xs font-semibold ${k.up && i !== 3 ? 'text-emerald-400' : i === 3 ? 'text-red-400' : 'text-emerald-400'}`}>{k.trend}</span>
-              </div>
-              <p className="text-xl font-display font-bold text-text-primary">{k.v}</p>
-              <p className="text-xs text-text-muted mt-1">{k.l}</p>
-            </div>
+    <div className="min-h-screen bg-surface-900 pb-32 text-left relative z-30 pointer-events-auto">
+      {/* Modal Novo Lançamento */}
+      <AnimatePresence>
+        {isNewLaunchModalOpen && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-3xl pointer-events-auto">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 20 }} 
+              className="bg-surface-800 w-full max-w-xl rounded-[3rem] p-12 border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] relative text-left pointer-events-auto"
+            >
+               <button onClick={() => setIsNewLaunchModalOpen(false)} className="absolute top-8 right-8 p-3 text-text-muted hover:text-white border border-white/5 rounded-full bg-surface-900 shadow-xl pointer-events-auto z-50"><X className="w-6 h-6" /></button>
+               <h2 className="text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter mb-10 leading-none">Novo Lançamento <br /><span className="text-accent-primary italic">Financeiro</span></h2>
+               <div className="space-y-8">
+                  <div className="space-y-3 pointer-events-auto">
+                     <label className="text-[11px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">DESCRIÇÃO DO ITEM / CATEGORIA</label>
+                     <input 
+                       type="text" 
+                       value={quickItem} 
+                       onChange={(e) => setQuickItem(e.target.value)} 
+                       className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-5 text-base font-bold text-text-primary focus:border-accent-primary outline-none shadow-inner pointer-events-auto" 
+                       placeholder="Ex: Aluguel, Kit Faixas, Suplementos..." 
+                     />
+                  </div>
+                  <div className="space-y-3 pointer-events-auto">
+                     <label className="text-[11px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">VALOR DA OPERAÇÃO (R$)</label>
+                     <input 
+                       type="text" 
+                       value={quickValue} 
+                       onChange={(e) => setQuickValue(e.target.value)} 
+                       className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-5 text-base font-bold text-text-primary focus:border-accent-primary outline-none shadow-inner pointer-events-auto" 
+                       placeholder="0,00" 
+                     />
+                  </div>
+                  <button 
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleQuickLaunch(); }} 
+                    disabled={launching}
+                    className="w-full py-6 bg-accent-primary text-black rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-2xl shadow-accent-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-40 pointer-events-auto"
+                  >
+                     {launching ? <Zap className="w-6 h-6 animate-spin" /> : <><span>SINCRONIZAR NO CAIXA</span><Check className="w-6 h-6 stroke-[3]" /></>}
+                  </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <div className="p-4 md:p-10 space-y-12 animate-fade-in text-left pointer-events-auto">
+        {/* Header Hero */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 relative z-40 pointer-events-auto">
+           <div className="text-left">
+              <h1 className="text-4xl md:text-6xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none mb-4">Financeiro <br /><span className="text-accent-primary italic underline underline-offset-8">Matriz de Comando</span></h1>
+              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Gestão estratégica de fluxo e DRE unificado</p>
+           </div>
+           <div className="flex flex-wrap items-center gap-4">
+              <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsNewLaunchModalOpen(true); }} 
+                className="px-10 py-5 bg-accent-primary text-black rounded-[2rem] text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-accent-primary/20 hover:scale-105 transition-all border-none active:scale-95 pointer-events-auto flex items-center gap-4 relative z-50"
+              >
+                 <Plus className="w-7 h-7 stroke-[3]" /> <span className="font-black">NOVO LANÇAMENTO</span>
+              </button>
+           </div>
+        </div>
+
+        {/* Navigation Tabs (DRE & IDR) */}
+        <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-hide relative z-40 pointer-events-auto shadow-2xl">
+          {tabs.map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTab(tab.id as FinanceTab); }}
+              className={`flex items-center gap-4 px-10 py-5 rounded-[2rem] cursor-pointer transition-all whitespace-nowrap border border-white/5 relative z-10 pointer-events-auto hover:bg-surface-800 active:scale-95 group ${
+                activeTab === tab.id 
+                  ? 'bg-accent-primary text-black dark:text-black shadow-2xl font-black uppercase text-[10px] tracking-[0.25em] translate-y-[-2px]' 
+                  : 'bg-surface-800/50 text-text-muted font-black uppercase text-[10px] tracking-[0.25em]'
+              }`}
+            >
+              <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-black' : 'group-hover:text-text-primary transition-colors'}`} />
+              <span className={activeTab === tab.id ? 'text-black font-black' : ''}>{tab.label}</span>
+            </button>
           ))}
         </div>
-        
-        {/* Quick Actions (Expediente/Limpeza) */}
-        <div className="kpi-card !rounded-[2.5rem] bg-accent-primary/5 border-accent-primary/20 p-6 shadow-xl shadow-accent-primary/5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex-shrink-0">
-              <h2 className="text-sm font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
-                <Zap className="w-4 h-4 text-accent-primary animate-pulse" />
-                Lançamento Rápido
-              </h2>
-              <p className="text-[10px] text-text-muted font-bold mt-1 uppercase tracking-tighter">Sabão, Cândida, Pano, Café — Lançou, tá pago!</p>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-              {[
-                { label: 'Sabão', icon: '🧼' },
-                { label: 'Cândida', icon: '🧪' },
-                { label: 'Pano', icon: '🧹' },
-                { label: 'Café', icon: '☕' },
-                { label: 'Água', icon: '💧' },
-              ].map((item) => (
-                <button 
-                  key={item.label}
-                  className={`bg-surface-800 border py-2.5 px-5 rounded-[1.2rem] flex items-center gap-2.5 transition-all group active:scale-95 shadow-lg hover:shadow-accent-primary/10 ${quickItem === item.label ? 'border-accent-primary bg-accent-primary/5' : 'border-white/5 hover:border-accent-primary/50'}`}
-                  onClick={() => {
-                    setQuickItem(item.label)
-                    setQuickValue('15,00')
-                  }}
-                >
-                  <span className="text-sm scale-110">{item.icon}</span>
-                  <span className="text-[10px] font-black uppercase text-text-primary group-hover:text-accent-primary tracking-wider">{item.label}</span>
-                </button>
-              ))}
-              
-              <div className="h-10 w-px bg-white/10 mx-3 hidden lg:block" />
-              
-              <div className="flex items-center gap-3 bg-surface-700/50 border border-white/10 rounded-[1.2rem] px-4 py-2 flex-1 md:max-w-[180px] focus-within:border-accent-primary/50 transition-all shadow-inner group">
-                <Plus className="w-4 h-4 text-text-muted group-focus-within:text-accent-primary" />
-                <input 
-                  type="text" 
-                  placeholder="Item..."
-                  value={quickItem}
-                  onChange={(e) => setQuickItem(e.target.value)}
-                  className="bg-transparent text-[11px] font-bold text-text-primary placeholder:text-text-muted outline-none w-full"
-                />
-              </div>
 
-              <div className="flex items-center gap-2 bg-surface-700/50 border border-white/10 rounded-[1.2rem] px-4 py-2 w-28 focus-within:border-accent-primary/50 transition-all shadow-inner group">
-                <span className="text-[10px] font-black text-text-muted">R$</span>
-                <input 
-                  type="text" 
-                  placeholder="0,00"
-                  value={quickValue}
-                  onChange={(e) => setQuickValue(e.target.value)}
-                  className="bg-transparent text-[11px] font-bold text-text-primary placeholder:text-text-muted outline-none w-full"
-                />
-              </div>
-
-              <button 
-                onClick={handleQuickLaunch}
-                disabled={!quickItem || !quickValue || launching}
-                className="w-10 h-10 rounded-xl bg-accent-primary flex items-center justify-center shadow-lg shadow-accent-primary/20 hover:scale-110 active:scale-95 transition-all text-surface-900 disabled:opacity-30 disabled:grayscale disabled:scale-100"
-              >
-                {launching ? <Zap className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          {/* Chart */}
-          <div className="xl:col-span-2 kpi-card">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-display font-semibold text-text-primary">{tx.chart}</h2>
-              <div className="flex gap-2">
-                <button className="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1.5">
-                  <Download className="w-3.5 h-3.5" /> {tx.export}
-                </button>
-                <button className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5">
-                  <Plus className="w-3.5 h-3.5" /> {tx.newLaunch}
-                </button>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={monthlyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#2E2E3A" vertical={false} />
-                <XAxis dataKey="m" tick={{ fill: '#71717A', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#71717A', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
-                <Tooltip contentStyle={{ background: '#18181F', border: '1px solid #2E2E3A', borderRadius: '12px', fontSize: '12px' }} formatter={(v: any) => [`R$ ${v.toLocaleString('pt-BR')}`, '']} />
-                <Bar dataKey="r" name="Receita" fill="var(--accent)" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="d" name="Despesa" fill="#E63B2E" radius={[6, 6, 0, 0]} opacity={0.7} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Inadimplentes */}
-          <div className="kpi-card">
-            <h2 className="font-display font-semibold text-text-primary mb-4">{tx.late}</h2>
-            <div className="space-y-3">
-              {inadimplentes.map((a, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 rounded-xl hover:bg-surface-600 transition-colors">
-                  <div className="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center text-[10px] font-bold text-red-400">
-                    {a.nome.split(' ').map(n => n[0]).join('').slice(0,2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-text-primary truncate">{a.nome}</p>
-                    <p className="text-[10px] text-text-muted">{a.valor} · {a.dias}d</p>
-                  </div>
-                  <button className="p-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all">
-                    <MessageCircle className="w-3.5 h-3.5" />
-                  </button>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-12 relative z-30 pointer-events-auto"
+          >
+            {activeTab === 'resumo' && (
+              <>
+                {/* Action Cards Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 pointer-events-auto">
+                   {[
+                     { label: 'Carteirinha', icon: CreditCard, color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                     { label: 'Kit Balcão', icon: ShoppingBag, color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+                     { label: 'Estoque', icon: Zap, color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+                     { label: 'Saques', icon: DollarSign, color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+                   ].map((btn, i) => (
+                     <button 
+                       key={i} 
+                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); alert(`Acessando ${btn.label}... 🚀`); }}
+                       className={`p-10 rounded-[3.5rem] border transition-all flex flex-col items-start justify-between gap-10 group active:scale-95 ${btn.color} hover:bg-accent-primary hover:text-black hover:border-accent-primary shadow-2xl pointer-events-auto relative overflow-hidden text-left h-full min-h-[220px] shadow-inner`}
+                     >
+                        <div className="w-16 h-16 rounded-[1.8rem] bg-surface-900 border border-white/5 flex items-center justify-center group-hover:bg-black/10 transition-colors shadow-2xl">
+                           <btn.icon className="w-8 h-8 group-hover:scale-110 transition-transform opacity-100" />
+                        </div>
+                        <span className="text-[14px] font-black uppercase tracking-[0.23em] group-hover:text-black italic leading-none">{btn.label}</span>
+                     </button>
+                   ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
+
+                {/* KPI Row */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 pointer-events-auto">
+                  {[
+                    { l: 'Receita Bruta', v: `R$ ${kpis.revenue.toLocaleString()}`, icon: TrendingUp, color: 'text-accent-primary' },
+                    { l: 'Despesas Gerais', v: `R$ ${kpis.expenses.toLocaleString()}`, icon: TrendingDown, color: 'text-red-400' },
+                    { l: 'Profit Líquido', v: `R$ ${kpis.profit.toLocaleString()}`, icon: DollarSign, color: 'text-emerald-400' },
+                    { l: 'Inadimplência', v: `R$ ${kpis.overdue.toLocaleString()}`, icon: AlertCircle, color: 'text-red-500' },
+                  ].map((k, i) => (
+                    <div key={i} className="kpi-card !rounded-[3rem] p-12 bg-surface-800 border border-white/5 shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative overflow-hidden group text-left pointer-events-auto">
+                      <div className="p-5 w-fit rounded-2xl bg-surface-900 border border-white/5 mb-10 group-hover:bg-accent-primary transition-all shadow-2xl">
+                        <k.icon className={`w-8 h-8 ${k.color} group-hover:text-black`} />
+                      </div>
+                      <p className="text-3xl md:text-5xl font-display font-black text-text-primary tracking-tighter italic leading-none mb-4">{k.v}</p>
+                      <p className="text-[12px] text-text-muted font-black uppercase tracking-[0.3em] opacity-40 italic">{k.l}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {(activeTab === 'dre' || activeTab === 'idr') && (
+              <div className="kpi-card !rounded-[4rem] p-16 bg-surface-800 border border-white/10 shadow-2xl text-left min-h-[500px] flex flex-col items-center justify-center space-y-10 pointer-events-auto backdrop-blur-3xl">
+                 <div className="w-32 h-32 rounded-[4rem] bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center shadow-[0_0_50px_rgba(var(--accent-rgb),0.1)]">
+                    <BarChart3 className="w-16 h-16 text-accent-primary animate-pulse" />
+                 </div>
+                 <div className="text-center space-y-4">
+                    <h2 className="text-4xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none">Demonstrativo de <br /><span className="text-accent-primary">Performance Unificada</span></h2>
+                    <p className="text-[13px] text-text-muted font-black uppercase tracking-[0.4em] opacity-40">Sincronizando registros com o Banco de Dados Central...</p>
+                 </div>
+                 <button 
+                  onClick={(e) => { e.preventDefault(); alert('Gerando PDF Estratégico... 📄🥋'); }}
+                  className="px-12 py-6 bg-surface-700 text-text-primary rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] hover:bg-accent-primary hover:text-black transition-all border border-white/5 shadow-2xl active:scale-95 pointer-events-auto"
+                 >
+                    GERAR RELATÓRIO PDF EXECUTIVO
+                 </button>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )

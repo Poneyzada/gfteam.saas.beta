@@ -82,66 +82,48 @@ export default function MasterAdoptionPage() {
       </div>
 
       {/* Header */}
-      <div className="px-10 py-10 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-accent-primary/10 flex items-center justify-center">
-              <Shield className="w-5 h-5 accent-text" />
+      <div className="px-10 py-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="text-left">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-accent-primary flex items-center justify-center shadow-xl shadow-accent-primary/20">
+              <Shield className="w-6 h-6 text-black" />
             </div>
-            <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Master • Visão Global</span>
+            <div className="text-left">
+               <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em] block">Rede Global • Acesso Master</span>
+               <h1 className="text-4xl md:text-5xl font-display font-black text-text-primary tracking-tighter uppercase italic">Gestão Matriz</h1>
+            </div>
           </div>
-          <h1 className="text-[2.5rem] font-display font-bold text-text-primary tracking-tight">
-            Gestão Matriz
-          </h1>
-          <p className="text-text-secondary mt-1 font-medium opacity-60 text-sm">
-            Métricas de adoção e repasse de franquia
-          </p>
+          <p className="text-text-muted mt-1 font-bold uppercase tracking-widest opacity-60 text-[10px] text-left">Controle de unidades, adoção de sistema e repasses</p>
         </div>
-        <button
-          onClick={fetchAdoption}
-          disabled={loading}
-          className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-surface-700 border border-surface-500 text-sm font-bold text-text-secondary hover:border-accent-primary/50 transition-all"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Atualizar
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={fetchAdoption}
+            disabled={loading}
+            className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-surface-800 border border-white/5 text-[10px] font-black uppercase tracking-widest text-text-primary hover:border-accent-primary transition-all shadow-xl pointer-events-auto"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Sincronizar Rede
+          </button>
+        </div>
       </div>
 
       <div className="px-10 space-y-10">
         {/* KPI Summary (DRE/IDR Style) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="kpi-card !rounded-[2.5rem] p-8 flex items-center gap-6 group cursor-pointer overflow-hidden">
-            <div className="card-accent" />
-            <div className="w-14 h-14 rounded-[1.5rem] bg-emerald-400/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { l: 'Unidades Ativas', v: using, i: Globe, c: 'text-accent-primary', bg: 'bg-accent-primary/10' },
+            { l: 'Pendentes Sistema', v: notUsing, i: Zap, c: 'text-amber-400', bg: 'bg-amber-400/10' },
+            { l: 'Repasses em Atraso', v: inactive, i: XCircle, c: 'text-red-500', bg: 'bg-red-500/10' },
+            { l: 'Faturamento Estimado', v: 'R$ 42k', i: DollarSign, c: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+          ].map((kpi, idx) => (
+            <div key={idx} className="kpi-card !rounded-[2.5rem] p-8 bg-surface-800 border border-white/5 shadow-2xl relative overflow-hidden group hover:border-accent-primary transition-all cursor-pointer">
+              <div className={`w-14 h-14 rounded-2xl ${kpi.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <kpi.i className={`w-7 h-7 ${kpi.c}`} />
+              </div>
+              <p className="text-[2.5rem] font-display font-black text-text-primary leading-none italic tracking-tighter text-left">{kpi.v}</p>
+              <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mt-2 opacity-60 text-left">{kpi.l}</p>
             </div>
-            <div>
-              <p className="text-[3rem] font-display font-black text-text-primary leading-none">{using}</p>
-              <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mt-1">Academias Ativas</p>
-            </div>
-          </div>
-
-          <div className="kpi-card !rounded-[2.5rem] p-8 flex items-center gap-6 group cursor-pointer overflow-hidden">
-            <div className="card-accent" />
-            <div className="w-14 h-14 rounded-[1.5rem] bg-yellow-400/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-              <DollarSign className="w-7 h-7 text-yellow-400" />
-            </div>
-            <div>
-              <p className="text-[3rem] font-display font-black text-text-primary leading-none">{notUsing}</p>
-              <p className="text-[10px] font-black text-yellow-400 uppercase tracking-widest mt-1">Repasses Pendentes</p>
-            </div>
-          </div>
-
-          <div className="kpi-card !rounded-[2.5rem] p-8 flex items-center gap-6 group cursor-pointer overflow-hidden">
-            <div className="card-accent" />
-            <div className="w-14 h-14 rounded-[1.5rem] bg-red-400/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-7 h-7 text-red-400" />
-            </div>
-            <div>
-              <p className="text-[3rem] font-display font-black text-text-primary leading-none">R$ 42k</p>
-              <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mt-1">Previsão Faturamento</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Units List */}

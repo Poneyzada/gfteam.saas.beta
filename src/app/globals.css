@@ -126,14 +126,28 @@
 
   .btn-primary {
     @apply relative overflow-hidden px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 flex items-center justify-center gap-3;
-    background-color: var(--accent);
-    color: #000;
+    background-color: var(--accent) !important;
+    color: #000000 !important;
     box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.2);
   }
   .btn-primary:hover { 
     transform: translateY(-2px); 
     box-shadow: 0 15px 40px rgba(var(--accent-rgb), 0.4); 
     filter: brightness(1.05); 
+    color: #000000 !important;
+  }
+
+  .force-black {
+    color: #000000 !important;
+  }
+
+  .nav-tab-active {
+    @apply bg-accent-primary shadow-xl force-black !text-black font-black transition-all;
+    background-color: var(--accent) !important;
+  }
+  
+  .force-white {
+    color: #FFFFFF !important;
   }
 
   .glass {

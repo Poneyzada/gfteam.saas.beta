@@ -1,353 +1,329 @@
 'use client'
 
-import { useApp } from '@/contexts/AppContext'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import {
-  Users, Zap, TrendingUp, DollarSign,
-  Calendar, Bell, Search, Clock,
-  ArrowRight, QrCode, Target, MessageCircle, X, Plus
+import { 
+  Users, TrendingUp, DollarSign, Zap, 
+  Megaphone, Plus, Bell, X, Send,
+  ArrowUpRight, AlertCircle, TrendingDown,
+  Award, PlayCircle, MessageSquare, Phone,
+  ChevronRight, Calendar, Clock
 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-export default function OriginalPremiumDashboard() {
-  const { lang, mode } = useApp()
-  const [userName, setUserName] = useState<string>('Mestre')
-  const [userRole, setUserRole] = useState<string>('manager')
+type AnnouncementType = 'announcement' | 'seminar' | 'graduation'
+
+interface Announcement {
+  id: string
+  title: string
+  content: string
+  type: AnnouncementType
+  created_at: string
+}
+
+interface OverdueStudent {
+  student: {
+    full_name: string
+    belt: string
+    phone: string
+  }
+  amount: number
+  description: string
+  due_date: string
+  days_overdue: number
+  reason: string
+}
+
+export default function DashboardPage() {
+  const [isQGModalOpen, setIsQGModalOpen] = useState(false)
+  const [announcementType, setAnnouncementType] = useState<AnnouncementType>('announcement')
+  const [announcementTitle, setAnnouncementTitle] = useState('')
+  const [announcementText, setAnnouncementText] = useState('')
+  const [posting, setPosting] = useState(false)
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [selectedOverdue, setSelectedOverdue] = useState<OverdueStudent | null>(null)
   
-  // Real-time Data States
-  const [expLeads, setExpLeads] = useState<any[]>([])
-  const [upcomingClasses, setUpcomingClasses] = useState<any[]>([])
-  const [announcements, setAnnouncements] = useState<any[]>([])
-  const [checkins, setCheckins] = useState<any[]>([
-    { id: 1, name: 'Lucas Andrade', belt: 'Azul', time: '17:28', beltColor: 'bg-blue-600', img: 'https://i.pravatar.cc/100?u=lucas' },
-    { id: 2, name: 'Ana Silva', belt: 'Branca', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
-  ])
-  const [loading, setLoading] = useState(true)
-  const [showPostModal, setShowPostModal] = useState(false)
-  const [newPost, setNewPost] = useState({ title: '', content: '' })
+  const [overdueStudents, setOverdueStudents] = useState<OverdueStudent[]>([])
+  const [trialLessons, setTrialLessons] = useState<any[]>([])
+  const [stats, setStats] = useState({
+    students: 248,
+    leads: 12,
+    revenue: 42500,
+    overdue: 850
+  })
 
   useEffect(() => {
-    async function getData() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase.from('profiles').select('full_name, role, tenant_id').eq('id', user.id).single()
-        if (profile) {
-          setUserName(profile.full_name || 'Mestre')
-          setUserRole(profile.role)
-          
-          // Fetch Real Data from Supabase
-          const [leadsRes, classesRes, newsRes] = await Promise.all([
-            supabase.from('leads').select('*').eq('tenant_id', profile.tenant_id).eq('status', 'agendado').order('created_at', { ascending: false }).limit(3),
-            supabase.from('schedules').select('*').eq('tenant_id', profile.tenant_id).limit(4),
-            supabase.from('notifications').select('*').limit(2).order('created_at', { ascending: false })
-          ])
-
-          if (leadsRes.data) setExpLeads(leadsRes.data)
-          if (classesRes.data) setUpcomingClasses(classesRes.data)
-          if (newsRes.data) setAnnouncements(newsRes.data)
-        }
-      }
-      setLoading(false)
-    }
-    getData()
+    fetchData()
   }, [])
 
-  const handlePost = async () => {
-    if (!newPost.title || !newPost.content) return
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      
-      const { data: profile } = await supabase.from('profiles').select('tenant_id').eq('id', user.id).single()
-      
-      const { error } = await supabase.from('notifications').insert({
-        title: newPost.title,
-        content: newPost.content,
-        tenant_id: profile?.tenant_id || null,
-        created_at: new Date().toISOString()
-      })
-      
-      if (!error) {
-        setAnnouncements([{ title: newPost.title, created_at: new Date().toISOString() }, ...announcements])
-        setShowPostModal(false)
-        setNewPost({ title: '', content: '' })
-        alert('Aviso postado com sucesso!')
-      }
-    } catch (err) {
-      console.error(err)
-    }
+  async function fetchData() {
+    const mockAnnouncements: Announcement[] = [
+      { id: '1', title: 'Graduação de Inverno', content: 'Atenção aos horários da cerimônia no sábado.', type: 'graduation', created_at: new Date().toISOString() },
+      { id: '2', title: 'Seminário de Passagem', content: 'Inscrições abertas na recepção.', type: 'seminar', created_at: new Date().toISOString() }
+    ]
+    setAnnouncements(mockAnnouncements)
+
+    const mockOverdue: OverdueStudent[] = [
+      { student: { full_name: 'Ricardo Almeida', belt: 'Marrom', phone: '(21) 98888-1234' }, amount: 150, description: 'Mensalidade Março', due_date: '10/03/2024', days_overdue: 15, reason: 'Cartão de crédito recusado na recorrência.' },
+      { student: { full_name: 'Ana Paula Silva', belt: 'Azul', phone: '(21) 97777-5678' }, amount: 200, description: 'Exame de Faixa', due_date: '15/03/2024', days_overdue: 10, reason: 'Aguardando confirmação de transferência PIX.' },
+      { student: { full_name: 'Marcos Freitas', belt: 'Preta 2º Grau', phone: '(21) 96666-4444' }, amount: 500, description: 'Anuidade Filiado', due_date: '01/03/2024', days_overdue: 25, reason: 'Esquecimento conforme contato inicial.' }
+    ]
+    setOverdueStudents(mockOverdue)
+
+    const mockLeads = [
+      { name: 'João Victor', phone: '(21) 98888-7777', source: 'Instagram' },
+      { name: 'Maria Eduarda', phone: '(21) 97777-6666', source: 'Landing Page' }
+    ]
+    setTrialLessons(mockLeads)
   }
 
-  const stats = [
-    { label: 'Alunos Ativos', value: '185', icon: Users, trend: '+8%', color: 'text-emerald-400' },
-    { label: 'Novos Leads', value: '12', icon: Zap, trend: '+3 hoje', color: 'text-amber-400' },
-    { label: 'Frequência', value: '82%', icon: TrendingUp, trend: '+2%', color: 'text-blue-400' },
-    { label: 'Faturamento', value: '14.2k', icon: DollarSign, trend: '94%', color: 'text-emerald-400' },
+  const handlePostAnnouncement = async () => {
+    if (!announcementTitle || !announcementText) return
+    setPosting(true)
+    setTimeout(() => {
+      const newAnn: Announcement = {
+        id: Math.random().toString(),
+        title: announcementTitle,
+        content: announcementText,
+        type: announcementType,
+        created_at: new Date().toISOString()
+      }
+      setAnnouncements([newAnn, ...announcements])
+      setPosting(false); setIsQGModalOpen(false); setAnnouncementTitle(''); setAnnouncementText('')
+    }, 1500)
+  }
+
+  const types = [
+    { id: 'announcement', label: 'Aviso', icon: Megaphone },
+    { id: 'seminar', label: 'Seminário', icon: Zap },
+    { id: 'graduation', label: 'Graduação', icon: Award }
   ]
 
   return (
-    <div className="min-h-screen bg-surface-900 pb-20 relative overflow-hidden stippled transition-colors duration-500">
-      {/* Background Orbs */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      
-      {/* Header Area */}
-      <div className="px-6 md:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-             <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
-             <p className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em]">Sistema de Elite • Online</p>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-display font-black text-text-primary tracking-tighter italic">
-            Olá, <span className="text-accent-primary">{userName.split(' ')[0]}</span>
-          </h1>
-          <p className="text-text-muted mt-2 font-bold uppercase tracking-widest text-[10px] opacity-60">
-            {userRole === 'instructor' ? 'Monitoramento Técnico • Visão Restrita' : 'Comando Central • Gestão de Performance'}
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4">
-             <button className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center hover:border-accent-primary/50 transition-all">
-               <Search className="w-5 h-5 text-text-muted" />
-             </button>
-             <button className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center relative">
-               <Bell className="w-5 h-5 text-text-muted" />
-               <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-accent-primary accent-shadow" />
-             </button>
-             <button 
-              onClick={() => { window.location.href = '/login' }} 
-              className="px-6 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all"
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-6 md:px-12 space-y-12 relative z-10">
-        
-        {/* KPI Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-          {stats.map((s, i) => (
-            <div key={i} className="kpi-card group cursor-pointer border-white/5">
-              <div className="card-accent" />
-              <div className="flex items-center justify-between mb-6 md:mb-10">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-surface-700 flex items-center justify-center border border-white/5">
-                  <s.icon className="w-6 h-6 md:w-8 md:h-8 text-accent-primary" />
-                </div>
-                <div className="text-right">
-                   <span className={`text-[9px] md:text-[10px] font-black ${s.color} bg-surface-700 px-3 py-1 rounded-full`}>{s.trend}</span>
-                   <p className="text-[9px] md:text-[10px] text-text-muted font-black uppercase tracking-widest mt-2">{s.label}</p>
-                </div>
-              </div>
-              <p className="text-4xl md:text-6xl font-display font-black text-text-primary tracking-tighter italic group-hover:translate-x-2 transition-transform">{s.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Content Grid - ORIGINAL 8x4 */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
-          
-          {/* Main Area (8 cols) */}
-          <div className="xl:col-span-8 space-y-12">
-            
-            {/* Top row: Check-ins & Avisos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-               {/* Quadrado de Presença (Check-ins) */}
-               <div className="kpi-card !p-8 md:!p-10 bg-surface-800 border-accent-primary/20">
-                  <div className="card-accent" />
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h3 className="text-2xl font-display font-black text-text-primary tracking-tighter italic">PRESENÇA</h3>
-                      <p className="text-[10px] text-text-muted font-black uppercase">Confirmar Alunos</p>
-                    </div>
-                    <div className="w-12 h-12 rounded-xl bg-accent-primary flex items-center justify-center hatched">
-                      <Users className="w-6 h-6 text-black" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {checkins.map(c => (
-                      <div key={c.id} className="flex items-center justify-between p-4 rounded-2xl bg-surface-900 border border-white/5 group hover:border-accent-primary/40 transition-all">
-                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-surface-700 overflow-hidden relative">
-                               <img src={c.img} alt={c.name} className="w-full h-full object-cover" />
-                               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${c.beltColor} border border-surface-900`} />
-                            </div>
-                            <div>
-                               <p className="text-xs font-black text-text-primary">{c.name}</p>
-                               <p className="text-[9px] text-text-muted font-bold uppercase">{c.belt} • {c.time}</p>
-                            </div>
-                         </div>
-                      <button 
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          // Real Database Connection
-                          try {
-                            const { data: { user } } = await supabase.auth.getUser();
-                            if (user) {
-                              const { error } = await supabase.from('attendance').insert({
-                                student_name: c.name,
-                                student_belt: c.belt,
-                                instructor_id: user.id,
-                                status: 'presenca_marcada'
-                              });
-                              if (error) console.error('Erro ao marcar presença:', error);
-                            }
-                          } catch (err) {
-                            console.error('Falha de conexão:', err);
-                          }
-                          
-                          alert(`Presença confirmada para ${c.name}`);
-                          setCheckins(checkins.filter(item => item.id !== c.id));
-                        }}
-                        className="w-10 h-10 rounded-xl bg-accent-primary border border-accent-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-accent-primary/20"
-                       >
-                          <Zap className={`w-5 h-5 ${mode === 'light' ? 'text-black' : 'text-white'} filter drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]`} />
-                       </button>
-                      </div>
-                    ))}
-                    {checkins.length === 0 && <p className="text-center py-4 text-[10px] text-text-muted uppercase font-black opacity-30">Sem pendências</p>}
-                  </div>
-               </div>
-
-               {/* Avisos QG */}
-               <div className="kpi-card !p-8 md:!p-10">
-                  <div className="card-accent opacity-20" />
-                  <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-display font-black text-text-primary italic tracking-tighter uppercase">Avisos do QG</h3>
-                      <button 
-                        onClick={() => setShowPostModal(true)}
-                        className="px-3 py-1.5 bg-accent-primary text-black text-[10px] font-black uppercase rounded-xl hover:scale-110 active:scale-95 transition-all shadow-lg shadow-accent-primary/20"
-                      >
-                        Postar
-                      </button>
-                  </div>
-                  <div className="space-y-4">
-                    {announcements.map((news, idx) => (
-                      <div key={idx} className="p-4 rounded-2xl bg-surface-900 border border-white/5 hover:bg-surface-800 transition-all">
-                         <p className="text-xs text-text-primary font-black uppercase italic mb-1">{news.title}</p>
-                         <p className="text-[9px] text-text-muted font-bold">{new Date(news.created_at).toLocaleDateString()}</p>
-                      </div>
-                    ))}
-                  </div>
-               </div>
-            </div>
-
-            {/* Bottom row: Experimentais & Kit Marketing (SMALL) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-               {/* Experimentais (8 de 12 sub-fluxo) */}
-               <div className="md:col-span-8 kpi-card !p-8 md:!p-10">
-                  <div className="card-accent opacity-30" />
-                  <h3 className="text-2xl font-display font-black text-accent-primary mb-8 italic tracking-tighter uppercase">Experimentais</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {expLeads.length > 0 ? expLeads.map((exp, i) => (
-                      <div key={i} className="p-5 rounded-3xl bg-surface-900 border border-white/5 group hover:border-accent-primary/40 transition-all">
-                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-surface-700 flex items-center justify-center border border-white/10">
-                               <MessageCircle className="w-5 h-5 text-text-muted opacity-50" />
-                            </div>
-                            <div>
-                               <p className="text-xs font-black text-text-primary uppercase truncate max-w-[100px]">{exp.name}</p>
-                               <span className="text-[8px] font-black bg-accent-primary/10 text-accent-primary px-2 py-0.5 rounded-md uppercase">Agendado</span>
-                            </div>
-                         </div>
-                         <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                            <span className="text-[9px] text-text-muted font-bold">{exp.source}</span>
-                            <button onClick={() => window.open(`https://wa.me/${exp.phone.replace(/\D/g,'')}`)} className="text-[9px] font-black text-accent-primary uppercase hover:underline">WhatsApp</button>
-                         </div>
-                      </div>
-                    )) : (
-                      <div className="col-span-2 py-8 text-center opacity-30 italic text-[10px] font-black uppercase text-text-muted">Nenhum agendado</div>
-                    )}
-                  </div>
-               </div>
-
-               {/* Kit Marketing (4 de 12 sub-fluxo) - SMALLER */}
-               <div className="md:col-span-4 kpi-card !p-6 bg-accent-primary border-none text-black flex flex-col items-center justify-center text-center hatched shadow-xl">
-                  <h3 className="text-xl font-display font-black mb-1 italic tracking-tighter uppercase leading-none">KIT<br/>MARKETING</h3>
-                  <div className="w-20 h-20 bg-white rounded-2xl p-2 my-4 rotate-3 hover:rotate-0 transition-transform">
-                      <QrCode className="w-full h-full text-black" />
-                  </div>
-                  <button className="w-full py-3 rounded-xl bg-black text-white text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all">
-                    BAIXAR
-                  </button>
-               </div>
-            </div>
-          </div>
-
-          {/* Right Sidebar (4 cols): Treinos / Próximas Aulas */}
-          <div className="xl:col-span-4">
-            <div className="kpi-card !p-8 md:!p-10 h-full bg-surface-800">
-               <div className="card-accent h-[120px]" />
-               <div className="flex items-center justify-between mb-10 relative z-10">
-                  <h2 className="text-2xl font-display font-black text-text-primary tracking-tighter italic uppercase">Agenda Local</h2>
-                  <Calendar className="w-5 h-5 text-accent-primary" />
-               </div>
-               
-               <div className="space-y-6 relative z-10">
-                  {upcomingClasses.length > 0 ? upcomingClasses.map((cls, idx) => (
-                    <div key={idx} className="p-6 rounded-[2.5rem] bg-surface-900 border border-white/5 group hover:border-accent-primary/40 transition-all shadow-lg">
-                       <p className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-2 group-hover:text-accent-primary transition-colors">{cls.class_type}</p>
-                       <h4 className="text-lg md:text-xl font-display font-black text-text-primary tracking-tighter italic uppercase mb-4 leading-tight">{cls.class_name}</h4>
-                       <div className="flex items-center gap-3 text-[10px] text-text-muted font-bold">
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{cls.time_start} • {cls.instructor_name}</span>
-                       </div>
-                    </div>
-                  )) : (
-                    <div className="py-20 text-center opacity-30 italic text-xs font-black uppercase text-text-muted">Carregando aulas...</div>
-                  )}
-               </div>
-
-               <button 
-                 onClick={() => window.location.href='/dashboard/cronograma'}
-                 className="w-full mt-10 py-5 rounded-2xl border border-dashed border-white/10 text-[10px] font-black text-text-muted uppercase tracking-[0.3em] hover:text-accent-primary hover:border-accent-primary transition-all"
-               >
-                 + Ver Completo
-               </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Post Modal */}
-      {showPostModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPostModal(false)} />
-           <div className="bg-surface-800 border border-white/10 w-full max-w-lg rounded-[3rem] p-10 relative z-10 animate-fade-up shadow-2xl">
-              <h2 className="text-2xl font-display font-black text-text-primary tracking-tighter italic uppercase mb-6">Novo Aviso QG</h2>
+    <div className="relative min-h-screen bg-surface-900 overflow-x-hidden pb-32 z-30 pointer-events-auto">
+      {/* QG Modal */}
+      <AnimatePresence>
+        {isQGModalOpen && (
+          <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/90 backdrop-blur-3xl pointer-events-auto">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }} className="bg-surface-800 w-full max-w-xl rounded-[3rem] p-10 md:p-12 border border-white/10 shadow-2xl relative text-left pointer-events-auto">
+              <button onClick={() => setIsQGModalOpen(false)} className="absolute top-8 right-8 p-3 rounded-full bg-surface-900 text-text-muted hover:text-white border border-white/5 pointer-events-auto z-50 shadow-xl"><X className="w-6 h-6" /></button>
               
-              <div className="space-y-4">
-                 <div>
-                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Título do Aviso</label>
-                    <input 
-                      type="text" 
-                      value={newPost.title}
-                      onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                      className="w-full mt-2 bg-surface-900 border border-white/5 p-4 rounded-2xl outline-none focus:border-accent-primary text-text-primary font-bold placeholder:opacity-30"
-                      placeholder="Ex: Seminário este Sábado"
-                    />
-                 </div>
-                 <div>
-                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Conteúdo</label>
-                    <textarea 
-                      value={newPost.content}
-                      onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                      className="w-full mt-2 bg-surface-900 border border-white/5 p-4 rounded-2xl outline-none focus:border-accent-primary text-text-primary font-medium h-32 placeholder:opacity-30"
-                      placeholder="Descreva o aviso aqui..."
-                    />
-                 </div>
+              <div className="mb-10">
+                <h2 className="text-3xl font-display font-black text-white uppercase italic tracking-tighter leading-none mb-2">Relatório do <span className="text-accent-primary">Front QG</span></h2>
+                <p className="text-[11px] text-text-muted font-black uppercase tracking-widest opacity-60">Sincronizar instrução para toda a unidade</p>
               </div>
 
-              <div className="flex gap-4 mt-8">
-                 <button onClick={() => setShowPostModal(false)} className="flex-1 py-4 rounded-2xl bg-surface-700 text-text-primary font-black uppercase text-xs">Cancelar</button>
-                 <button onClick={handlePost} className="flex-1 py-4 rounded-2xl bg-accent-primary text-black font-black uppercase text-xs shadow-lg shadow-accent-primary/20 hover:scale-105 active:scale-95 transition-all">Postar Agora</button>
+              <div className="space-y-10">
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide pointer-events-auto">
+                  {types.map((t) => (
+                    <button key={t.id} onClick={() => setAnnouncementType(t.id as AnnouncementType)} className={`flex items-center gap-4 px-8 py-5 rounded-[2rem] transition-all whitespace-nowrap border border-white/5 pointer-events-auto active:scale-95 uppercase ${announcementType === t.id ? 'bg-accent-primary text-black dark:text-black font-black shadow-2xl text-[10px] tracking-widest' : 'bg-surface-900 text-text-muted font-black text-[10px] tracking-widest'}`}>
+                      <t.icon className="w-5 h-5" />
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TÍTULO DA INSTRUÇÃO</label>
+                    <input type="text" value={announcementTitle} onChange={(e) => setAnnouncementTitle(e.target.value)} className="w-full bg-surface-900 border border-white/10 rounded-2xl px-8 py-5 text-base font-bold text-text-primary focus:border-accent-primary outline-none shadow-inner" placeholder="Pressione para digitar..." />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">CONTEÚDO ESTRATÉGICO</label>
+                    <textarea value={announcementText} onChange={(e) => setAnnouncementText(e.target.value)} className="w-full bg-surface-900 border border-white/10 rounded-3xl px-8 py-6 text-base font-bold text-text-primary focus:border-accent-primary outline-none min-h-[180px] shadow-inner" placeholder="Descreva os detalhes para a base..." />
+                  </div>
+                </div>
+
+                <button onClick={handlePostAnnouncement} disabled={posting} className="w-full py-6 bg-accent-primary text-black rounded-[2rem] font-black uppercase text-[12px] tracking-[0.3em] shadow-2xl shadow-accent-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-40 pointer-events-auto">
+                  {posting ? <Zap className="w-6 h-6 animate-spin" /> : <><span>EMITIR COMANDO</span><Send className="w-6 h-6 stroke-[3]" /></>}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <div className="p-4 md:p-10 space-y-10 animate-fade-in text-left relative z-30 pointer-events-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+           <div className="text-left">
+              <h1 className="text-4xl md:text-6xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-tight mb-4">Base de Comando <br /><span className="text-accent-primary italic">Operacional Ativa</span></h1>
+              <p className="text-[11px] text-text-muted font-black uppercase tracking-[0.4em] opacity-60">Status de Prontidão da Unidade Oficial</p>
+           </div>
+           <button 
+             onClick={(e) => {
+               e.preventDefault();
+               e.stopPropagation();
+               setIsQGModalOpen(true);
+             }} 
+             className="px-10 py-5 rounded-[2rem] font-black uppercase text-[12px] tracking-[0.2em] bg-accent-primary text-black dark:text-black shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-5 border-none active:scale-95 pointer-events-auto relative z-50"
+           >
+              <Megaphone className="w-6 h-6 stroke-[3] text-black" /> <span className="font-black">POSTAR NO QG</span>
+           </button>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 relative z-30 pointer-events-auto">
+           {[
+             { l: 'Alunos Elite', v: stats.students, i: Users, c: 'text-accent-primary' },
+             { l: 'Leads (Novos)', v: stats.leads, i: TrendingUp, c: 'text-emerald-400' },
+             { l: 'Faturamento', v: `R$ ${stats.revenue.toLocaleString()}`, i: DollarSign, c: 'text-emerald-500' },
+             { l: 'Inadimplentes', v: stats.overdue, i: AlertCircle, c: 'text-red-500' },
+           ].map((s, idx) => (
+             <div key={idx} className="kpi-card !rounded-[2.5rem] p-8 bg-surface-800 border border-white/5 relative overflow-hidden group shadow-2xl text-left pointer-events-auto">
+               <div className="w-14 h-14 rounded-2xl bg-surface-900 border border-white/5 flex items-center justify-center mb-8 group-hover:bg-accent-primary transition-all"><s.i className={`w-6 h-6 ${s.c} group-hover:text-black transition-colors`} /></div>
+               <p className="text-3xl md:text-5xl font-display font-black text-text-primary italic tracking-tight mb-1">{s.v}</p>
+               <p className="text-[10px] text-text-muted font-black uppercase tracking-widest opacity-40">{s.l}</p>
+             </div>
+           ))}
+        </div>
+
+        {/* Dynamic Lists */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 relative z-30 pointer-events-auto">
+           {/* Radar Feed */}
+           <div className="kpi-card !rounded-[3rem] p-10 bg-surface-800 border border-white/10 shadow-2xl relative z-40 text-left pointer-events-auto">
+              <div className="flex items-center justify-between mb-12">
+                <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter">Radar do QG</h2>
+                <button onClick={() => setIsQGModalOpen(true)} className="p-4 rounded-2xl bg-surface-900 border border-white/5 text-accent-primary hover:bg-accent-primary hover:text-black transition-all shadow-xl pointer-events-auto relative z-50">
+                  <Plus className="w-6 h-6 stroke-[3]" />
+                </button>
+              </div>
+              <div className="space-y-6">
+                {announcements.map((ann, i) => (
+                  <div key={i} className="flex gap-8 p-8 rounded-[2.5rem] bg-surface-900/60 border border-white/5 group hover:border-accent-primary/20 transition-all text-left relative overflow-hidden shadow-xl pointer-events-auto">
+                     <div className={`w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-black shrink-0 transition-all group-hover:scale-110 ${ann.type === 'seminar' ? 'bg-emerald-400' : ann.type === 'graduation' ? 'bg-blue-400' : 'bg-accent-primary'}`}>
+                        {ann.type === 'graduation' ? <Award className="w-7 h-7" /> : <Megaphone className="w-7 h-7" />}
+                     </div>
+                     <div className="flex-1 min-w-0"><div className="flex items-center justify-between mb-2"><h4 className="text-xl font-black text-text-primary uppercase tracking-tight truncate leading-none">{ann.title}</h4><span className="text-[10px] font-black text-text-muted uppercase text-right">{new Date(ann.created_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div><p className="text-[12px] text-text-muted font-bold opacity-60 leading-relaxed">{ann.content}</p></div>
+                  </div>
+                ))}
+              </div>
+           </div>
+
+           {/* Overdue List (LISTA NEGRA) */}
+           <div className="kpi-card !rounded-[3rem] p-10 bg-surface-800 border border-white/10 shadow-2xl relative z-40 overflow-hidden text-left pointer-events-auto">
+              <div className="flex items-center justify-between mb-12 text-left">
+                 <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase tracking-tighter italic flex items-center gap-4">Lista Negra <span className="flex items-center gap-2 px-3 py-1 bg-red-500/10 rounded-full"><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /><span className="text-[8px] font-black text-red-500 uppercase tracking-widest">COBRANÇA ATIVA</span></span></h2>
+              </div>
+              <div className="space-y-5">
+                 {overdueStudents.map((pay, i) => (
+                   <div key={i} onClick={() => setSelectedOverdue(pay)} className="p-6 rounded-[2rem] bg-surface-900/50 border border-white/5 flex items-center justify-between hover:bg-red-500/10 transition-all cursor-pointer group shadow-lg pointer-events-auto relative z-50">
+                      <div className="flex items-center gap-6">
+                         <div className="w-12 h-12 rounded-2xl bg-surface-800 flex items-center justify-center text-red-500 font-black text-xs border border-white/5 group-hover:bg-red-500 group-hover:text-white transition-all italic">!</div>
+                         <div className="text-left">
+                            <p className="text-[13px] font-black text-accent-primary uppercase tracking-tight leading-none mb-1 group-hover:underline">{pay.student.full_name}</p>
+                            <p className="text-[10px] text-text-muted font-bold uppercase opacity-60 tracking-widest">R$ {pay.amount} · Dívida {pay.description}</p>
+                         </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-black text-red-500 animate-pulse uppercase tracking-widest">{pay.days_overdue} DIAS</span>
+                        <button onClick={(e) => { 
+                          e.stopPropagation(); 
+                          const phone = pay.student.phone.replace(/\D/g, '');
+                          const text = encodeURIComponent(`Fala ${pay.student.full_name}, tudo bem? Aqui é do QG da GFTeam. Vi que consta em aberto o valor de R$ ${pay.amount} referente ao: ${pay.description}. Consegue regularizar hoje pra gente alinhar a sua grade de treinos? 🥋`);
+                          window.open(`https://wa.me/55${phone}?text=${text}`, '_blank');
+                        }} className="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all pointer-events-auto relative z-60 cursor-pointer text-center flex items-center justify-center">COBRAR</button>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </div>
+
+           {/* Trial Lessons */}
+           <div className="kpi-card !rounded-[3rem] p-10 bg-surface-800 border-x-4 border-emerald-500/20 shadow-2xl relative z-40 overflow-hidden text-left pointer-events-auto">
+              <div className="flex items-center justify-between mb-12 text-left">
+                 <h2 className="text-2xl md:text-3xl font-display font-black text-text-primary uppercase tracking-tighter italic flex items-center gap-4">Combates Iniciais <span className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /><span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">NOVOS LEADS</span></span></h2>
+              </div>
+              <div className="space-y-5">
+                 {trialLessons.map((lead, i) => (
+                   <div key={i} className="p-6 rounded-[2rem] bg-surface-900/50 border border-white/5 flex items-center justify-between hover:bg-emerald-500/10 transition-all cursor-pointer group shadow-lg pointer-events-auto relative z-50">
+                      <div className="flex items-center gap-6">
+                         <div className="w-12 h-12 rounded-2xl bg-surface-800 border border-white/5 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-400 group-hover:text-black transition-all italic text-xs font-black">LEAD</div>
+                         <div className="text-left">
+                            <p className="text-[13px] font-black text-text-primary uppercase tracking-tight leading-none mb-1">{lead.name}</p>
+                            <p className="text-[10px] text-text-muted font-bold uppercase opacity-60 tracking-widest">{lead.phone} · {lead.source}</p>
+                         </div>
+                      </div>
+                      <button onClick={(e) => { e.stopPropagation(); alert('Iniciando contato...'); }} className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all border border-emerald-500/20 pointer-events-auto relative z-50"><Send className="w-5 h-5" /></button>
+                   </div>
+                 ))}
               </div>
            </div>
         </div>
-      )}
+
+        {/* Detailed Overdue Modal (EPIC VIEW) */}
+        <AnimatePresence>
+          {selectedOverdue && (
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-3xl pointer-events-auto">
+              <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-surface-800 w-full max-w-lg rounded-[3.5rem] p-12 border border-white/10 shadow-[0_0_100px_rgba(239,68,68,0.3)] relative text-left pointer-events-auto">
+                 <button onClick={() => setSelectedOverdue(null)} className="absolute top-8 right-8 p-3 rounded-full bg-surface-900 text-text-muted hover:text-white border border-white/5 pointer-events-auto z-50 shadow-2xl"><X className="w-6 h-6" /></button>
+                 
+                 <div className="flex items-center gap-6 mb-10">
+                    <div className="w-20 h-20 rounded-[2.5rem] bg-red-500 flex items-center justify-center text-white shadow-2xl shadow-red-500/40"><AlertCircle className="w-10 h-10 stroke-[3]" /></div>
+                    <div className="text-left">
+                      <h2 className="text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter leading-none mb-1">Dossiê do Aluno</h2>
+                      <p className="text-[10px] text-red-500 font-black uppercase tracking-widest italic">Status: Inadimplência Confirmada</p>
+                    </div>
+                 </div>
+
+                 <div className="space-y-6 mb-10">
+                    <div className="p-10 bg-surface-900 rounded-[3rem] border border-white/5 space-y-8 shadow-inner pointer-events-auto relative overflow-hidden">
+                       <div className="absolute top-0 right-0 p-8 opacity-5">
+                          <AlertCircle className="w-32 h-32 text-red-500 stroke-[4]" />
+                       </div>
+                       
+                       <div className="text-left relative z-10">
+                          <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] mb-3 opacity-40">Identificação Base</p>
+                          <p className="text-3xl font-black text-text-primary uppercase leading-tight mb-4">{selectedOverdue.student.full_name}</p>
+                          <div className="flex flex-wrap items-center gap-3">
+                             <span className="text-[10px] px-4 py-2 bg-accent-primary text-black rounded-xl font-black uppercase shadow-lg">Faixa {selectedOverdue.student.belt}</span>
+                             <span className="text-[10px] px-4 py-2 bg-surface-800 text-text-primary rounded-xl font-black border border-white/5 shadow-inner">{selectedOverdue.student.phone}</span>
+                          </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/5 relative z-10">
+                          <div className="space-y-1">
+                             <p className="text-[10px] font-black text-text-muted uppercase tracking-widest opacity-40">Dívida Total</p>
+                             <p className="text-4xl font-display font-black text-red-500 italic tracking-tighter leading-none">R$ {selectedOverdue.amount}</p>
+                          </div>
+                          <div className="space-y-1">
+                             <p className="text-[10px] font-black text-text-muted uppercase tracking-widest opacity-40">Tempo de Atraso</p>
+                             <p className="text-4xl font-display font-black text-text-primary italic tracking-tighter leading-none">{selectedOverdue.days_overdue} <span className="text-lg">Dias</span></p>
+                          </div>
+                       </div>
+
+                       <div className="pt-8 border-t border-white/5 relative z-10">
+                          <div className="flex items-center gap-3 mb-4">
+                             <MessageSquare className="w-5 h-5 text-accent-primary" />
+                             <p className="text-[11px] font-black text-text-muted uppercase tracking-widest opacity-40">Motivo Reportado</p>
+                          </div>
+                          <div className="p-6 rounded-2xl bg-surface-800 border border-white/5 shadow-inner">
+                             <p className="text-[13px] font-bold text-text-primary leading-relaxed antialiased italic">"{selectedOverdue.reason}"</p>
+                          </div>
+                       </div>
+
+                       <div className="flex items-center gap-3 pt-6 text-text-muted opacity-40">
+                          <Calendar className="w-4 h-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Original: {selectedOverdue.due_date} · Item: {selectedOverdue.description}</span>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-6">
+                    <button onClick={() => setSelectedOverdue(null)} className="py-6 bg-surface-700 text-text-primary rounded-[2rem] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-surface-600 transition-all pointer-events-auto border-none active:scale-95 shadow-xl">POSTPONAR</button>
+                    <button onClick={() => {
+                          const phone = selectedOverdue.student.phone.replace(/\D/g, '');
+                          const text = encodeURIComponent(`Fala ${selectedOverdue.student.full_name}, tudo bem? Aqui é da GFTeam. Estou vendo aqui na ficha que estamos com ${selectedOverdue.days_overdue} dias de atraso na ${selectedOverdue.description} (R$ ${selectedOverdue.amount}). Você reportou como motivo: "${selectedOverdue.reason}". Como posso te ajudar a resolver isso hoje? Oss! 🥋`);
+                          window.open(`https://wa.me/55${phone}?text=${text}`, '_blank');
+                    }} className="py-6 bg-emerald-500 text-black rounded-[2rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-emerald-500/30 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-3 pointer-events-auto border-none cursor-pointer">
+                       <Phone className="w-5 h-5 fill-current" />
+                       <span>CONTATO DIRETO</span>
+                    </button>
+                 </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

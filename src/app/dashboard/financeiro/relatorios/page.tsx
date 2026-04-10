@@ -37,7 +37,7 @@ export default function FinancialReportsPage() {
             onClick={() => setReportType(item.id as any)}
             className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] border transition-all ${
               reportType === item.id 
-              ? 'bg-accent-primary border-accent-primary text-[#09090B] font-bold shadow-lg accent-shadow' 
+              ? 'bg-accent-primary border-accent-primary text-black !text-black font-black shadow-lg accent-shadow force-black' 
               : 'bg-surface-600 border-white/5 text-text-muted hover:text-text-primary font-semibold'
             }`}
           >
