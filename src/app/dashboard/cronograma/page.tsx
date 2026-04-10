@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useApp } from '@/contexts/AppContext'
@@ -35,6 +35,9 @@ const schedule = [
 export default function CronogramaPage() {
   const { lang } = useApp()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedDay, setSelectedDay] = useState(0)
+
+  const days = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
 
   return (
     <div className="min-h-screen bg-surface-900 pb-32 text-left relative z-10 pointer-events-auto">
@@ -136,12 +139,17 @@ export default function CronogramaPage() {
         <div className="kpi-card !rounded-[3rem] bg-surface-800 border border-white/5 shadow-2xl p-6 flex items-center justify-between group">
            <button className="w-14 h-14 rounded-2xl bg-surface-900 border border-white/5 flex items-center justify-center text-text-muted hover:bg-accent-primary hover:text-black transition-all shadow-xl"><ChevronLeft className="w-7 h-7" /></button>
            <div className="flex gap-4 overflow-x-auto scrollbar-hide py-4 px-4 mask-fade-edges">
-              {['SEGUNDA', 'TERÃ‡A', 'QUARTA', 'QUINTA', 'SEXTA', 'SÃBADO'].map((day, i) => (
-                <div key={i} className={`flex flex-col items-center gap-2 min-w-[100px] p-4 rounded-[2rem] transition-all cursor-pointer shadow-lg group/item ${i === 0 ? 'bg-accent-primary shadow-accent-primary/20 scale-105' : 'bg-surface-900 border border-white/5 hover:border-accent-primary/40'}`}>
-                  <span className={`text-[10px] font-black tracking-widest ${i === 0 ? 'text-black' : 'text-text-muted group-hover/item:text-text-primary'}`}>{day}</span>
-                  <span className={`text-xl font-display font-black italic ${i === 0 ? 'text-black' : 'text-text-primary'}`}>{16 + i} MAR</span>
-                </div>
-              ))}
+               {days.map((day, i) => (
+                 <button 
+                   key={i} 
+                   onClick={() => setSelectedDay(i)}
+                   className={`flex flex-col items-center gap-2 min-w-[100px] p-4 rounded-[2rem] transition-all cursor-pointer shadow-lg pointer-events-auto border-none outline-none ${selectedDay === i ? 'scale-105' : 'border border-white/10 hover:border-accent-primary/40'}`}
+                   style={{ backgroundColor: selectedDay === i ? 'var(--accent)' : 'rgb(30,30,35)' }}
+                 >
+                   <span className={`text-[10px] font-black tracking-widest ${selectedDay === i ? 'text-black' : 'text-gray-400'}`}>{day}</span>
+                   <span className={`text-xl font-display font-black italic ${selectedDay === i ? 'text-black' : 'text-white'}`}>{16 + i} MAR</span>
+                 </button>
+               ))}
            </div>
            <button className="w-14 h-14 rounded-2xl bg-surface-900 border border-white/5 flex items-center justify-center text-text-muted hover:bg-accent-primary hover:text-black transition-all shadow-xl"><ChevronRight className="w-7 h-7" /></button>
         </div>
