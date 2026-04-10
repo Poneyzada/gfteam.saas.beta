@@ -5,7 +5,7 @@ import {
   Users, TrendingUp, DollarSign, Calendar, 
   MapPin, Clock, ArrowUpRight, ChevronRight, 
   Zap, Bell, Search, Plus, Target, Shield,
-  Award, Swords, Dumbbell, Play, BookOpen
+  Award, Swords, Dumbbell, Play, BookOpen, X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
