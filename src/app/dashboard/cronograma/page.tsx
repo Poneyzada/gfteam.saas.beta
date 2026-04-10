@@ -62,8 +62,50 @@ export default function CronogramaPage() {
                      </div>
                   </div>
                   <div className="space-y-3">
-                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO TREINO / PROFESSOR</label>
-                     <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-5 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: Graduação Adulto G1..." />
+                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">NOME DO TREINO</label>
+                     <input type="text" className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-base font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner" placeholder="Ex: Graduação Adulto G1..." />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">PROFESSOR</label>
+                        <select className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner appearance-none">
+                           <option>Prof. Julio</option>
+                           <option>Prof. Marcos</option>
+                           <option>Profa. Ana</option>
+                           <option>Prof. Rafael</option>
+                        </select>
+                     </div>
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">TATAME</label>
+                        <select className="w-full bg-surface-900 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary shadow-inner appearance-none">
+                           <option>Tatame Principal</option>
+                           <option>Tatame B (Strike)</option>
+                           <option>Tatame C (Infantil)</option>
+                        </select>
+                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-2 opacity-60">DIAS DA SEMANA</label>
+                     <div className="flex flex-wrap gap-2">
+                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, i) => (
+                          <button key={day} className={`py-3 px-4 rounded-xl border border-white/5 text-[10px] font-black uppercase transition-all pointer-events-auto cursor-pointer ${i === 0 || i === 2 ? 'bg-accent-primary text-black shadow-xl shadow-accent-primary/20' : 'bg-surface-900 text-text-muted hover:border-accent-primary hover:text-accent-primary'}`}>{day}</button>
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-surface-900 border border-white/5 rounded-2xl">
+                     <div className="flex items-center gap-3">
+                        <Zap className="w-5 h-5 text-accent-primary" />
+                        <div>
+                           <p className="text-xs font-black text-text-primary uppercase tracking-widest">Auto-Repetir</p>
+                           <p className="text-[9px] text-text-muted font-bold">Replicar essa aula para as próximas semanas</p>
+                        </div>
+                     </div>
+                     <div className="w-12 h-6 rounded-full bg-accent-primary flex items-center p-1 cursor-pointer pointer-events-auto shadow-inner shadow-black/20">
+                        <div className="w-4 h-4 rounded-full bg-black translate-x-6 shadow-md" />
+                     </div>
                   </div>
                   <div className="flex gap-4 pt-6 border-t border-white/5">
                     <button onClick={() => setIsModalOpen(false)} className="flex-1 py-5 bg-surface-700 text-text-primary rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-surface-600 transition-all">CANCELAR</button>
