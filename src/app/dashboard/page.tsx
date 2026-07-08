@@ -19,10 +19,7 @@ export default function OriginalRaizDashboard() {
   const [expLeads, setExpLeads] = useState<any[]>([])
   const [upcomingClasses, setUpcomingClasses] = useState<any[]>([])
   const [announcements, setAnnouncements] = useState<any[]>([])
-  const [checkins, setCheckins] = useState<any[]>([
-    { id: 1, name: 'Lucas Andrade', belt: 'Azul', time: '17:28', beltColor: 'bg-blue-600', img: 'https://i.pravatar.cc/100?u=lucas' },
-    { id: 2, name: 'Ana Silva', belt: 'Branca', time: '17:30', beltColor: 'bg-white', img: 'https://i.pravatar.cc/100?u=ana' },
-  ])
+  const [checkins, setCheckins] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showPostModal, setShowPostModal] = useState(false)
   const [newPost, setNewPost] = useState({ title: '', content: '' })
@@ -41,20 +38,64 @@ export default function OriginalRaizDashboard() {
         if (profile) {
           setUserName(profile.full_name || 'Mestre')
           setUserRole(profile.role)
-          const [leadsRes, classesRes, newsRes] = await Promise.all([
+          const [leadsRes, classesRes, newsRes, checkinsRes] = await Promise.all([
             supabase.from('leads').select('*').eq('tenant_id', profile.tenant_id).eq('status', 'agendado').order('created_at', { ascending: false }).limit(4),
             supabase.from('schedules').select('*').eq('tenant_id', profile.tenant_id).limit(4),
-            supabase.from('notifications').select('*').limit(2).order('created_at', { ascending: false })
+            supabase.from('notifications').select('*').limit(2).order('created_at', { ascending: false }),
+            supabase.from('checkins').select('*, student:profiles(*)').eq('tenant_id', profile.tenant_id).eq('status', 'pending').order('created_at', { ascending: false })
           ])
           if (leadsRes.data) setExpLeads(leadsRes.data)
           if (classesRes.data) setUpcomingClasses(classesRes.data)
           if (newsRes.data) setAnnouncements(newsRes.data)
+          if (checkinsRes.data) {
+            const mappedCheckins = checkinsRes.data.map((c: any) => {
+              const student = c.student || {}
+              const belt = (student.belt || 'branca').toLowerCase()
+              const beltColors: Record<string, string> = {
+                branca: 'bg-white',
+                azul: 'bg-blue-600',
+                roxa: 'bg-purple-700',
+                marrom: 'bg-[#5D4037]',
+                preta: 'bg-surface-950 border border-white/20'
+              }
+              const dateObj = new Date(c.created_at)
+              const timeStr = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+              return {
+                id: c.id,
+                student_id: c.student_id,
+                name: student.full_name || 'Aluno',
+                belt: student.belt || 'Branca',
+                time: timeStr,
+                beltColor: beltColors[belt] || 'bg-white',
+                img: c.photo_url || student.avatar_url || 'https://i.pravatar.cc/100?u=student'
+              }
+            })
+            setCheckins(mappedCheckins)
+          }
         }
       }
       setLoading(false)
     }
     getData()
   }, [])
+
+  const confirmCheckin = async (id: string, studentId: string) => {
+    // 1. Confirm checkin
+    const { error: err } = await supabase.from('checkins').update({ status: 'confirmed' }).eq('id', id)
+    if (err) {
+      alert('Erro ao confirmar check-in: ' + err.message)
+      return
+    }
+
+    // 2. Increment classes count
+    const { data: profile } = await supabase.from('profiles').select('total_classes').eq('id', studentId).single()
+    const currentClasses = profile?.total_classes || 0
+    await supabase.from('profiles').update({ total_classes: currentClasses + 1 }).eq('id', studentId)
+
+    // 3. Update UI
+    setCheckins(checkins.filter(item => item.id !== id))
+    alert('Check-in facial confirmado com sucesso! Aula creditada ao atleta.')
+  }
 
   const handlePost = async () => {
     if (!newPost.title || !newPost.content) return
@@ -127,7 +168,7 @@ export default function OriginalRaizDashboard() {
                     {checkins.map(c => (
                       <div key={c.id} className="flex items-center justify-between p-4 rounded-2xl bg-surface-800 border border-black/10 group hover:border-accent-primary transition-all">
                         <div className="flex items-center gap-4"><div className="w-12 h-12 rounded-xl bg-surface-700 overflow-hidden relative border border-black/10"><img src={c.img} alt={c.name} className="w-full h-full object-cover" /><div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${c.beltColor} border-2 border-surface-800`} /></div><div className="text-left"><p className="text-sm font-black text-black dark:text-white uppercase italic leading-none mb-1">{c.name}</p><p className="text-[9px] text-black dark:text-white font-black uppercase tracking-widest">{c.belt} • {c.time}</p></div></div>
-                        <button onClick={() => setCheckins(checkins.filter(item => item.id !== c.id))} className="w-10 h-10 rounded-xl bg-accent-primary border-none flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer"><Zap className="w-5 h-5 text-black" /></button>
+                        <button onClick={() => confirmCheckin(c.id, c.student_id)} className="w-10 h-10 rounded-xl bg-accent-primary border-none flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer"><Zap className="w-5 h-5 text-black" /></button>
                       </div>
                     ))}
                   </div>

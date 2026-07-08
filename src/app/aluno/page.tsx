@@ -5,11 +5,42 @@ import {
   QrCode, User, BookOpen, Award, CheckCircle2, 
   ChevronRight, Calendar, Clock, Trophy, Bell, Settings, Zap, Shield,
   TrendingUp, Star, CreditCard, Camera, MapPin, Share2, Download, LogOut, Play,
-  ChevronLeft, Check, CameraIcon, UserIcon, Info
+  ChevronLeft, Check, CameraIcon, UserIcon, Info, X, AlertCircle
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
+
+const resizeImage = (base64Str: string): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 300;
+      const MAX_HEIGHT = 300;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
+  });
+};
 
 export default function AlunoApp() {
   const { lang } = useApp()
@@ -35,23 +66,45 @@ export default function AlunoApp() {
     isKids: false
   })
 
+  // State variables for face verification
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [referencePhoto, setReferencePhoto] = useState<string | null>(null)
+  const [showCheckinModal, setShowCheckinModal] = useState(false)
+  const [faceapi, setFaceapi] = useState<any>(null)
+  const [faceapiLoaded, setFaceapiLoaded] = useState(false)
+  const [tenantId, setTenantId] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Only import face-api on client side
+    import('@vladmandic/face-api').then((mod) => {
+      setFaceapi(mod);
+    });
+  }, []);
+
   useEffect(() => {
     async function getProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/login'; return; }
       
+      setUserId(user.id)
+      
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, role, belt, total_classes, training_hours, medals, stripes, training_time, avatar_specs')
+        .select('full_name, role, belt, total_classes, training_hours, medals, stripes, training_time, avatar_specs, avatar_url, tenant_id')
         .eq('id', user.id)
         .single()
       
       if (data?.full_name) setUserName(data.full_name)
       if (data?.role) setUserRole(data.role)
+      if (data?.tenant_id) setTenantId(data.tenant_id)
+      if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url)
+        setReferencePhoto(data.avatar_url)
+      }
       
       if (data?.belt) {
         setStudentBelt((data.belt as string).toLowerCase())
-        // If they already have a belt, they probably did onboarding, but let's check
       } else if (data?.role === 'student') {
         setShowOnboarding(true)
       }
@@ -74,14 +127,17 @@ export default function AlunoApp() {
       belt: studentBelt,
       stripes: stripes,
       training_time: trainingTime,
-      avatar_specs: avatarSpecs
+      avatar_specs: avatarSpecs,
+      avatar_url: referencePhoto
     }).eq('id', user.id)
 
     if (!error) {
+      if (referencePhoto) setAvatarUrl(referencePhoto)
       setShowOnboarding(false)
       alert('Sua Carteirinha Elite foi gerada com sucesso!')
     }
   }
+
 
   const beltColors: Record<string, { bg: string, text: string, accent: string, rgb: string }> = {
     branca: { bg: 'bg-white', text: 'text-surface-900', accent: '#fff', rgb: '255, 255, 255' },
@@ -129,14 +185,14 @@ export default function AlunoApp() {
               </button>
 
               <button 
-                onClick={() => { setIdentityType('photo'); setOnboardingStep(3); }}
-                className="group flex items-center gap-6 p-8 rounded-[2.5rem] bg-surface-900 border border-white/5 hover:border-accent-primary transition-all shadow-xl opacity-60"
+                onClick={() => { setIdentityType('photo'); setOnboardingStep(6); }}
+                className="group flex items-center gap-6 p-8 rounded-[2.5rem] bg-surface-900 border border-white/5 hover:border-accent-primary transition-all shadow-xl"
               >
-                <div className="w-16 h-16 rounded-2xl bg-surface-800 flex items-center justify-center">
-                  <CameraIcon className="w-8 h-8 text-text-muted" />
+                <div className="w-16 h-16 rounded-2xl bg-surface-800 flex items-center justify-center group-hover:bg-accent-primary transition-all">
+                  <CameraIcon className="w-8 h-8 text-accent-primary group-hover:text-black" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-black text-text-muted uppercase tracking-widest leading-none mb-1">FOTO REAL</p>
+                  <p className="text-sm font-black text-text-primary uppercase tracking-widest leading-none mb-1">FOTO REAL</p>
                   <p className="text-[9px] text-text-muted font-bold uppercase tracking-widest opacity-40 italic">Suba uma foto sua de Kimono</p>
                 </div>
               </button>
@@ -255,11 +311,16 @@ export default function AlunoApp() {
                    <div className="relative z-10 flex flex-col h-full items-center justify-center">
                       <div className="w-24 h-24 rounded-full bg-surface-900/20 p-1 flex items-center justify-center mb-4">
                         <div className="w-full h-full rounded-full bg-surface-800 flex items-center justify-center relative overflow-hidden">
-                           {/* Placeholder for Lego Avatar Logic */}
-                           <UserIcon className={`w-12 h-12 ${currentTheme.text} opacity-20`} />
-                           <div className="absolute inset-x-0 bottom-0 bg-accent-primary/40 h-1/3 flex items-center justify-center">
-                              <span className="text-[8px] font-black text-black">LEGO-BJJ</span>
-                           </div>
+                           {identityType === 'photo' && referencePhoto ? (
+                             <img src={referencePhoto} alt="Avatar" className="w-full h-full object-cover" />
+                           ) : (
+                             <>
+                               <UserIcon className={`w-12 h-12 ${currentTheme.text} opacity-20`} />
+                               <div className="absolute inset-x-0 bottom-0 bg-accent-primary/40 h-1/3 flex items-center justify-center">
+                                  <span className="text-[8px] font-black text-black">LEGO-BJJ</span>
+                               </div>
+                             </>
+                           )}
                         </div>
                       </div>
                       <h3 className={`text-xl font-display font-black uppercase italic tracking-tighter leading-none ${currentTheme.text}`}>{userName.split(' ')[0]}</h3>
@@ -277,9 +338,64 @@ export default function AlunoApp() {
              </div>
           </motion.div>
         )}
+
+        {onboardingStep === 6 && (
+          <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="text-left">
+            <button onClick={() => setOnboardingStep(1)} className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase mb-8 hover:text-white transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Voltar
+            </button>
+            <h2 className="text-3xl font-display font-black text-text-primary uppercase italic tracking-tighter mb-4 leading-none">SUA FOTO <br /><span className="text-accent-primary italic tracking-tight">DE CADASTRO</span></h2>
+            <p className="text-text-muted text-[10px] font-black uppercase tracking-widest mb-8 opacity-60">Esta foto será usada pela IA para validar seu rosto no check-in.</p>
+            
+            <div className="flex flex-col items-center gap-6 p-8 rounded-[2.5rem] bg-surface-900 border border-white/5 shadow-xl relative overflow-hidden">
+               {referencePhoto ? (
+                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-accent-primary shadow-lg">
+                     <img src={referencePhoto} alt="Foto Preview" className="w-full h-full object-cover" />
+                  </div>
+               ) : (
+                  <div className="w-40 h-40 rounded-full bg-surface-800 border-2 border-dashed border-white/20 flex flex-col items-center justify-center text-text-muted">
+                     <CameraIcon className="w-12 h-12 opacity-40 mb-2" />
+                     <span className="text-[8px] font-black uppercase">Tire uma Selfie</span>
+                  </div>
+               )}
+
+               <label className="cursor-pointer py-4 px-8 bg-accent-primary text-black rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all text-center">
+                  {referencePhoto ? 'TIRAR OUTRA FOTO' : 'TIRAR FOTO / ENVIAR'}
+                  <input 
+                     type="file" 
+                     accept="image/*" 
+                     capture="user" 
+                     className="hidden" 
+                     onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                           const reader = new FileReader();
+                           reader.onload = async (event) => {
+                              const base64 = event.target?.result as string;
+                              const resized = await resizeImage(base64);
+                              setReferencePhoto(resized);
+                           };
+                           reader.readAsDataURL(file);
+                        }
+                     }}
+                  />
+               </label>
+            </div>
+            
+            {referencePhoto && (
+               <button 
+                  onClick={() => setOnboardingStep(3)} 
+                  className="w-full mt-10 py-6 bg-accent-primary text-black rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl active:scale-95 transition-all"
+               >
+                  PROSSEGUIR →
+               </button>
+            )}
+          </motion.div>
+        )}
       </motion.div>
     </div>
   )
+
 
   // Experimental Mode UI
   if (userRole === 'experimental') {
@@ -343,10 +459,218 @@ export default function AlunoApp() {
     )
   }
 
+  const CheckinModal = () => {
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const [step, setStep] = useState<'loading' | 'camera' | 'matching' | 'success' | 'error'>('loading')
+    const [statusMsg, setStatusMsg] = useState('Carregando modelos de IA...')
+    const [errorMsg, setErrorMsg] = useState('')
+    const [localStream, setLocalStream] = useState<MediaStream | null>(null)
+
+    useEffect(() => {
+      let activeStream: MediaStream | null = null;
+      async function startCheckin() {
+        if (!faceapi) {
+          setErrorMsg('Biblioteca de IA não carregada.');
+          setStep('error');
+          return;
+        }
+        try {
+          if (!faceapiLoaded) {
+            setStatusMsg('Carregando modelos de IA...');
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+            setFaceapiLoaded(true);
+          }
+          
+          setStatusMsg('Iniciando câmera...');
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+          activeStream = stream;
+          setLocalStream(stream);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          setStep('camera');
+        } catch (err: any) {
+          setErrorMsg('Câmera bloqueada ou não encontrada. Verifique as permissões!');
+          setStep('error');
+        }
+      }
+      startCheckin();
+
+      return () => {
+        if (activeStream) {
+          activeStream.getTracks().forEach(track => track.stop());
+        }
+      };
+    }, [faceapi]);
+
+    const captureAndVerify = async () => {
+      if (!videoRef.current || !canvasRef.current || !faceapi) return;
+      setStep('matching');
+      setStatusMsg('Detectando rosto e comparando...');
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const selfieBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+      // Stop camera immediately
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        setLocalStream(null);
+      }
+
+      try {
+        // 1. Load selfie image to memory
+        const selfieImg = new Image();
+        selfieImg.src = selfieBase64;
+        await new Promise((resolve, reject) => {
+          selfieImg.onload = resolve;
+          selfieImg.onerror = reject;
+        });
+
+        // 2. Load reference image to memory
+        const refImg = new Image();
+        refImg.src = avatarUrl || '';
+        await new Promise((resolve, reject) => {
+          refImg.onload = resolve;
+          refImg.onerror = reject;
+        });
+
+        // 3. Detect and extract landmarks/descriptors
+        const selfieDetection = await faceapi.detectSingleFace(selfieImg).withFaceLandmarks().withFaceDescriptor();
+        if (!selfieDetection) {
+          setErrorMsg('Rosto não detectado na selfie. Tente enquadrar melhor o seu rosto!');
+          setStep('error');
+          return;
+        }
+
+        const refDetection = await faceapi.detectSingleFace(refImg).withFaceLandmarks().withFaceDescriptor();
+        if (!refDetection) {
+          setErrorMsg('Sua foto de perfil está inválida para reconhecimento. Refaça a foto na carteirinha.');
+          setStep('error');
+          return;
+        }
+
+        // 4. Compare facial descriptors using Euclidean Distance
+        const distance = faceapi.euclideanDistance(selfieDetection.descriptor, refDetection.descriptor);
+        console.log('Distância facial:', distance);
+
+        if (distance < 0.6) {
+          // MATCH! Insert Check-in
+          setStatusMsg('Registrando check-in...');
+          const { error: checkinErr } = await supabase.from('checkins').insert({
+            tenant_id: tenantId,
+            student_id: userId,
+            status: 'confirmed',
+            photo_url: selfieBase64
+          });
+
+          if (checkinErr) {
+            setErrorMsg('Erro ao salvar check-in: ' + checkinErr.message);
+            setStep('error');
+          } else {
+            setTotalClasses(prev => prev + 1);
+            setStep('success');
+          }
+        } else {
+          setErrorMsg('Reconhecimento negado: Rosto não corresponde ao cadastro!');
+          setStep('error');
+        }
+      } catch (err: any) {
+        setErrorMsg('Erro no processamento da IA: ' + err.message);
+        setStep('error');
+      }
+    };
+
+    const handleClose = () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      setShowCheckinModal(false);
+    };
+
+    return (
+      <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+        <div className="bg-surface-800 w-full max-w-md rounded-[3rem] p-10 border border-white/10 shadow-2xl text-center relative">
+          <button onClick={handleClose} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-surface-900 border border-white/10 flex items-center justify-center text-white hover:bg-red-600 transition-all cursor-pointer">
+            <X className="w-5 h-5" />
+          </button>
+
+          <h3 className="text-2xl font-display font-black text-text-primary uppercase italic tracking-tighter mb-6">Validação de Face</h3>
+
+          <div className="w-full aspect-square bg-surface-900 rounded-[2rem] border-2 border-white/5 overflow-hidden relative mb-8 flex items-center justify-center">
+            {step === 'loading' && (
+              <div className="space-y-4">
+                <div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-black text-text-muted uppercase tracking-widest animate-pulse">{statusMsg}</p>
+              </div>
+            )}
+
+            {step === 'camera' && (
+              <div className="relative w-full h-full">
+                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover scale-x-[-1]" />
+                <div className="absolute inset-0 border-[6px] border-accent-primary/20 rounded-[2rem] pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-dashed border-accent-primary/40 rounded-full pointer-events-none animate-pulse" />
+              </div>
+            )}
+
+            {step === 'matching' && (
+              <div className="space-y-4">
+                <div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-black text-accent-primary uppercase tracking-widest animate-pulse">{statusMsg}</p>
+              </div>
+            )}
+
+            {step === 'success' && (
+              <div className="p-6 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center mx-auto text-emerald-400">
+                  <Check className="w-8 h-8 stroke-[3]" />
+                </div>
+                <p className="text-xl font-display font-black text-emerald-400 uppercase italic tracking-tight">Presença Confirmada!</p>
+                <p className="text-xs text-text-muted">Seu check-in facial foi registrado e validado com sucesso. Bom treino! OSS!</p>
+              </div>
+            )}
+
+            {step === 'error' && (
+              <div className="p-6 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 border-2 border-red-500 flex items-center justify-center mx-auto text-red-400">
+                  <AlertCircle className="w-8 h-8" />
+                </div>
+                <p className="text-xl font-display font-black text-red-400 uppercase italic tracking-tight">Falha na Validação</p>
+                <p className="text-xs text-text-muted leading-relaxed">{errorMsg}</p>
+              </div>
+            )}
+          </div>
+
+          <canvas ref={canvasRef} className="hidden" />
+
+          {step === 'camera' && (
+            <button onClick={captureAndVerify} className="w-full py-5 bg-accent-primary text-black rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-accent-primary/20 hover:scale-105 active:scale-95 transition-all border-none cursor-pointer">
+              CAPTURAR E VALIDAR
+            </button>
+          )}
+
+          {(step === 'error' || step === 'success') && (
+            <button onClick={step === 'success' ? handleClose : () => setStep('camera')} className="w-full py-5 bg-surface-900 border border-white/10 text-text-primary rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-surface-700 active:scale-95 transition-all cursor-pointer">
+              {step === 'success' ? 'FECHAR' : 'TENTAR NOVAMENTE'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`min-h-screen bg-surface-900 text-left relative overflow-hidden transition-all duration-500 pb-32 selection:bg-accent-primary selection:text-black`}>
       <AnimatePresence>
         {showOnboarding && <OnboardingWizard />}
+        {showCheckinModal && <CheckinModal />}
       </AnimatePresence>
       
       {/* Dynamic Header */}
@@ -360,7 +684,11 @@ export default function AlunoApp() {
               <div className="relative group">
                  <div className={`w-14 h-14 rounded-3xl ${currentTheme.bg} flex items-center justify-center p-1 shadow-2xl`}>
                     <div className="w-full h-full bg-surface-800 rounded-[1.2rem] flex items-center justify-center overflow-hidden">
-                       <UserIcon className={`w-8 h-8 ${currentTheme.text} opacity-20`} />
+                       {avatarUrl ? (
+                          <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                       ) : (
+                          <UserIcon className={`w-8 h-8 ${currentTheme.text} opacity-20`} />
+                       )}
                     </div>
                  </div>
                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-xl ${currentTheme.bg} border-4 border-surface-900 flex items-center justify-center shadow-md`}>
@@ -430,6 +758,42 @@ export default function AlunoApp() {
                         </button>
                      </div>
                   </div>
+               </div>
+
+               {/* Selfie Check-in Card */}
+               <div className="kpi-card !p-10 !rounded-[3rem] border border-black/10 dark:border-white/10 bg-surface-800 shadow-2xl relative overflow-hidden text-left">
+                  <div className="flex items-center justify-between mb-6">
+                     <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.4em]">Validação de Presença</span>
+                     <Camera className="w-5 h-5 text-accent-primary" />
+                  </div>
+                  
+                  {avatarUrl ? (
+                     <>
+                        <h3 className="text-2xl font-display font-black text-text-primary mb-3 uppercase italic tracking-tighter leading-none">CHECK-IN FACIAL</h3>
+                        <p className="text-xs text-text-muted mb-8 leading-relaxed">
+                           Tire uma selfie rápida para validar seu rosto e registrar sua presença na aula de hoje automaticamente.
+                        </p>
+                        <button 
+                           onClick={() => setShowCheckinModal(true)} 
+                           className="w-full py-5 rounded-[1.5rem] bg-accent-primary text-black font-black uppercase text-xs tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-accent-primary/20 border-none cursor-pointer"
+                        >
+                           INICIAR CHECK-IN FACIAL
+                        </button>
+                     </>
+                  ) : (
+                     <>
+                        <h3 className="text-2xl font-display font-black text-text-primary mb-3 uppercase italic tracking-tighter leading-none">FOTO REQUERIDA</h3>
+                        <p className="text-xs text-text-muted mb-8 leading-relaxed">
+                           Você precisa cadastrar uma foto real de rosto na sua carteirinha para habilitar o Check-in Facial.
+                        </p>
+                        <button 
+                           onClick={() => { setShowOnboarding(true); setOnboardingStep(1); }} 
+                           className="w-full py-5 rounded-[1.5rem] bg-surface-900 border border-white/10 text-text-primary font-black uppercase text-xs tracking-widest hover:bg-surface-700 transition-all cursor-pointer"
+                        >
+                           CADASTRAR FOTO
+                        </button>
+                     </>
+                  )}
                </div>
 
                {/* Quick Stats Grid */}
@@ -589,10 +953,14 @@ export default function AlunoApp() {
                               <div className="w-full h-full bg-surface-900 rounded-[3.8rem] flex items-center justify-center overflow-hidden border-4 border-surface-800 shadow-inner">
                                  {/* Dynamic Lego Preview */}
                                  <div className="relative w-full h-full flex flex-col items-center justify-center">
-                                    <div className="w-20 h-28 bg-accent-primary/20 rounded-[2rem] flex items-center justify-center border-2 border-accent-primary/10 overflow-hidden">
-                                       <UserIcon className={`w-14 h-14 ${currentTheme.text} opacity-30`} />
-                                       <div className="absolute bottom-4 text-[10px] font-black text-accent-primary tracking-tighter uppercase bg-black/80 px-4 py-1.5 rounded-full shadow-lg">LEGO-BJJ</div>
-                                    </div>
+                                    {avatarUrl ? (
+                                       <img src={avatarUrl} alt="Foto Aluno" className="w-full h-full object-cover" />
+                                    ) : (
+                                       <div className="w-20 h-28 bg-accent-primary/20 rounded-[2rem] flex items-center justify-center border-2 border-accent-primary/10 overflow-hidden">
+                                          <UserIcon className={`w-14 h-14 ${currentTheme.text} opacity-30`} />
+                                          <div className="absolute bottom-4 text-[10px] font-black text-accent-primary tracking-tighter uppercase bg-black/80 px-4 py-1.5 rounded-full shadow-lg">LEGO-BJJ</div>
+                                       </div>
+                                    )}
                                  </div>
                               </div>
                            </div>
