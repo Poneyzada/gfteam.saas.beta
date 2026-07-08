@@ -22,7 +22,7 @@ type Tenant = {
 // Mock data for UI preview while Supabase loads
 const MOCK_TENANTS: Tenant[] = [
   { id: '1', name: 'GFTeam Matriz', slug: 'gfteam-matriz', plan: 'enterprise', active: true, created_at: '2024-01-01', using_app: true, payment_status: 'paid', whatsapp: '21999999999' },
-  { id: '2', name: 'GFTeam Frazão', slug: 'frazao-academia', plan: 'pro', active: true, created_at: '2024-03-01', using_app: true, payment_status: 'paid', whatsapp: '21888888888' },
+  { id: '2', name: 'GFTeam Barra', slug: 'gfteam-barra', plan: 'pro', active: true, created_at: '2024-03-01', using_app: true, payment_status: 'paid', whatsapp: '21888888888' },
   { id: '3', name: 'GFTeam São Paulo', slug: 'gfteam-sp', plan: 'starter', active: true, created_at: '2024-02-01', using_app: false, payment_status: 'pending', whatsapp: '11777777777' },
   { id: '4', name: 'GFTeam Los Angeles', slug: 'gfteam-la', plan: 'starter', active: true, created_at: '2024-02-15', using_app: false, payment_status: 'pending', whatsapp: '13105550199' },
   { id: '5', name: 'GFTeam Portugal', slug: 'gfteam-pt', plan: 'starter', active: false, created_at: '2024-01-20', using_app: false, payment_status: 'overdue', whatsapp: '35199999999' },

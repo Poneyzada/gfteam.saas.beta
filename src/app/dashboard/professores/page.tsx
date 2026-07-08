@@ -10,7 +10,7 @@ export default function ProfessorsPage() {
   const [selectedForPerm, setSelectedForPerm] = useState<any>(null)
   const [staff] = useState([
     { id: 1, name: 'Julio Cesar Pereira', role: 'Mestre Principal', perm: 'Acesso Total (Matriz)', belt: 'Coral', status: 'Ativo', classes: 12, since: '1990', email: 'julio.cesar@gfteam.com', phone: '+55 21 99999-0001', bio: 'Fundador da GFTeam. Faixa Coral 7º Grau.' },
-    { id: 2, name: 'Marcos Freitas', role: 'Mestre', perm: 'Gestão de Filial', belt: 'Preta 4º Grau', status: 'Ativo', classes: 24, since: '2010', email: 'frazao@gfteam.com', phone: '+55 21 98888-0002', bio: 'Especialista em passagens de guarda e gestão de equipes.' },
+    { id: 2, name: 'Carlos Souza', role: 'Mestre', perm: 'Gestão de Filial', belt: 'Preta 4º Grau', status: 'Ativo', classes: 24, since: '2010', email: 'carlos@gfteam.com', phone: '+55 21 98888-0002', bio: 'Especialista em passagens de guarda e gestão de equipes.' },
     { id: 3, name: 'Italo Melo', role: 'Instrutor', perm: 'Aulas & Alunos', belt: 'Preta 2º Grau', status: 'Ativo', classes: 20, since: '2015', email: 'italo.melo@gfteam.com', phone: '+55 21 97777-0003', bio: 'Instrutor focado em competições e técnica refinada.' },
     { id: 4, name: 'Ana Silva', role: 'Instrutora Kids', perm: 'Aulas & Alunos', belt: 'Marrom', status: 'Ativo', classes: 15, since: '2021', email: 'ana.silva@gfteam.com', phone: '+55 21 96666-0004', bio: 'Coordenação do programa Kids e iniciação esportiva.' },
   ])

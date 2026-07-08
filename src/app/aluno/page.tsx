@@ -749,7 +749,7 @@ export default function AlunoApp() {
                         <div className="flex items-center gap-4">
                            <div className="w-12 h-12 rounded-2xl bg-surface-900 border border-white/10 flex items-center justify-center font-black text-sm text-accent-primary uppercase shadow-inner italic">GF</div>
                            <div className="text-left">
-                               <p className="text-[10px] font-black text-text-primary uppercase tracking-widest leading-none">Mestre Frazão</p>
+                               <p className="text-[10px] font-black text-text-primary uppercase tracking-widest leading-none">Seu Professor</p>
                                <p className="text-[9px] text-text-muted font-medium mt-1.5 uppercase tracking-widest italic opacity-40">Unidade Matriz • 19:00</p>
                            </div>
                         </div>
@@ -855,7 +855,7 @@ export default function AlunoApp() {
                         </div>
                         <div className="text-left">
                            <p className="text-xs font-black text-text-primary uppercase tracking-widest italic">Graduação {studentBelt} {stripes} G</p>
-                           <p className="text-[10px] text-text-muted font-medium mt-1 uppercase tracking-widest opacity-40 italic">Ciclo Vigente • Mestre Frazão</p>
+                           <p className="text-[10px] text-text-muted font-medium mt-1 uppercase tracking-widest opacity-40 italic">Ciclo Vigente • GFTeam</p>
                         </div>
                      </div>
                      <div className="flex gap-6 relative">
@@ -944,7 +944,7 @@ export default function AlunoApp() {
                             <Shield className={`w-7 h-7 ${currentTheme.text} drop-shadow-xl`} />
                             <span className={`text-xl font-display font-black tracking-tighter italic uppercase ${currentTheme.text}`}>GFTEAM <span className="opacity-40 italic">QG</span></span>
                          </div>
-                         <div className={`px-4 py-2 rounded-xl border border-current opacity-40 text-[9px] font-black uppercase tracking-widest ${currentTheme.text}`}>MASTER FRAZÃO</div>
+                         <div className={`px-4 py-2 rounded-xl border border-current opacity-40 text-[9px] font-black uppercase tracking-widest ${currentTheme.text}`}>GFTEAM QG</div>
                       </div>
 
                       <div className="flex flex-col items-center mb-14">
