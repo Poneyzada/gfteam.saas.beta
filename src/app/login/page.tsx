@@ -144,7 +144,7 @@ export default function LoginPage() {
             role: role || 'student',
             tenant_id: tenantId,
             belt: 'Branca',
-            degree: 0,
+            belt_degree: 0,
             status: 'pending', // Always pending for new signups
             permissions: {
               finance: false,

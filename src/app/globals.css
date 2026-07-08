@@ -1,98 +1,109 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@layer base {
+  :root {
+    --bg-app: #F9FAFB;
+    --bg-sidebar: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-hover: #F1F5F9;
+    --border-app: rgba(0, 0, 0, 0.1);
+    --accent: #FFC700;
+    --text-main: #000000;
+    --text-dim: #1E293B;
+    --surface-900: #FFFFFF;
+    --surface-800: #F1F5F9;
+    --surface-700: #E2E8F0;
+    --surface-600: #CBD5E1;
+  }
+
+  [data-mode="dark"] {
+    --bg-app: #000000;
+    --bg-sidebar: #050505;
+    --bg-card: #0A0A0F;
+    --bg-hover: #12121A;
+    --border-app: rgba(255, 255, 255, 0.2);
+    --text-main: #FFFFFF;
+    --text-dim: #F8FAFC;
+    --surface-900: #000000;
+    --surface-800: #0D0D14;
+    --surface-700: #151520;
+    --surface-600: #1F1F2B;
+  }
+
+  * { border-color: var(--border-app); }
+  body { 
+    background-color: var(--bg-app); 
+    color: var(--text-main); 
+    font-family: system-ui, -apple-system, sans-serif; 
+  }
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Raiz / High Contrast - Light */
-  --bg-app: #FFFFFF;
-  --bg-sidebar: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-hover: #F8FAFC;
-  --border-app: rgba(0, 0, 0, 0.1);
-  --text-main: #000000;
-  --text-dim: #000000; /* No more gray */
-
-  /* Surface System */
-  --surface-900: #FFFFFF;
-  --surface-800: #FAFAFA;
-  --surface-700: #F4F4F5;
-  --surface-600: #E4E4E7;
-  --surface-500: #D4D4D8;
-
-  --accent: #FFC700;
-  --accent-rgb: 255, 199, 0;
-  --radius-premium: 2rem;
-}
-
-[data-mode="dark"] {
-  /* Raiz / High Contrast - Dark */
-  --bg-app: #000000;
-  --bg-sidebar: #0A0A0E;
-  --bg-card: #0F0F14;
-  --bg-hover: #16161D;
-  --border-app: rgba(255, 255, 255, 0.15);
-  --text-main: #FFFFFF;
-  --text-dim: #FFFFFF; /* No more gray */
-
-  --surface-900: #000000;
-  --surface-800: #0A0A0E;
-  --surface-700: #0F0F14;
-  --surface-600: #1A1A22;
-}
-
-@layer base {
-  * { border-color: var(--border-app); }
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-  body { 
-    background-color: var(--bg-app); 
-    color: var(--text-main); 
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif; 
-  }
-}
-
 @layer components {
-  /* Simplified KPI Card - NO DECORATION */
   .kpi-card {
-    @apply rounded-3xl p-8 border transition-all duration-300 relative overflow-hidden;
     background: var(--bg-card);
-    border-color: var(--border-app);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-app);
+    border-radius: 2rem;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
 
   .btn-primary {
-    @apply relative overflow-hidden px-8 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 flex items-center justify-center gap-3;
     background-color: var(--accent) !important;
     color: #000000 !important;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: none;
+    cursor: pointer;
   }
-  
-  .btn-primary:hover { 
-    transform: translateY(-2px); 
-    filter: brightness(1.1);
-  }
-
-  .accent-bg { background-color: var(--accent); }
-  .accent-text { color: var(--accent); }
-
-  /* Removed Noise and Hatched patterns because they was making text "invisible" */
-  .hatched { background: var(--accent); } 
-  .noise-overlay { display: none; }
-  .card-accent { display: none; }
-
-  .force-black { color: #000000 !important; }
-  .force-white { color: #FFFFFF !important; }
-  
-  .text-text-primary { color: var(--text-main) !important; opacity: 1 !important; }
-  .text-text-muted { color: var(--text-dim) !important; opacity: 1 !important; }
 }
 
-/* Force legibility globally */
-.opacity-40, .opacity-60, .opacity-30, .opacity-50 {
-    opacity: 1 !important;
+/* NUCLEAR CONTRAST FIXES */
+[data-mode="dark"] h1, 
+[data-mode="dark"] h2, 
+[data-mode="dark"] h3, 
+[data-mode="dark"] h4, 
+[data-mode="dark"] p, 
+[data-mode="dark"] span, 
+[data-mode="dark"] div,
+[data-mode="dark"] label {
+    color: #FFFFFF !important;
 }
 
-.text-text-muted {
-    opacity: 1 !important;
-    color: var(--text-main) !important;
+[data-mode="dark"] .text-black,
+[data-mode="dark"] .text-slate-900,
+[data-mode="dark"] .text-gray-900,
+[data-mode="dark"] .text-gray-600,
+[data-mode="dark"] .text-slate-600 {
+    color: #FFFFFF !important;
+}
+
+[data-mode="dark"] input,
+[data-mode="dark"] select,
+[data-mode="dark"] textarea {
+    background-color: #0A0A0F !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #FFFFFF !important;
+}
+
+[data-mode="dark"] .bg-surface-800 {
+    background-color: #0D0D14 !important;
+}
+
+[data-mode="dark"] .bg-surface-900 {
+    background-color: #000000 !important;
+}
+
+/* Visibility Reset */
+.opacity-30, .opacity-40, .opacity-50, .opacity-60 {
+  opacity: 1 !important;
 }

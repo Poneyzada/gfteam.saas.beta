@@ -78,32 +78,32 @@ export default function RaizTreinosPage() {
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="relative w-full max-w-xl bg-surface-800 border border-white/10 rounded-[3rem] p-10 text-left shadow-2xl"
+              className="relative w-full max-w-xl bg-surface-800 border border-black/10 dark:border-white/10 rounded-[3rem] p-10 text-left shadow-2xl"
             >
-              <h2 className="text-3xl font-display font-black text-white mb-8 uppercase italic tracking-tighter leading-none">Novas Técnicas</h2>
+              <h2 className="text-3xl font-display font-black text-text-primary mb-8 uppercase italic tracking-tighter leading-none">Novas Técnicas</h2>
               <div className="space-y-6">
                  <div>
-                    <label className="text-[10px] font-black text-white uppercase tracking-widest pl-2">Nome da Técnica / Drill</label>
-                    <input type="text" value={newLesson.title} onChange={(e) => setNewLesson({...newLesson, title: e.target.value})} className="w-full mt-2 bg-surface-900 border border-white/10 p-5 rounded-2xl text-white font-black uppercase text-sm outline-none focus:border-accent-primary" placeholder="EX: PASSAGEM..." />
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-2 opacity-80">Nome da Técnica / Drill</label>
+                    <input type="text" value={newLesson.title} onChange={(e) => setNewLesson({...newLesson, title: e.target.value})} className="w-full mt-2 bg-surface-900 border border-black/10 dark:border-white/10 p-5 rounded-2xl text-text-primary font-black uppercase text-sm outline-none focus:border-accent-primary" placeholder="EX: PASSAGEM..." />
                  </div>
                  
                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                       <label className="text-[10px] font-black text-white uppercase tracking-widest pl-2">Nível</label>
-                       <select value={newLesson.level} onChange={(e) => setNewLesson({...newLesson, level: e.target.value})} className="w-full mt-2 bg-surface-900 border border-white/10 p-5 rounded-2xl text-white font-black text-sm outline-none focus:border-accent-primary appearance-none">
-                          <option>Básico</option>
-                          <option>Intermediário</option>
-                          <option>Avançado</option>
+                       <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-2 opacity-80">Nível</label>
+                       <select value={newLesson.level} onChange={(e) => setNewLesson({...newLesson, level: e.target.value})} className="w-full mt-2 bg-surface-900 border border-black/10 dark:border-white/10 p-5 rounded-2xl text-text-primary font-black text-sm outline-none focus:border-accent-primary appearance-none">
+                          <option className="bg-surface-900 text-text-primary">Básico</option>
+                          <option className="bg-surface-900 text-text-primary">Intermediário</option>
+                          <option className="bg-surface-900 text-text-primary">Avançado</option>
                        </select>
                     </div>
                     <div>
-                        <label className="text-[10px] font-black text-white uppercase tracking-widest pl-2">Link YouTube</label>
-                        <input type="text" value={newLesson.video} onChange={(e) => setNewLesson({...newLesson, video: e.target.value})} className="w-full mt-2 bg-surface-900 border border-white/10 p-5 rounded-2xl text-white font-black text-sm outline-none focus:border-accent-primary" placeholder="URL..." />
+                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-2 opacity-80">Link YouTube</label>
+                        <input type="text" value={newLesson.video} onChange={(e) => setNewLesson({...newLesson, video: e.target.value})} className="w-full mt-2 bg-surface-900 border border-black/10 dark:border-white/10 p-5 rounded-2xl text-text-primary font-black text-sm outline-none focus:border-accent-primary" placeholder="URL..." />
                     </div>
                  </div>
 
                  <div className="flex gap-4 mt-8">
-                    <button onClick={() => setIsAddLessonModalOpen(false)} className="flex-1 py-5 rounded-2xl bg-surface-700 text-white font-black uppercase text-[10px] tracking-widest border-none cursor-pointer">Cancelar</button>
+                    <button onClick={() => setIsAddLessonModalOpen(false)} className="flex-1 py-5 rounded-2xl bg-surface-700 text-text-primary font-black uppercase text-[10px] tracking-widest border border-black/10 dark:border-white/10 cursor-pointer">Cancelar</button>
                     <button onClick={handleAddLesson} className="flex-1 py-5 rounded-2xl bg-accent-primary text-black font-black uppercase text-[10px] tracking-widest shadow-xl border-none cursor-pointer">Vincular ao Plano</button>
                  </div>
               </div>
